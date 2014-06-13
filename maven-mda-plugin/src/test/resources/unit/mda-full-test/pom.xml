@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.soffid.tools</groupId>
+  <artifactId>maven-mda-plugin-test</artifactId>
+  <packaging>jar</packaging>
+  <name>Maven MDA Test</name>
+  <version>1.0</version>
+	<parent>
+		<groupId>com.soffid</groupId>
+		<artifactId>template</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.soffid.tools</groupId>
+				<artifactId>mda-maven-plugin</artifactId>
+				<configuration>
+					<generateCore>true</generateCore>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>mda</goal>
+						</goals>
+						<phase>generate-sources</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>com.soffid.mda</groupId>
+                        <artifactId>Soffid-IAM</artifactId>
+                        <version>2</version>
+                        <type>mdzip</type>
+                        <scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<refactorings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="jascut JaSCUTConfig.xsd"
+    xmlns="jascut">
+
+    <description>Upgrade to SAX 2</description>
+
+    <rename-type>
+        <type-orig>org.xml.sax.helpers.AttributeListImpl</type-orig>
+        <type-new>org.xml.sax.helpers.AttributesImpl</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.xml.sax.HandlerBase</type-orig>
+        <type-new>org.xml.sax.helpers.DefaultHandler</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.xml.sax.helpers.ParserFactory</type-orig>
+        <type-new>org.xml.sax.helpers.XMLReaderFactory</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.xml.sax.AttributeList</type-orig>
+        <type-new>org.xml.sax.Attributes</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.xml.sax.DocumentHandler</type-orig>
+        <type-new>org.xml.sax.ContentHandler</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.xml.sax.Parser</type-orig>
+        <type-new>org.xml.sax.XMLReader</type-new>
+    </rename-type>
+
+    <rename-method>
+        <type>org.xml.sax.AttributeList</type>
+        <method-orig>getName</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>getQName</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.xml.sax.Parser</type>
+        <method-orig>setDocumentHandler</method-orig>
+        <args-orig>org.xml.sax.DocumentHandler</args-orig>
+        <method-new>setContentHandler</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.xml.sax.helpers.AttributeListImpl</type>
+        <method-orig>setAttributeList</method-orig>
+        <args-orig>org.xml.sax.AttributeList</args-orig>
+        <method-new>setAttributes</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.xml.sax.helpers.ParserFactory</type>
+        <method-orig>makeParser</method-orig>
+        <args-orig/>
+        <method-new>createXMLReader</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.xml.sax.helpers.ParserFactory</type>
+        <method-orig>makeParser</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <method-new>createXMLReader</method-new>
+    </rename-method>
+
+    <change-method-signature>
+        <type>org.xml.sax.helpers.AttributeListImpl</type>
+        <method-orig>addAttribute</method-orig>
+        <args-orig>java.lang.String, java.lang.String, java.lang.String</args-orig>
+        <args-new>
+            <arg>
+                <type>java.lang.String</type>
+                <name>uri</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>localName</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>qName</name>
+                <value kind="reference">0</value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>type</name>
+                <value kind="reference">1</value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>value</name>
+                <value kind="reference">2</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <type>org.xml.sax.DocumentHandler</type>
+        <method-orig>startElement</method-orig>
+        <args-orig>java.lang.String, org.xml.sax.AttributeList</args-orig>
+        <args-new>
+            <arg>
+                <type>java.lang.String</type>
+                <name>namespaceURI</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>localName</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>qName</name>
+                <value kind="reference">0</value>
+            </arg>
+            <arg>
+                <type>org.xml.sax.Attributes</type>
+                <name>atts</name>
+                <value kind="reference">1</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <type>org.xml.sax.DocumentHandler</type>
+        <method-orig>endElement</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <args-new>
+            <arg>
+                <type>java.lang.String</type>
+                <name>namespaceURI</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>localName</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>qName</name>
+                <value kind="reference">0</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <type>org.xml.sax.HandlerBase</type>
+        <method-orig>notationDecl</method-orig>
+        <args-orig>java.lang.String, java.lang.String, java.lang.String</args-orig>
+        <throws-new>org.xml.sax.SAXException</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <type>org.xml.sax.HandlerBase</type>
+        <method-orig>resolveEntity</method-orig>
+        <args-orig>java.lang.String, java.lang.String</args-orig>
+        <throws-new>org.xml.sax.SAXException, java.io.IOException</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <type>org.xml.sax.HandlerBase</type>
+        <method-orig>unparsedEntityDecl</method-orig>
+        <args-orig>java.lang.String, java.lang.String, java.lang.String, java.lang.String</args-orig>
+        <throws-new>org.xml.sax.SAXException</throws-new>
+    </change-method-signature>
+
+</refactorings>

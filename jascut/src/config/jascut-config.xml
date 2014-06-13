@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<refactorings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="jascut JaSCUTConfig.xsd"
+    xmlns="jascut">
+
+    <description>Test</description>
+
+    <change-method-signature>
+        <type>lib.GenericPrinter</type>
+        <method-orig>print</method-orig>
+        <args-orig>T extends java.lang.Object</args-orig>
+        <method-new>printX</method-new>
+        <args-new>
+            <arg>
+                <type>java.lang.String</type>
+                <name>t</name>
+                <value kind="reference">0</value>
+            </arg>
+            <arg>
+                <type>int</type>
+                <name>n</name>
+                <value kind="literal">42</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <rename-method>
+        <type>lib.Printer</type>
+        <method-orig>print</method-orig>
+        <args-orig/>
+        <method-new>printMessage</method-new>
+    </rename-method>
+
+    <rename-field>
+        <description>Rename height to width</description>
+        <type>java.awt.Dimension</type>
+        <field-orig>height</field-orig>
+        <field-new>width</field-new>
+    </rename-field>
+
+</refactorings>

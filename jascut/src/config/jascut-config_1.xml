@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<refactorings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="jascut JaSCUTConfig.xsd"
+    xmlns="jascut">
+
+    <change-method-signature>
+        <type>java.lang.Object</type>
+        <method-orig>clone</method-orig>
+        <args-orig></args-orig>
+        <mods-new>static</mods-new>
+        <return-new>java.lang.Exception</return-new>
+        <method-new>CLONE</method-new>
+        <args-new></args-new>
+        <throws-new>java.lang.Exception</throws-new>
+    </change-method-signature>
+
+    <rename-method>
+        <description>printf to printf2</description>
+        <type>java.io.PrintStream</type>
+        <method-orig>printf</method-orig>
+        <args-orig>java.lang.String, java.lang.Object...</args-orig>
+        <method-new>printf2</method-new>
+    </rename-method>
+    <!--
+    <rename-field>
+        <type>java.awt.Dimension</type>
+        <field-orig>height</field-orig>
+        <field-new>width</field-new>
+    </rename-field>
+    <rename-field>
+        <type>java.awt.Dimension</type>
+        <field-orig>width</field-orig>
+        <field-new>height</field-new>
+    </rename-field>
+    -->
+    <!--
+    <convert-to-diamond/>
+    <format-literal groups="3" minimum-length="8"/>
+    -->
+    <!--
+    <rename-method>
+        <description>Rename...</description>
+        <type>lib.Service</type>
+        <method-orig>print</method-orig>
+        <args-orig>T extends java.lang.Object</args-orig>
+        <method-new>printA</method-new>
+    </rename-method>
+    -->
+    <!--
+    <rename-method>
+        <description>Rename...</description>
+        <type>lib.Service</type>
+        <method-orig>print</method-orig>
+        <args-orig>K extends java.lang.Object,V extends java.lang.Object</args-orig>
+        <method-new>printB</method-new>
+    </rename-method>
+    <rename-method>
+        <description>Rename Service.read() to Service.readInt()</description>
+        <type>lib.Service</type>
+        <method-orig>read</method-orig>
+        <args-orig></args-orig>
+        <method-new>readInt</method-new>
+        <args-new></args-new>
+    </rename-method>
+    <rename-method>
+        <type>lib.Service</type>
+        <method-orig>print</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>printInt</method-new>
+        <args-new>
+            <arg ref="0"/>
+        </args-new>
+    </rename-method>
+    -->
+    
+</refactorings>

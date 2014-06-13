@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>es.caib.dgtic.seguretat</groupId>
+		<artifactId>template</artifactId>
+		<version>1.0.2</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>es.caib.seycon</groupId>
+	<artifactId>caib-rmic-plugin</artifactId>
+	<packaging>maven-plugin</packaging>
+	<name>CAIB RMIC Maven Plugin</name>
+	<version>1.0</version>
+	<description>
+		The RMIC Plugin calls the rmic compiler on a number of specified
+		class files and generates stubs for these classes. The classpath
+		for rmic is set to the Compile classpath of the maven project.
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-project</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-archiver</artifactId>
+			<version>2.2</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<gforge.project>seycon</gforge.project>
+	</properties>
+
+  <scm xmlns="">
+    <tag xmlns="http://maven.apache.org/POM/4.0.0">caib-rmic-plugin-1_0</tag>
+  </scm>
+</project>

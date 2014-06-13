@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<refactorings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="jascut JaSCUTConfig.xsd"
+    xmlns="jascut">
+
+    <description>BouncyCastleAPI</description>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.asn1.DERTags</type-orig>
+        <type-new>org.bouncycastle.asn1.BERTags</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.x509.AttributeCertificateHolder</type-orig>
+        <type-new>org.bouncycastle.cert.AttributeCertificateHolder</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.x509.AttributeCertificateIssuer</type-orig>
+        <type-new>org.bouncycastle.cert.AttributeCertificateIssuer</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.asn1.BERConstructedOctetString</type-orig>
+        <type-new>org.bouncycastle.asn1.BEROctetString</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.asn1.util.DERDump</type-orig>
+        <type-new>org.bouncycastle.asn1.util.ASN1Dump</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.asn1.sec.ECPrivateKeyStructure</type-orig>
+        <type-new>org.bouncycastle.asn1.sec.ECPrivateKey</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.ocsp.OCSPReq</type-orig>
+        <type-new>org.bouncycastle.cert.ocsp.OCSPReq</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.ocsp.OCSPResp</type-orig>
+        <type-new>org.bouncycastle.cert.ocsp.OCSPResp</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.crypto.modes.PaddedBlockCipher</type-orig>
+        <type-new>org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.jce.PKCS10CertificationRequest</type-orig>
+        <type-new>org.bouncycastle.pkcs.PKCS10CertificationRequest</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.asn1.pkcs.RSAPrivateKeyStructure</type-orig>
+        <type-new>org.bouncycastle.asn1.pkcs.RSAPrivateKey</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.asn1.x509.RSAPublicKeyStructure</type-orig>
+        <type-new>org.bouncycastle.asn1.pkcs.RSAPublicKey</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.asn1.x509.X509CertificateStructure</type-orig>
+        <type-new>org.bouncycastle.asn1.x509.Certificate</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.asn1.x509.X509Extensions</type-orig>
+        <type-new>org.bouncycastle.asn1.x509.Extensions</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.asn1.x509.X509ExtensionsGenerator</type-orig>
+        <type-new>org.bouncycastle.asn1.x509.ExtensionsGenerator</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.asn1.x509.X509Name</type-orig>
+        <type-new>org.bouncycastle.asn1.x500.X500Name</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.x509.X509V2AttributeCertificate</type-orig>
+        <type-new>org.bouncycastle.cert.X509AttributeCertificateHolder</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.bouncycastle.x509.X509V2CRLGenerator</type-orig>
+        <type-new>org.bouncycastle.cert.X509v2CRLBuilder</type-new>
+    </rename-type>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.CRLReason</type>
+        <field-orig>AA_COMPROMISE</field-orig>
+        <field-new>aACompromise</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.ReasonFlags</type>
+        <field-orig>AA_COMPROMISE</field-orig>
+        <field-new>aACompromise</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>ADD_INFO_NOT_AVAILABLE</field-orig>
+        <field-new>addInfoNotAvailable</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.CRLReason</type>
+        <field-orig>AFFILIATION_CHANGED</field-orig>
+        <field-new>affiliationChanged</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.ReasonFlags</type>
+        <field-orig>AFFILIATION_CHANGED</field-orig>
+        <field-new>affiliationChanged</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>BAD_ALG</field-orig>
+        <field-new>badAlg</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>BAD_CERT_ID</field-orig>
+        <field-new>badCertId</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>BAD_DATA_FORMAT</field-orig>
+        <field-new>badDataFormat</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>BAD_MESSAGE_CHECK</field-orig>
+        <field-new>badMessageCheck</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>BAD_POP</field-orig>
+        <field-new>badPOP</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>BAD_REQUEST</field-orig>
+        <field-new>badRequest</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>BAD_TIME</field-orig>
+        <field-new>badTime</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.CRLReason</type>
+        <field-orig>CA_COMPROMISE</field-orig>
+        <field-new>cACompromise</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.ReasonFlags</type>
+        <field-orig>CA_COMPROMISE</field-orig>
+        <field-new>cACompromise</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.CRLReason</type>
+        <field-orig>CERTIFICATE_HOLD</field-orig>
+        <field-new>certificateHold</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.ReasonFlags</type>
+        <field-orig>CERTIFICATE_HOLD</field-orig>
+        <field-new>certificateHold</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.CRLReason</type>
+        <field-orig>CESSATION_OF_OPERATION</field-orig>
+        <field-new>cessationOfOperation</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.ReasonFlags</type>
+        <field-orig>CESSATION_OF_OPERATION</field-orig>
+        <field-new>cessationOfOperation</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers</type>
+        <field-orig>id_aa_commitmentType</field-orig>
+        <field-new>id_aa_ets_commitmentType</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers</type>
+        <field-orig>id_aa_otherSigCert</field-orig>
+        <field-new>id_aa_ets_otherSigCert</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers</type>
+        <field-orig>id_aa_signerLocation</field-orig>
+        <field-new>id_aa_ets_signerLocation</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers</type>
+        <field-orig>id_aa_sigPolicyId</field-orig>
+        <field-new>id_aa_ets_sigPolicyId</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>INCORRECT_DATA</field-orig>
+        <field-new>incorrectData</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.CRLReason</type>
+        <field-orig>KEY_COMPROMISE</field-orig>
+        <field-new>keyCompromise</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.ReasonFlags</type>
+        <field-orig>KEY_COMPROMISE</field-orig>
+        <field-new>keyCompromise</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>MISSING_TIME_STAMP</field-orig>
+        <field-new>missingTimeStamp</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers</type>
+        <field-orig>pbewithSHAAnd40BitRC2_CBC</field-orig>
+        <field-new>pbeWithSHAAnd40BitRC2_CBC</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.CRLReason</type>
+        <field-orig>PRIVILEGE_WITHDRAWN</field-orig>
+        <field-new>privilegeWithdrawn</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.ReasonFlags</type>
+        <field-orig>PRIVILEGE_WITHDRAWN</field-orig>
+        <field-new>privilegeWithdrawn</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.CRLReason</type>
+        <field-orig>REMOVE_FROM_CRL</field-orig>
+        <field-new>removeFromCRL</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.X509AttributeIdentifiers</type>
+        <field-orig>RoleSyntax</field-orig>
+        <field-new>id_at_role</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.CRLReason</type>
+        <field-orig>SUPERSEDED</field-orig>
+        <field-new>superseded</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.ReasonFlags</type>
+        <field-orig>SUPERSEDED</field-orig>
+        <field-new>superseded</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.X509Name</type>
+        <field-orig>SymbolLookUp</field-orig>
+        <field-new>DefaultLookUp</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>SYSTEM_FAILURE</field-orig>
+        <field-new>systemFailure</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>TIME_NOT_AVAILABLE</field-orig>
+        <field-new>timeNotAvailable</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>UNACCEPTED_EXTENSION</field-orig>
+        <field-new>unacceptedExtension</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>UNACCEPTED_POLICY</field-orig>
+        <field-new>unacceptedPolicy</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.CRLReason</type>
+        <field-orig>UNSPECIFIED</field-orig>
+        <field-new>unspecified</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.x509.ReasonFlags</type>
+        <field-orig>UNUSED</field-orig>
+        <field-new>unused</field-new>
+    </rename-field>
+
+    <rename-field>
+        <type>org.bouncycastle.asn1.cmp.PKIFailureInfo</type>
+        <field-orig>WRONG_AUTHORITY</field-orig>
+        <field-new>wrongAuthority</field-new>
+    </rename-field>
+
+    <rename-method>
+        <type>org.bouncycastle.x509.ExtendedPKIXParameters</type>
+        <method-orig>addAddionalStore</method-orig>
+        <args-orig>org.bouncycastle.util.Store</args-orig>
+        <method-new>addAdditionalStore</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.bouncycastle.asn1.pkcs.PrivateKeyInfo</type>
+        <method-orig>getAlgorithmId</method-orig>
+        <args-orig/>
+        <method-new>getPrivateKeyAlgorithm</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.bouncycastle.asn1.x509.SubjectPublicKeyInfo</type>
+        <method-orig>getAlgorithmId</method-orig>
+        <args-orig/>
+        <method-new>getAlgorithm</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.bouncycastle.asn1.cms.TimeStampAndCRL</type>
+        <method-orig>getCertificateList</method-orig>
+        <args-orig/>
+        <method-new>getCRL</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.bouncycastle.asn1.cryptopro.GOST3410ParamSetParameters</type>
+        <method-orig>getLKeySize</method-orig>
+        <args-orig/>
+        <method-new>getKeySize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.bouncycastle.asn1.x509.AlgorithmIdentifier</type>
+        <method-orig>getObjectId</method-orig>
+        <args-orig/>
+        <method-new>getAlgorithm</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.bouncycastle.asn1.crmf.CertReqMsg</type>
+        <method-orig>getPop</method-orig>
+        <args-orig/>
+        <method-new>getPopo</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.bouncycastle.asn1.x509.SubjectPublicKeyInfo</type>
+        <method-orig>getPublicKey</method-orig>
+        <args-orig/>
+        <method-new>parsePublicKey</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.bouncycastle.asn1.ASN1Object</type>
+        <method-orig>toASN1Object</method-orig>
+        <args-orig/>
+        <method-new>toASN1Primitive</method-new>
+    </rename-method>
+
+    <rename-method>
+        <type>org.bouncycastle.ocsp.OCSPReq</type>
+        <method-orig>getVersion</method-orig>
+        <args-orig/>
+        <method-new>getVersionNumber</method-new>
+    </rename-method>
+
+    <change-method-signature>
+        <type>org.bouncycastle.jce.PKCS10CertificationRequest</type>
+        <method-orig>getEncoded</method-orig>
+        <args-orig/>
+        <throws-new>java.io.IOException</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <type>org.bouncycastle.asn1.ASN1Object</type>
+        <method-orig>getEncoded</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <args-new/>
+        <throws-new>java.io.IOException</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <type>org.bouncycastle.asn1.x509.X509ExtensionsGenerator</type>
+        <method-orig>addExtension</method-orig>
+        <args-orig>org.bouncycastle.asn1.ASN1ObjectIdentifier, boolean, org.bouncycastle.asn1.ASN1Encodable</args-orig>
+        <throws-new>java.io.IOException</throws-new>
+    </change-method-signature>
+
+</refactorings>

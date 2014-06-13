@@ -1,0 +1,277 @@
+body {
+  padding-left: 3em;
+  font-family: Georgia, "Times New Roman",
+        Times, serif;
+  color: purple;
+  background-color: #ffffff }
+ul.navigation {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 50em;
+  font-family: Helvetica, Geneva, Arial,
+        SunSans-Regular, sans-serif;
+  border-left:  1em solid #5f7993;
+      }
+      
+      
+ul.navigation li {
+  background: white;
+  margin: 0.5em 0;
+  padding: 0.3em;
+  border-right: 1em solid black }
+ul.navigation a {
+  text-decoration: none }
+a:link {
+  color: blue }
+a:visited {
+  color: purple }
+h1 {
+	color: #5f7993; /* Soffid dark blue */
+  font-family: Helvetica, Geneva, Arial,
+        SunSans-Regular, sans-serif }
+        
+ 
+/*********************** Attributes **************************/      
+ul.attributes {
+	background-color: #5f7993; /* Soffid dark blue */;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 85%;
+  font-family: Helvetica, Geneva, Arial,
+        SunSans-Regular, sans-serif ;
+  border-left: 1em solid #a6d100; /* Soffid green */
+}
+
+.attribute-name {
+	display: inline-block;
+	width: 30%;
+  vertical-align: top;
+}
+
+.attribute-type {
+	display: inline-block;
+	width: 50%;
+  vertical-align: top;
+}
+
+.attribute-identifier {
+	background-color: red;
+  vertical-align: top;
+}
+
+.attribute-optional {
+	color: gray;
+}
+
+.attribute-description {
+	display: block;
+	margin-left: 30%;
+	padding-left: 0.3em;
+	color: yellow;
+}
+
+
+ul.attributes li {
+  color: white;
+  margin: 0.5em 0;
+  padding: 0.3em;
+  border-bottom: white solid 1px;
+}
+   
+ul.attributes a {
+  color: white; }
+        
+/*********************** Operations **************************/      
+ul.methods {
+  background-color: #5f7993; /* Soffid dark blue */;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 85%;
+  font-family: Helvetica, Geneva, Arial,
+        SunSans-Regular, sans-serif ;
+  border-left: 1em solid #17b5c8; /* Soffid light blue */
+  color: white;
+}
+
+div.operation {
+	width: 100%;
+	border-bottom: 3px solid white;
+}
+
+div.operation div.operation-header {
+	display: inline-block;
+	vertical-align: top;
+	width: 100%;
+}
+
+div.operation-name {
+	width: 30%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+div.operation-description {
+	float: right;
+	width: 70%;
+	color: yellow;
+	vertical-align: top;
+}
+
+div.operation-actors {
+	float: right;
+	width: 70%;
+	color: pink;
+	vertical-align: top;
+}
+
+div.operation div.hql {
+	float:right;
+	width: 70%;
+	color: red;
+	font-size: small;
+	vertical-align: top;
+}
+
+div.operation div.params {
+	display: inline-block;
+	vertical-align: top;
+	width: 100%;
+}
+
+.param-name {
+	display: inline-block;
+	width: 20%;
+	padding-left: 10%;
+	vertical-align: top;
+}
+
+.param-type {
+	display: inline-block;
+	width: 40%;
+	vertical-align: top;
+}
+
+.param-description {
+	display: inline-block;
+	width: 30%;
+	vertical-align: top;
+}
+
+.return-name {
+	display: inline-block;
+	width: 20%;
+	padding-left: 10%;
+	vertical-align: top;
+}
+
+.return-type {
+	display: inline-block;
+	width: 40%;
+	vertical-align: top;
+}
+
+
+ul.methods li {
+  color: white;
+  margin: 0.5em 0;
+   }
+   
+ul.methods a {
+  color: white; 
+}
+        
+/*********************** Dependencies **************************/      
+ul.dependencies {
+	background-color: #5f7993; /* Soffid dark blue */;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 85%;
+  font-family: Helvetica, Geneva, Arial,
+        SunSans-Regular, sans-serif ;
+  border-left: 1em solid #a6d100; /* Soffid green */
+}
+
+
+ul.dependencies li {
+  color: white;
+  margin: 0.5em 0;
+  padding: 0.3em;
+  border-bottom: white solid 1px;
+}
+   
+ul.dependencies a {
+  color: white; 
+  text-decoration: none;
+}
+
+
+/*********** Footer *********/
+.genfooter {
+	background-color: black;
+	text-align: right;
+	color: white;
+}
+
+/*********** Top line *********/
+.topline {
+	background-color: black;
+	text-align: center;
+	color: white;
+}
+
+.topline a {
+	text-decoration: none;
+	color: white;
+}
+        
+/********** UML Diagram **********/
+.uml {
+	width: 100%;
+	display: inline-block;
+}        
+
+.uml img {
+	width: 70%;
+	float: right;
+	display: block;
+
+}
+
+/********** Object properties ***********/
+ul.properties {
+	background-color: #5f7993; /* Soffid dark blue */;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 60%;
+  font-family: Helvetica, Geneva, Arial,
+        SunSans-Regular, sans-serif ;
+  border-left: 1em solid black;
+}
+
+.property {
+	display: inline-block;
+	width: 30%;
+  vertical-align: top;
+}
+
+.property-value {
+	display: inline-block;
+	width: 70%;
+  vertical-align: top;
+}
+
+ul.properties li {
+  color: white;
+  margin: 0.5em 0;
+  padding: 0.3em;
+  border-bottom: white solid 1px;
+}
+   
+ul.properties a {
+  color: white; }
+.

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<refactorings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="jascut JaSCUTConfig.xsd"
+    xmlns="jascut">
+
+    <description>Test</description>
+
+    <rename-type>
+        <type-orig>lib.Car</type-orig>
+        <type-new>lib.Bus</type-new>
+    </rename-type>
+    
+    <rename-method>
+        <type>lib.Car</type>
+        <method-orig>start</method-orig>
+        <args-orig/>
+        <method-new>startEngine</method-new>
+    </rename-method>
+
+</refactorings>

@@ -1,0 +1,1957 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<refactorings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="jascut JaSCUTConfig.xsd"
+    xmlns="jascut">
+
+    <description>Upgrade to Java 7 API</description>
+
+    <rename-type>
+        <type-orig>org.xml.sax.AttributeList</type-orig>
+        <type-new>org.xml.sax.Attributes</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.xml.sax.helpers.AttributeListImpl</type-orig>
+        <type-new>org.xml.sax.helpers.AttributesImpl</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.xml.sax.DocumentHandler</type-orig>
+        <type-new>org.xml.sax.ContentHandler</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.omg.CORBA.DynAny</type-orig>
+        <type-new>org.omg.DynamicAny.DynAny</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.omg.CORBA.DynArray</type-orig>
+        <type-new>org.omg.DynamicAny.DynArray</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.omg.CORBA.DynEnum</type-orig>
+        <type-new>org.omg.DynamicAny.DynEnum</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.omg.CORBA.DynFixed</type-orig>
+        <type-new>org.omg.DynamicAny.DynFixed</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.omg.CORBA.DynSequence</type-orig>
+        <type-new>org.omg.DynamicAny.DynSequence</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.omg.CORBA.DynStruct</type-orig>
+        <type-new>org.omg.DynamicAny.DynStruct</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.omg.CORBA.DynUnion</type-orig>
+        <type-new>org.omg.DynamicAny.DynUnion</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.omg.CORBA.DynValue</type-orig>
+        <type-new>org.omg.DynamicAny.DynValue</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.xml.sax.HandlerBase</type-orig>
+        <type-new>org.xml.sax.helpers.DefaultHandler</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.xml.sax.Parser</type-orig>
+        <type-new>org.xml.sax.XMLReader</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>org.xml.sax.helpers.ParserFactory</type-orig>
+        <type-new>org.xml.sax.helpers.XMLReaderFactory</type-new>
+    </rename-type>
+
+    <rename-type>
+        <type-orig>java.rmi.RMISecurityException</type-orig>
+        <type-new>java.lang.SecurityException</type-new>
+    </rename-type>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.addItem(String) to add(String)
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>addItem</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <method-new>add</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.addItem(String, int) to add(String, int)
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>addItem</method-orig>
+        <args-orig>java.lang.String, int</args-orig>
+        <method-new>add</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.allowsMultipleSelections() to isMultipleMode()
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>allowsMultipleSelections</method-orig>
+        <args-orig/>
+        <method-new>isMultipleMode</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextArea.appendText(String) to append(String)
+        </description>
+        <type>java.awt.TextArea</type>
+        <method-orig>appendText</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <method-new>append</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.bounds() to getBounds()
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>bounds</method-orig>
+        <args-orig/>
+        <method-new>getBounds</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.clear() to removeAll()
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>clear</method-orig>
+        <args-orig/>
+        <method-new>removeAll</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.image.renderable.RenderContext.concetenateTransform(AffineTransform)
+            to concatenateTransform(AffineTransform)
+        </description>
+        <type>java.awt.image.renderable.RenderContext</type>
+        <method-orig>concetenateTransform</method-orig>
+        <args-orig>java.awt.geom.AffineTransform</args-orig>
+        <method-new>concatenateTransform</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Container.countComponents() to getComponentCount()
+        </description>
+        <type>java.awt.Container</type>
+        <method-orig>countComponents</method-orig>
+        <args-orig/>
+        <method-new>getComponentCount</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.countItems() to getItemCount()
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>countItems</method-orig>
+        <args-orig/>
+        <method-new>getItemCount</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Choice.countItems() to getItemCount()
+        </description>
+        <type>java.awt.Choice</type>
+        <method-orig>countItems</method-orig>
+        <args-orig/>
+        <method-new>getItemCount</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Menu.countItems() to getItemCount()
+        </description>
+        <type>java.awt.Menu</type>
+        <method-orig>countItems</method-orig>
+        <args-orig/>
+        <method-new>getItemCount</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.MenuBar.countMenus() to getMenuCount()
+        </description>
+        <type>java.awt.MenuBar</type>
+        <method-orig>countMenus</method-orig>
+        <args-orig/>
+        <method-new>getMenuCount</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.delItem(int) to remove(int)
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>delItem</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>remove</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.enable(boolean) to setEnabled(boolean)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>enable</method-orig>
+        <args-orig>boolean</args-orig>
+        <method-new>setEnabled</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.MenuItem.enable(boolean) to setEnabled(boolean)
+        </description>
+        <type>java.awt.MenuItem</type>
+        <method-orig>enable</method-orig>
+        <args-orig>boolean</args-orig>
+        <method-new>setEnabled</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.datatransfer.DataFlavor.equals(String) to isMimeTypeEqual(String)
+        </description>
+        <type>java.awt.datatransfer.DataFlavor</type>
+        <method-orig>equals</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <method-new>isMimeTypeEqual</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename org.omg.CORBA.ServerRequest.except(Any) to set_exception(Any)
+        </description>
+        <type>org.omg.CORBA.ServerRequest</type>
+        <method-orig>except</method-orig>
+        <args-orig>org.omg.CORBA.Any</args-orig>
+        <method-new>set_exception</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Polygon.getBoundingBox() to getBounds()
+        </description>
+        <type>java.awt.Polygon</type>
+        <method-orig>getBoundingBox</method-orig>
+        <args-orig/>
+        <method-new>getBounds</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Graphics.getClipRect() to getClipBounds()
+        </description>
+        <type>java.awt.Graphics</type>
+        <method-orig>getClipRect</method-orig>
+        <args-orig/>
+        <method-new>getClipBounds</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.swing.JPopupMenu.getComponentAtIndex(int) to getComponent(int)
+        </description>
+        <type>javax.swing.JPopupMenu</type>
+        <method-orig>getComponentAtIndex</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>getComponent</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.swing.JMenuBar.getComponentAtIndex(int) to getComponent(int)
+        </description>
+        <type>javax.swing.JMenuBar</type>
+        <method-orig>getComponentAtIndex</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>getComponent</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.CheckboxGroup.getCurrent() to getSelectedCheckbox()
+        </description>
+        <type>java.awt.CheckboxGroup</type>
+        <method-orig>getCurrent</method-orig>
+        <args-orig/>
+        <method-new>getSelectedCheckbox</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.swing.AbstractButton.getLabel() to getText()
+        </description>
+        <type>javax.swing.AbstractButton</type>
+        <method-orig>getLabel</method-orig>
+        <args-orig/>
+        <method-new>getText</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Scrollbar.getLineIncrement() to getUnitIncrement()
+        </description>
+        <type>java.awt.Scrollbar</type>
+        <method-orig>getLineIncrement</method-orig>
+        <args-orig/>
+        <method-new>getUnitIncrement</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.FontMetrics.getMaxDecent() to getMaxDescent()
+        </description>
+        <type>java.awt.FontMetrics</type>
+        <method-orig>getMaxDecent</method-orig>
+        <args-orig/>
+        <method-new>getMaxDescent</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.swing.JRootPane.getMenuBar() to getJMenuBar()
+        </description>
+        <type>javax.swing.JRootPane</type>
+        <method-orig>getMenuBar</method-orig>
+        <args-orig/>
+        <method-new>getJMenuBar</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.swing.JInternalFrame.getMenuBar() to getJMenuBar()
+        </description>
+        <type>javax.swing.JInternalFrame</type>
+        <method-orig>getMenuBar</method-orig>
+        <args-orig/>
+        <method-new>getJMenuBar</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Scrollbar.getPageIncrement() to getBlockIncrement()
+        </description>
+        <type>java.awt.Scrollbar</type>
+        <method-orig>getPageIncrement</method-orig>
+        <args-orig/>
+        <method-new>getBlockIncrement</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Scrollbar.getVisible() to getVisibleAmount()
+        </description>
+        <type>java.awt.Scrollbar</type>
+        <method-orig>getVisible</method-orig>
+        <args-orig/>
+        <method-new>getVisibleAmount</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextArea.insertText(String, int) to insert(String, int)
+        </description>
+        <type>java.awt.TextArea</type>
+        <method-orig>insertText</method-orig>
+        <args-orig>java.lang.String, int</args-orig>
+        <method-new>insert</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Container.insets() to getInsets()
+        </description>
+        <type>java.awt.Container</type>
+        <method-orig>insets</method-orig>
+        <args-orig/>
+        <method-new>getInsets</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.inside(int, int) to contains(int, int)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>inside</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>contains</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Rectangle.inside(int, int) to contains(int, int)
+        </description>
+        <type>java.awt.Rectangle</type>
+        <method-orig>inside</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>contains</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Polygon.inside(int, int) to contains(int, int)
+        </description>
+        <type>java.awt.Polygon</type>
+        <method-orig>inside</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>contains</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.isFocusTraversable() to isFocusable()
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>isFocusTraversable</method-orig>
+        <args-orig/>
+        <method-new>isFocusable</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.lang.Character.isJavaLetter(char) to isJavaIdentifierStart(char)
+        </description>
+        <type>java.lang.Character</type>
+        <method-orig>isJavaLetter</method-orig>
+        <args-orig>char</args-orig>
+        <method-new>isJavaIdentifierStart</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.lang.Character.isJavaLetterOrDigit(char) to isJavaIdentifierPart(char)
+        </description>
+        <type>java.lang.Character</type>
+        <method-orig>isJavaLetterOrDigit</method-orig>
+        <args-orig>char</args-orig>
+        <method-new>isJavaIdentifierPart</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.isSelected(int) to isIndexSelected(int)
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>isSelected</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>isIndexSelected</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.lang.Character.isSpace(char) to isWhitespace(char)
+        </description>
+        <type>java.lang.Character</type>
+        <method-orig>isSpace</method-orig>
+        <args-orig>char</args-orig>
+        <method-new>isWhitespace</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Container.layout() to doLayout()
+        </description>
+        <type>java.awt.Container</type>
+        <method-orig>layout</method-orig>
+        <args-orig/>
+        <method-new>doLayout</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.layout() to doLayout()
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>layout</method-orig>
+        <args-orig/>
+        <method-new>doLayout</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.ScrollPane.layout() to doLayout()
+        </description>
+        <type>java.awt.ScrollPane</type>
+        <method-orig>layout</method-orig>
+        <args-orig/>
+        <method-new>doLayout</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Container.locate(int, int) to getComponentAt(int, int)
+        </description>
+        <type>java.awt.Container</type>
+        <method-orig>locate</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>getComponentAt</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.locate(int, int) to getComponentAt(int, int)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>locate</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>getComponentAt</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.location() to getLocation()
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>location</method-orig>
+        <args-orig/>
+        <method-new>getLocation</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.minimumSize() to getMinimumSize()
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>minimumSize</method-orig>
+        <args-orig/>
+        <method-new>getMinimumSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Container.minimumSize() to getMinimumSize()
+        </description>
+        <type>java.awt.Container</type>
+        <method-orig>minimumSize</method-orig>
+        <args-orig/>
+        <method-new>getMinimumSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.minimumSize() to getMinimumSize()
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>minimumSize</method-orig>
+        <args-orig/>
+        <method-new>getMinimumSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextField.minimumSize() to getMinimumSize()
+        </description>
+        <type>java.awt.TextField</type>
+        <method-orig>minimumSize</method-orig>
+        <args-orig/>
+        <method-new>getMinimumSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextArea.minimumSize() to getMinimumSize()
+        </description>
+        <type>java.awt.TextArea</type>
+        <method-orig>minimumSize</method-orig>
+        <args-orig/>
+        <method-new>getMinimumSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.minimumSize(int) to getMinimumSize(int)
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>minimumSize</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>getMinimumSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextField.minimumSize(int) to getMinimumSize(int)
+        </description>
+        <type>java.awt.TextField</type>
+        <method-orig>minimumSize</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>getMinimumSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextArea.minimumSize(int, int) to getMinimumSize(int, int)
+        </description>
+        <type>java.awt.TextArea</type>
+        <method-orig>minimumSize</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>getMinimumSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.move(int, int) to setLocation(int, int)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>move</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>setLocation</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Rectangle.move(int, int) to setLocation(int, int)
+        </description>
+        <type>java.awt.Rectangle</type>
+        <method-orig>move</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>setLocation</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.xml.stream.XMLEventFactory.newInstance(String, ClassLoader)
+            to newFactory(String, ClassLoader)
+        </description>
+        <type>javax.xml.stream.XMLEventFactory</type>
+        <method-orig>newInstance</method-orig>
+        <args-orig>java.lang.String, java.lang.ClassLoader</args-orig>
+        <method-new>newFactory</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.xml.stream.XMLInputFactory.newInstance(String, ClassLoader)
+            to newFactory(String, ClassLoader)
+        </description>
+        <type>javax.xml.stream.XMLInputFactory</type>
+        <method-orig>newInstance</method-orig>
+        <args-orig>java.lang.String, java.lang.ClassLoader</args-orig>
+        <method-new>newFactory</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.nextFocus() to transferFocus()
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>nextFocus</method-orig>
+        <args-orig/>
+        <method-new>transferFocus</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename org.omg.CORBA.ServerRequest.op_name() to operation()
+        </description>
+        <type>org.omg.CORBA.ServerRequest</type>
+        <method-orig>op_name</method-orig>
+        <args-orig/>
+        <method-new>operation</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename org.omg.CORBA.ServerRequest.params(NVList) to arguments(NVList)
+        </description>
+        <type>org.omg.CORBA.ServerRequest</type>
+        <method-orig>params</method-orig>
+        <args-orig>org.omg.CORBA.NVList</args-orig>
+        <method-new>arguments</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.image.renderable.RenderContext.preConcetenateTransform(AffineTransform)
+            to preConcatenateTransform(AffineTransform)
+        </description>
+        <type>java.awt.image.renderable.RenderContext</type>
+        <method-orig>preConcetenateTransform</method-orig>
+        <args-orig>java.awt.geom.AffineTransform</args-orig>
+        <method-new>preConcatenateTransform</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.preferredSize() to getPreferredSize()
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>preferredSize</method-orig>
+        <args-orig/>
+        <method-new>getPreferredSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Container.preferredSize() to getPreferredSize()
+        </description>
+        <type>java.awt.Container</type>
+        <method-orig>preferredSize</method-orig>
+        <args-orig/>
+        <method-new>getPreferredSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.preferredSize() to getPreferredSize()
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>preferredSize</method-orig>
+        <args-orig/>
+        <method-new>getPreferredSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextField.preferredSize() to getPreferredSize()
+        </description>
+        <type>java.awt.TextField</type>
+        <method-orig>preferredSize</method-orig>
+        <args-orig/>
+        <method-new>getPreferredSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextArea.preferredSize() to getPreferredSize()
+        </description>
+        <type>java.awt.TextArea</type>
+        <method-orig>preferredSize</method-orig>
+        <args-orig/>
+        <method-new>getPreferredSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.preferredSize(int) to getPreferredSize(int)
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>preferredSize</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>getPreferredSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextField.preferredSize(int) to getPreferredSize(int)
+        </description>
+        <type>java.awt.TextField</type>
+        <method-orig>preferredSize</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>getPreferredSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextArea.preferredSize(int, int) to getPreferredSize(int, int)
+        </description>
+        <type>java.awt.TextArea</type>
+        <method-orig>preferredSize</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>getPreferredSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextArea.replaceText(String, int, int) to replaceRange(String, int, int)
+        </description>
+        <type>java.awt.TextArea</type>
+        <method-orig>replaceText</method-orig>
+        <args-orig>java.lang.String, int, int</args-orig>
+        <method-new>replaceRange</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.reshape(int, int, int, int) to setBounds(int, int, int, int)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>reshape</method-orig>
+        <args-orig>int, int, int, int</args-orig>
+        <method-new>setBounds</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Rectangle.reshape(int, int, int, int) to setBounds(int, int, int, int)
+        </description>
+        <type>java.awt.Rectangle</type>
+        <method-orig>reshape</method-orig>
+        <args-orig>int, int, int, int</args-orig>
+        <method-new>setBounds</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Window.reshape(int, int, int, int) to setBounds(int, int, int, int)
+        </description>
+        <type>java.awt.Window</type>
+        <method-orig>reshape</method-orig>
+        <args-orig>int, int, int, int</args-orig>
+        <method-new>setBounds</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.swing.JComponent.reshape(int, int, int, int) to setBounds(int, int, int, int)
+        </description>
+        <type>javax.swing.JComponent</type>
+        <method-orig>reshape</method-orig>
+        <args-orig>int, int, int, int</args-orig>
+        <method-new>setBounds</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.resize(Dimension) to setSize(Dimension)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>resize</method-orig>
+        <args-orig>java.awt.Dimension</args-orig>
+        <method-new>setSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.resize(int, int) to setSize(int, int)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>resize</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>setSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Rectangle.resize(int, int) to setSize(int, int)
+        </description>
+        <type>java.awt.Rectangle</type>
+        <method-orig>resize</method-orig>
+        <args-orig>int, int</args-orig>
+        <method-new>setSize</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename org.omg.CORBA.ServerRequest.result(Any) to set_result(Any)
+        </description>
+        <type>org.omg.CORBA.ServerRequest</type>
+        <method-orig>result</method-orig>
+        <args-orig>org.omg.CORBA.Any</args-orig>
+        <method-new>set_result</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.CheckboxGroup.setCurrent(Checkbox) to setSelectedCheckbox(Checkbox)
+        </description>
+        <type>java.awt.CheckboxGroup</type>
+        <method-orig>setCurrent</method-orig>
+        <args-orig>java.awt.Checkbox</args-orig>
+        <method-new>setSelectedCheckbox</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.TextField.setEchoCharacter(char) to setEchoChar(char)
+        </description>
+        <type>java.awt.TextField</type>
+        <method-orig>setEchoCharacter</method-orig>
+        <args-orig>char</args-orig>
+        <method-new>setEchoChar</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.swing.AbstractButton.setLabel(String) to setText(String)
+        </description>
+        <type>javax.swing.AbstractButton</type>
+        <method-orig>setLabel</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <method-new>setText</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Scrollbar.setLineIncrement(int) to setUnitIncrement(int)
+        </description>
+        <type>java.awt.Scrollbar</type>
+        <method-orig>setLineIncrement</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>setUnitIncrement</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.swing.JRootPane.setMenuBar(JMenuBar) to setJMenuBar(JMenuBar)
+        </description>
+        <type>javax.swing.JRootPane</type>
+        <method-orig>setMenuBar</method-orig>
+        <args-orig>javax.swing.JMenuBar</args-orig>
+        <method-new>setJMenuBar</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.swing.JInternalFrame.setMenuBar(JMenuBar) to setJMenuBar(JMenuBar)
+        </description>
+        <type>javax.swing.JInternalFrame</type>
+        <method-orig>setMenuBar</method-orig>
+        <args-orig>javax.swing.JMenuBar</args-orig>
+        <method-new>setJMenuBar</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.List.setMultipleSelections(boolean) to setMultipleMode(boolean)
+        </description>
+        <type>java.awt.List</type>
+        <method-orig>setMultipleSelections</method-orig>
+        <args-orig>boolean</args-orig>
+        <method-new>setMultipleMode</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.management.monitor.MonitorMBean.setObservedObject(ObjectName)
+            to addObservedObject(ObjectName)
+        </description>
+        <type>javax.management.monitor.MonitorMBean</type>
+        <method-orig>setObservedObject</method-orig>
+        <args-orig>javax.management.ObjectName</args-orig>
+        <method-new>addObservedObject</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.management.monitor.Monitor.setObservedObject(ObjectName)
+            to addObservedObject(ObjectName)
+        </description>
+        <type>javax.management.monitor.Monitor</type>
+        <method-orig>setObservedObject</method-orig>
+        <args-orig>javax.management.ObjectName</args-orig>
+        <method-new>addObservedObject</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Scrollbar.setPageIncrement(int) to setBlockIncrement(int)
+        </description>
+        <type>java.awt.Scrollbar</type>
+        <method-orig>setPageIncrement</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>setBlockIncrement</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.management.monitor.CounterMonitor.setThreshold(Number)
+            to setInitThreshold(Number)
+        </description>
+        <type>javax.management.monitor.CounterMonitor</type>
+        <method-orig>setThreshold</method-orig>
+        <args-orig>java.lang.Number</args-orig>
+        <method-new>setInitThreshold</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename javax.management.monitor.CounterMonitorMBean.setThreshold(Number)
+            to setInitThreshold(Number)
+        </description>
+        <type>javax.management.monitor.CounterMonitorMBean</type>
+        <method-orig>setThreshold</method-orig>
+        <args-orig>java.lang.Number</args-orig>
+        <method-new>setInitThreshold</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.show(boolean) to setVisible(boolean)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>show</method-orig>
+        <args-orig>boolean</args-orig>
+        <method-new>setVisible</method-new>
+    </rename-method>
+
+    <rename-method>
+        <description>
+            Rename java.awt.Component.size() to getSize()
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>size</method-orig>
+        <args-orig/>
+        <method-new>getSize</method-new>
+    </rename-method>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.CardLayout.addLayoutComponent(String, Component) to addLayoutComponent(Component, Object)
+        </description>
+        <type>java.awt.CardLayout</type>
+        <method-orig>addLayoutComponent</method-orig>
+        <args-orig>java.lang.String, java.awt.Component</args-orig>
+        <args-new>
+            <arg>
+                <type>java.awt.Component</type>
+                <name>comp</name>
+                <value kind="reference">1</value>
+            </arg>
+            <arg>
+                <type>java.lang.Object</type>
+                <name>constraints</name>
+                <value kind="reference">0</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.net.URLDecoder.decode(String) to decode(String, "utf-8")
+        </description>
+        <type>java.net.URLDecoder</type>
+        <method-orig>decode</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <args-new>
+            <arg>
+                <type>java.lang.String</type>
+                <name>s</name>
+                <value kind="reference">0</value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>enc</name>
+                <value kind="literal">utf-8</value>
+            </arg>
+        </args-new>
+        <throws-new>java.io.UnsupportedEncodingException</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.Component.disable() to setEnabled(boolean)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>disable</method-orig>
+        <args-orig/>
+        <method-new>setEnabled</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">false</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.MenuItem.disable() to setEnabled(boolean)
+        </description>
+        <type>java.awt.MenuItem</type>
+        <method-orig>disable</method-orig>
+        <args-orig/>
+        <method-new>setEnabled</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">false</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change javax.swing.JComponent.disable() to setEnabled(boolean)
+        </description>
+        <type>javax.swing.JComponent</type>
+        <method-orig>disable</method-orig>
+        <args-orig/>
+        <method-new>setEnabled</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">false</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.Component.enable() to setEnabled(boolean)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>enable</method-orig>
+        <args-orig/>
+        <method-new>setEnabled</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">true</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.MenuItem.enable() to setEnabled(boolean)
+        </description>
+        <type>java.awt.MenuItem</type>
+        <method-orig>enable</method-orig>
+        <args-orig/>
+        <method-new>setEnabled</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">true</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change javax.swing.JComponent.enable() to setEnabled(boolean)
+        </description>
+        <type>javax.swing.JComponent</type>
+        <method-orig>enable</method-orig>
+        <args-orig/>
+        <method-new>setEnabled</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">true</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.net.URLEncoder.encode(String) to encode(String, "utf-8")
+        </description>
+        <type>java.net.URLEncoder</type>
+        <method-orig>encode</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <args-new>
+            <arg>
+                <type>java.lang.String</type>
+                <name>s</name>
+                <value kind="reference">0</value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>enc</name>
+                <value kind="literal">utf-8</value>
+            </arg>
+        </args-new>
+        <throws-new>java.io.UnsupportedEncodingException</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.Component.hide() to setVisible(boolean)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>hide</method-orig>
+        <args-orig/>
+        <method-new>setVisible</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">false</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.Dialog.hide() to setVisible(boolean)
+        </description>
+        <type>java.awt.Dialog</type>
+        <method-orig>hide</method-orig>
+        <args-orig/>
+        <method-new>setVisible</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">false</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.Window.hide() to setVisible(boolean)
+        </description>
+        <type>java.awt.Window</type>
+        <method-orig>hide</method-orig>
+        <args-orig/>
+        <method-new>setVisible</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">false</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.rmi.server.RMIClassLoader.loadClass(String) to loadClass(null, String)
+        </description>
+        <type>java.rmi.server.RMIClassLoader</type>
+        <method-orig>loadClass</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <args-new>
+            <arg>
+                <type>java.lang.String</type>
+                <name>codebase</name>
+                <value kind="null"/>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>name</name>
+                <value kind="reference">0</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change javax.swing.text.View.modelToView(int, Shape) to
+            modelToView(int, java.awt.Shape, javax.swing.text.Position.Bias.Forward)
+        </description>
+        <type>javax.swing.text.View</type>
+        <method-orig>modelToView</method-orig>
+        <args-orig>int, java.awt.Shape</args-orig>
+        <args-new>
+            <arg>
+                <type>int</type>
+                <name>pos</name>
+                <value kind="reference">0</value>
+            </arg>
+            <arg>
+                <type>java.awt.Shape</type>
+                <name>a</name>
+                <value kind="reference">1</value>
+            </arg>
+            <arg>
+                <type>javax.swing.text.Position.Bias</type>
+                <name>b</name>
+                <value kind="identifier">javax.swing.text.Position.Bias.Forward</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.net.MulticastSocket.setTTL(byte) to setTimeToLive(int)
+        </description>
+        <type>java.net.MulticastSocket</type>
+        <method-orig>setTTL</method-orig>
+        <args-orig>byte</args-orig>
+        <method-new>setTimeToLive</method-new>
+        <args-new>
+            <arg>
+                <type>int</type>
+                <name>ttl</name>
+                <value kind="reference">0</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.Component.show() to setVisible(boolean)
+        </description>
+        <type>java.awt.Component</type>
+        <method-orig>show</method-orig>
+        <args-orig/>
+        <method-new>setVisible</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">true</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.Dialog.show() to setVisible(boolean)
+        </description>
+        <type>java.awt.Dialog</type>
+        <method-orig>show</method-orig>
+        <args-orig/>
+        <method-new>setVisible</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">true</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change java.awt.Window.show() to setVisible(boolean)
+        </description>
+        <type>java.awt.Window</type>
+        <method-orig>show</method-orig>
+        <args-orig/>
+        <method-new>setVisible</method-new>
+        <args-new>
+            <arg>
+                <type>boolean</type>
+                <name>b</name>
+                <value kind="literal">true</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change javax.swing.plaf.metal.MetalScrollPaneUI.uninstallListeners(JScrollPane)
+            to uninstallListeners(JComponent)
+        </description>
+        <type>javax.swing.plaf.metal.MetalScrollPaneUI</type>
+        <method-orig>uninstallListeners</method-orig>
+        <args-orig>javax.swing.JScrollPane</args-orig>
+        <args-new>
+            <arg>
+                <type>javax.swing.JComponent</type>
+                <name>c</name>
+                <value kind="reference">0</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change org.xml.sax.helpers.AttributeListImpl.addAttribute(String, String, String)
+            to addAttribute("", "", String, String, String)
+        </description>
+        <type>org.xml.sax.helpers.AttributeListImpl</type>
+        <method-orig>addAttribute</method-orig>
+        <args-orig>java.lang.String, java.lang.String, java.lang.String</args-orig>
+        <args-new>
+            <arg>
+                <type>java.lang.String</type>
+                <name>uri</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>localName</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>qName</name>
+                <value kind="reference">0</value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>type</name>
+                <value kind="reference">1</value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>value</name>
+                <value kind="reference">2</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change org.xml.sax.DocumentHandler.startElement(String, AttributeList)
+            to startElement("", "", String, AttributeList)
+        </description>
+        <type>org.xml.sax.DocumentHandler</type>
+        <method-orig>startElement</method-orig>
+        <args-orig>java.lang.String, org.xml.sax.AttributeList</args-orig>
+        <args-new>
+            <arg>
+                <type>java.lang.String</type>
+                <name>namespaceURI</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>localName</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>qName</name>
+                <value kind="reference">0</value>
+            </arg>
+            <arg>
+                <type>org.xml.sax.Attributes</type>
+                <name>attrs</name>
+                <value kind="reference">1</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change org.xml.sax.DocumentHandler.endElement(String) to endElement("", "", String)
+        </description>
+        <type>org.xml.sax.DocumentHandler</type>
+        <method-orig>endElement</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <args-new>
+            <arg>
+                <type>java.lang.String</type>
+                <name>namespaceURI</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>localName</name>
+                <value kind="literal"></value>
+            </arg>
+            <arg>
+                <type>java.lang.String</type>
+                <name>qName</name>
+                <value kind="reference">0</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Add throws SAXException
+        </description>
+        <type>org.xml.sax.HandlerBase</type>
+        <method-orig>notationDecl</method-orig>
+        <args-orig>java.lang.String, java.lang.String, java.lang.String</args-orig>
+        <throws-new>org.xml.sax.SAXException</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Add throws IOException
+        </description>
+        <type>org.xml.sax.HandlerBase</type>
+        <method-orig>resolveEntity</method-orig>
+        <args-orig>java.lang.String, java.lang.String</args-orig>
+        <throws-new>org.xml.sax.SAXException, java.io.IOException</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Add throws SAXException
+        </description>
+        <type>org.xml.sax.HandlerBase</type>
+        <method-orig>unparsedEntityDecl</method-orig>
+        <args-orig>java.lang.String, java.lang.String, java.lang.String, java.lang.String</args-orig>
+        <throws-new>org.xml.sax.SAXException</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>assign</method-orig>
+        <args-orig>org.omg.CORBA.DynAny</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>from_any</method-orig>
+        <args-orig>org.omg.CORBA.Any</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>to_any</method-orig>
+        <args-orig/>
+        <throws-new/>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_boolean</method-orig>
+        <args-orig>boolean</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_octet</method-orig>
+        <args-orig>byte</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_char</method-orig>
+        <args-orig>char</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_short</method-orig>
+        <args-orig>short</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_ushort</method-orig>
+        <args-orig>short</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_long</method-orig>
+        <args-orig>int</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_ulong</method-orig>
+        <args-orig>int</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_float</method-orig>
+        <args-orig>float</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_double</method-orig>
+        <args-orig>double</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_string</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_reference</method-orig>
+        <args-orig>org.omg.CORBA.Object</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_typecode</method-orig>
+        <args-orig>org.omg.CORBA.TypeCode</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_longlong</method-orig>
+        <args-orig>long</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_ulonglong</method-orig>
+        <args-orig>long</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_wchar</method-orig>
+        <args-orig>char</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_wstring</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_any</method-orig>
+        <args-orig>org.omg.CORBA.Any</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>insert_val</method-orig>
+        <args-orig>java.io.Serializable</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_val</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_boolean</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_octet</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_char</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_short</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_ushort</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_long</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_ulong</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_float</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_double</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_string</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_reference</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_typecode</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_longlong</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_ulonglong</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_wchar</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_wstring</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynAny</type>
+        <method-orig>get_any</method-orig>
+        <args-orig/>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynArray</type>
+        <method-orig>set_elements</method-orig>
+        <args-orig>org.omg.CORBA.Any[]</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <rename-method>
+        <description>
+            Change org.omg.CORBA.DynSequence.length() to get_length()
+        </description>
+        <type>org.omg.CORBA.DynSequence</type>
+        <method-orig>length</method-orig>
+        <args-orig/>
+        <method-new>get_length</method-new>
+    </rename-method>
+
+    <change-method-signature>
+        <description>
+            Change org.omg.CORBA.DynSequence.length(int) to set_length(int)
+        </description>
+        <type>org.omg.CORBA.DynSequence</type>
+        <method-orig>length</method-orig>
+        <args-orig>int</args-orig>
+        <method-new>set_length</method-new>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change exceptions
+        </description>
+        <type>org.omg.CORBA.DynSequence</type>
+        <method-orig>set_elements</method-orig>
+        <args-orig>org.omg.CORBA.Any[]</args-orig>
+        <throws-new>org.omg.DynamicAny.DynAnyPackage.TypeMismatch, org.omg.DynamicAny.DynAnyPackage.InvalidValue</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change parameter type to org.xml.sax.ContentHandler
+        </description>
+        <type>org.xml.sax.Parser</type>
+        <method-orig>setDocumentHandler</method-orig>
+        <args-orig>org.xml.sax.DocumentHandler</args-orig>
+        <method-new>setContentHandler</method-new>
+        <args-new>
+            <arg>
+                <type>org.xml.sax.ContentHandler</type>
+                <name>handler</name>
+                <value kind="reference">0</value>
+            </arg>
+        </args-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change org.xml.sax.helpers.ParserFactory.makeParser() to createXMLReader() throws SAXException
+        </description>
+        <type>org.xml.sax.helpers.ParserFactory</type>
+        <method-orig>makeParser</method-orig>
+        <args-orig/>
+        <method-new>createXMLReader</method-new>
+        <throws-new>org.xml.sax.SAXException</throws-new>
+    </change-method-signature>
+
+    <change-method-signature>
+        <description>
+            Change org.xml.sax.helpers.ParserFactory.makeParser(String) to createXMLReader(String) throws SAXException
+        </description>
+        <type>org.xml.sax.helpers.ParserFactory</type>
+        <method-orig>makeParser</method-orig>
+        <args-orig>java.lang.String</args-orig>
+        <method-new>createXMLReader</method-new>
+        <throws-new>org.xml.sax.SAXException</throws-new>
+    </change-method-signature>
+
+</refactorings>

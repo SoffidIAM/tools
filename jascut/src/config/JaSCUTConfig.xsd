@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="jascut" targetNamespace="jascut">
+
+    <!--
+        XML schema for JaSCUT config file.
+    -->
+    <xs:element name="refactorings" type="refactorings"/>
+    <xs:complexType name="refactorings">
+        <xs:sequence >
+            <xs:element ref="description" minOccurs="0"/>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="add-override"/>
+                <xs:element ref="change-method-signature"/>
+                <xs:element ref="factory-method"/>
+                <xs:element ref="field-to-method"/>
+                <xs:element ref="rename-field"/>
+                <xs:element ref="rename-method"/>
+                <xs:element ref="rename-type"/>
+                <xs:element ref="move-field"/>
+                <xs:element ref="move-method"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="add-override" type="add-override"/>
+    <xs:complexType name="add-override">
+        <xs:sequence >
+            <xs:element ref="description" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="change-method-signature" type="change-method-signature"/>
+    <xs:complexType name="change-method-signature">
+        <xs:sequence >
+            <xs:element ref="description" minOccurs="0"/>
+            <xs:element ref="type"/>
+            <xs:element ref="method-orig"/>
+            <xs:element ref="args-orig"/>
+            <xs:element ref="mods-new" minOccurs="0"/>
+            <xs:element ref="return-new" minOccurs="0"/>
+            <xs:element ref="method-new" minOccurs="0"/>
+            <xs:element ref="args-new" minOccurs="0"/>
+            <xs:element ref="throws-new" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="factory-method" type="factory-method"/>
+    <xs:complexType name="factory-method">
+        <xs:sequence >
+            <xs:element ref="description" minOccurs="0"/>
+            <xs:element ref="type-orig"/>
+            <xs:element ref="args-orig"/>
+            <xs:element ref="type-new"/>
+            <xs:element ref="type-args-new" minOccurs="0"/>
+            <xs:element ref="method-new"/>
+            <xs:element ref="args-new" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="field-to-method" type="field-to-method"/>
+    <xs:complexType name="field-to-method">
+        <xs:sequence >
+            <xs:element ref="description" minOccurs="0"/>
+            <xs:element ref="type"/>
+            <xs:element ref="field-orig"/>
+            <xs:element ref="getter-new"/>
+            <xs:element ref="setter-new" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="rename-field" type="rename-field"/>
+    <xs:complexType name="rename-field">
+        <xs:sequence >
+            <xs:element ref="description" minOccurs="0"/>
+            <xs:element ref="type"/>
+            <xs:element ref="field-orig"/>
+            <xs:element ref="field-new"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="rename-method" type="rename-method"/>
+    <xs:complexType name="rename-method">
+        <xs:sequence >
+            <xs:element ref="description" minOccurs="0"/>
+            <xs:element ref="type"/>
+            <xs:element ref="method-orig"/>
+            <xs:element ref="args-orig"/>
+            <xs:element ref="method-new"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="rename-type" type="rename-type"/>
+    <xs:complexType name="rename-type">
+        <xs:sequence >
+            <xs:element ref="description" minOccurs="0"/>
+            <xs:element ref="type-orig"/>
+            <xs:element ref="type-new"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="move-field" type="move-field"/>
+    <xs:complexType name="move-field">
+        <xs:sequence >
+            <xs:element ref="description" minOccurs="0"/>
+            <xs:element ref="type-orig"/>
+            <xs:element ref="field-orig"/>
+            <xs:element ref="type-new"/>
+            <xs:element ref="field-new"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="move-method" type="move-method"/>
+    <xs:complexType name="move-method">
+        <xs:sequence >
+            <xs:element ref="description" minOccurs="0"/>
+            <xs:element ref="type-orig"/>
+            <xs:element ref="method-orig"/>
+            <xs:element ref="args-orig"/>
+            <xs:element ref="type-new"/>
+            <xs:element ref="method-new"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="description" type="xs:string"/>
+
+    <xs:element name="field-orig" type="xs:string"/>
+
+    <xs:element name="field-new" type="xs:string"/>
+
+    <xs:element name="method-orig" type="xs:string"/>
+
+    <xs:element name="method-new" type="xs:string"/>
+
+    <xs:element name="args-orig" type="xs:string"/>
+
+    <xs:element name="args-new" type="args-new"/>
+    <xs:complexType name="args-new">
+        <xs:sequence>
+            <xs:element ref="arg" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="arg" type="arg"/>
+    <xs:complexType name="arg">
+        <xs:sequence minOccurs="0">
+            <xs:element ref="type"/>
+            <xs:element ref="name"/>
+            <xs:element ref="value"/>
+        </xs:sequence>
+        <xs:attribute name="ref" type="xs:integer"/>
+    </xs:complexType>
+
+    <xs:element name="name" type="xs:string"/>
+
+    <xs:element name="value" type="value"/>
+    <xs:complexType name="value">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="kind" type="xs:string"/>
+                <xs:attribute name="ref" type="xs:integer"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:element name="type" type="xs:string"/>
+
+    <xs:element name="type-orig" type="xs:string"/>
+
+    <xs:element name="type-args-new" type="xs:string"/>
+
+    <xs:element name="type-new" type="xs:string"/>
+
+    <xs:element name="mods-new" type="xs:string"/>
+
+    <xs:element name="return-new" type="xs:string"/>
+
+    <xs:element name="throws-new" type="xs:string"/>
+
+    <xs:element name="getter-new" type="xs:string"/>
+
+    <xs:element name="setter-new" type="xs:string"/>
+
+</xs:schema>
