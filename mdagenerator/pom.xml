@@ -15,7 +15,8 @@
 	</prerequisites>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/SoffidIAM/tools.git</connection>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 
 
 	<build>

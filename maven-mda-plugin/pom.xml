@@ -25,7 +25,7 @@
 		<maven>2.0.9</maven>
 	</prerequisites>
 	<scm>
-		<url>scm:git:ssh://git@github.com:/SoffidIAM/tools.git</url>
+		<connection>scm:git:ssh://git@github.com:/SoffidIAM/tools.git</connection>
 	</scm>
 
 
@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>com.soffid.tools</groupId>
 			<artifactId>mdagenerator</artifactId>
-			<version>2.0.21-SNAPSHOT</version>
+			<version>2.0.20-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
