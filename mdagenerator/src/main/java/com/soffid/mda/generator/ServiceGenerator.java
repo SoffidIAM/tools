@@ -1409,13 +1409,17 @@ public class ServiceGenerator {
 							first = false;
 						else
 							out.print ( ", " );
-						if (!this.translated && translated && param.getDataType().isTranslated() && param.getDataType().isValueObject())
+						if (!this.translated && translated && 
+							param.getDataType().isCollection() && param.getDataType().getChildClass() != null &&
+							param.getDataType().getChildClass().isTranslated() && param.getDataType().getChildClass().isValueObject())
 						{
-							if (param.getDataType().isCollection() )
-								out.print ( param.getDataType().getFullName(!translated)+ ".to" + param.getDataType().getName(!translated) + "List ("
-									+  param.getName(translated) + ")" );
-							else
-								out.print (  param.getDataType().getJavaType(!translated) + ".to" + param.getDataType().getName(!translated)+ "("+ param.getName(translated) + ")" );
+							out.print ( param.getDataType().getChildClass().getFullName(!translated)+ ".to" + 
+								param.getDataType().getChildClass().getName(!translated) + "List ("
+								+  param.getName(translated) + ")" );
+						}
+						else if (!this.translated && translated && param.getDataType().isTranslated() && param.getDataType().isValueObject())
+						{
+							out.print (  param.getDataType().getJavaType(!translated) + ".to" + param.getDataType().getName(!translated)+ "("+ param.getName(translated) + ")" );
 						}
 						else
 							out.print ( param.getName(translated) );
