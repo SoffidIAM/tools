@@ -3310,21 +3310,24 @@ public class EntityGenerator<E> {
 			LinkedList <ModelClass> nextLevel = new LinkedList<ModelClass>();
 			for (ModelClass e: entitiesToParse)
 			{
-				for (ModelAttribute foreignAtt: e.getForeignKeys())
+				if (e.isGenerated())
 				{
-					ModelClass foreignClass = foreignAtt.getModelClass();
-					if (foreignClass.isEntity())
+					for (ModelAttribute foreignAtt: e.getForeignKeys())
 					{
-						nextLevel.add (foreignClass);
+						ModelClass foreignClass = foreignAtt.getModelClass();
+						if (foreignClass.isEntity())
+						{
+							nextLevel.add (foreignClass);
+						}
 					}
-				}
-				
-				for (ModelAttribute att: e.getAttributes())
-				{
-					ModelClass foreignClass = att.getDataType();
-					if (foreignClass.isEntity())
+					
+					for (ModelAttribute att: e.getAttributes())
 					{
-						nextLevel.add (foreignClass);
+						ModelClass foreignClass = att.getDataType();
+						if (foreignClass.isEntity())
+						{
+							nextLevel.add (foreignClass);
+						}
 					}
 				}
 			}
