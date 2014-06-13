@@ -65,6 +65,12 @@ import java.util.Set;
  */
 public class Mda2Mojo extends AbstractMojo {
 	/**
+	 * Generate Documentation
+	 * 
+	 * @parameter
+	 */
+	private boolean generateDoc = false;
+	/**
 	 * Use translated versions
 	 * 
 	 * @parameter
@@ -135,6 +141,13 @@ public class Mda2Mojo extends AbstractMojo {
 	 * @parameter
 	 */
 	private String commonsDir;
+
+	/**
+	 * Directory where documentation files will be generated
+	 * 
+	 * @parameter
+	 */
+	private String docDir;
 
 	/**
 	 * Generate plugin files
@@ -246,6 +259,9 @@ public class Mda2Mojo extends AbstractMojo {
 					g.setSyncResourcesDir(syncResourcesDir);
 				if (xmiDir != null)
 					g.setXmlModule(xmiDir);
+				if (docDir != null)
+					g.setUmlDir(docDir);
+				g.setGenerateUml(generateDoc);
 				g.setTranslatedOnly(translate);
 				g.generate(p);
 			} finally {
