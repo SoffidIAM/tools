@@ -19,7 +19,7 @@ public class ModelOperation extends ModelElement {
 	private Method method;
 	LinkedList<ModelParameter> params = null;
 	private ModelParameter returnParameter;
-	private ModelClass modelClass;
+	private AbstractModelClass modelClass;
 	public ModelOperation (Parser parser, Method m)
 	{
 		super (parser);
@@ -149,11 +149,11 @@ public class ModelOperation extends ModelElement {
 		}
 	}
 
-	public ModelClass getModelClass ()
+	public AbstractModelClass getModelClass ()
 	{
 		if (modelClass == null)
 		{
-			modelClass = (ModelClass) parser.getElement(method.getDeclaringClass());
+			modelClass = (AbstractModelClass) parser.getElement(method.getDeclaringClass());
 		}
 		return modelClass;
 	}
@@ -179,7 +179,7 @@ public class ModelOperation extends ModelElement {
 				clause.append( "throws ");
 			else
 				clause.append (", ");
-			ModelClass m = (ModelClass) parser.getElement(th);
+			AbstractModelClass m = (AbstractModelClass) parser.getElement(th);
 			clause.append (m.getFullName(translated));
 		}
 
@@ -254,11 +254,11 @@ public class ModelOperation extends ModelElement {
 		return method.getAnnotation(Transactional.class);
 	}
 
-	Set<ModelClass> actors = null;
-	public Set<ModelClass> getActors() {
+	Set<AbstractModelClass> actors = null;
+	public Set<AbstractModelClass> getActors() {
 		if (actors == null)
 		{
-			actors = new HashSet<ModelClass>();
+			actors = new HashSet<AbstractModelClass>();
 			Operation op = method.getAnnotation(Operation.class);
 			if (op != null)
 			{

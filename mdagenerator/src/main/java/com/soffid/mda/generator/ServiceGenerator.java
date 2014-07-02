@@ -16,7 +16,8 @@ import net.sourceforge.plantuml.SourceStringReader;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soffid.mda.parser.ModelAttribute;
+import com.soffid.mda.parser.AbstractModelAttribute;
+import com.soffid.mda.parser.AbstractModelClass;
 import com.soffid.mda.parser.ModelClass;
 import com.soffid.mda.parser.ModelOperation;
 import com.soffid.mda.parser.ModelParameter;
@@ -53,7 +54,7 @@ public class ServiceGenerator {
 		{
 			pkg = rootPkg;
 		}
-		for (ModelClass service: parser.getServices()) {
+		for (AbstractModelClass service: parser.getServices()) {
 			boolean translated2 = this.translated;
 			do
 			{
@@ -140,7 +141,7 @@ public class ServiceGenerator {
 				+ "\t{" + endl
 				+ "\t\tObject bean;" );
 
-		for (ModelClass service: parser.getServices()) {
+		for (AbstractModelClass service: parser.getServices()) {
 			String path = service.getServerPath();
 			String role = service.getServerRole();
 			if (! service.isInternal() && ! path.isEmpty()) {
@@ -257,7 +258,7 @@ public class ServiceGenerator {
 				+ " " + endl
 				+ " " );
 
-		for (ModelClass service: parser.getServices()) {
+		for (AbstractModelClass service: parser.getServices()) {
 			String path = service.getServerPath();
 			if (! service.isInternal() && ! path.isEmpty()) {
 				out.println ( "	/**" + endl
@@ -456,7 +457,7 @@ public class ServiceGenerator {
 					+ "" );
 		}
 
-		for (ModelClass service: parser.getServices ()) {
+		for (AbstractModelClass service: parser.getServices ()) {
 			out.println ( "\t/**" + endl
 				+ "\t * Gets an instance of {@link "+ service.getFullName(translated)+"}." + endl
 				+ "\t */" + endl
@@ -541,7 +542,7 @@ public class ServiceGenerator {
 		out.println ( "{" + endl
 			+ "" );
 
-		for (ModelClass service: parser.getServices()) {
+		for (AbstractModelClass service: parser.getServices()) {
 			if (!service.isInternal() && ! service.isServerOnly())
 			{
 				out.println( "\t/**" + endl
@@ -583,7 +584,7 @@ public class ServiceGenerator {
 			+ "\t<enterprise-beans>" + endl
 			+ "" );
 
-		for (ModelClass service: parser.getServices()) {
+		for (AbstractModelClass service: parser.getServices()) {
 			if (!service.isInternal() && ! service.isServerOnly())
 			{
 
@@ -600,7 +601,7 @@ public class ServiceGenerator {
 							+ "\t\t\t<local-home>" + service.getEjbHomeFullName(translated) + "</local-home>" + endl
 							+ "\t\t\t<local>" + service.getEjbInterfaceFullName(translated) + "</local>" + endl
 							+ "\t\t\t<ejb-class>" + service.getBeanFullName(translated) + "</ejb-class>" + endl
-							+ "\t\t\t<session-type>Stateless</session-type>" + endl
+							+ "\t\t\t<session-type>" + (service.isStateful() ? "Stateful": "Stateless") + "</session-type>" + endl
 							+ "\t\t   " + endl
 							+ "\t\t\t<transaction-type>Container</transaction-type>" + endl
 							+ "\t\t</session>" + endl
@@ -616,7 +617,7 @@ public class ServiceGenerator {
 			+ "\t<assembly-descriptor>" + endl
 			+ "" );
 
-		for (ModelClass actor: parser.getActors ())
+		for (AbstractModelClass actor: parser.getActors ())
 		{
 			out .println ( "\t\t<security-role>" + endl
 					+ "\t\t\t<description><![CDATA["
@@ -626,10 +627,10 @@ public class ServiceGenerator {
 					);
 		}
 
-		for (ModelClass service: parser.getServices()) {
+		for (AbstractModelClass service: parser.getServices()) {
 			if (!service.isInternal() && ! service.isServerOnly())
 			{
-				Set<ModelClass> allActors = service.getAllActors();
+				Set<AbstractModelClass> allActors = service.getAllActors();
 				if (!allActors.isEmpty())
 				{
 					boolean translated = false;
@@ -638,7 +639,7 @@ public class ServiceGenerator {
 						out.println ( "\t\t<method-permission>" + endl
 								+ "\t\t\t<description><![CDATA[Create method security constraint]]></description>" ) ;
 						// Create methods
-						for (ModelClass actor: allActors)
+						for (AbstractModelClass actor: allActors)
 						{
 							if (actor.getRoleName().equals( "anonymous"))
 								out.println ( "\t\t\t<unchecked/>" );
@@ -667,7 +668,7 @@ public class ServiceGenerator {
 
 				for (ModelOperation op: service.getOperations())
 				{
-					Set<ModelClass> actors = op.getActors();
+					Set<AbstractModelClass> actors = op.getActors();
 					if (!actors.isEmpty())
 					{
 						Boolean translated = false;
@@ -675,7 +676,7 @@ public class ServiceGenerator {
 						{
 							out.println ( "\t\t<method-permission>" + endl
 									+ "\t\t\t<description><![CDATA[" + op.getSpec(translated) + " security constraint]]></description>" );
-							for (ModelClass actor: actors)
+							for (AbstractModelClass actor: actors)
 							{
 								if (actor.getRoleName().equals ("anonymous"))
 								{
@@ -713,7 +714,7 @@ public class ServiceGenerator {
 			}
 		}
 
-		for (ModelClass service: parser.getServices()) {
+		for (AbstractModelClass service: parser.getServices()) {
 			if (!service.isInternal() && ! service.isServerOnly())
 			{
 				for (ModelOperation op: service.getOperations())
@@ -771,7 +772,7 @@ public class ServiceGenerator {
 				+ "\t<enterprise-beans>" + endl
 				+ "" );
 
-		for (ModelClass service: parser.getServices()) {
+		for (AbstractModelClass service: parser.getServices()) {
 			if (!service.isInternal() && ! service.isServerOnly())
 			{
 				boolean translated = false;
@@ -795,7 +796,7 @@ public class ServiceGenerator {
 	}
 
 
-	void generateInterface (ModelClass service, boolean translated) throws FileNotFoundException, UnsupportedEncodingException {
+	void generateInterface (AbstractModelClass service, boolean translated) throws FileNotFoundException, UnsupportedEncodingException {
 		String file;
 		if (service.isInternal())
 		{
@@ -906,7 +907,7 @@ public class ServiceGenerator {
 				for (Class cl: trans.noRollbackFor())
 				{
 					out.print(separator);
-					ModelClass mc = (ModelClass) parser.getElement(cl);
+					AbstractModelClass mc = (AbstractModelClass) parser.getElement(cl);
 					out.print(mc.getFullName(true));
 					out.print(".class");
 					separator = ",";
@@ -921,7 +922,7 @@ public class ServiceGenerator {
 				for (Class cl: trans.rollbackFor())
 				{
 					out.print(separator);
-					ModelClass mc = (ModelClass) parser.getElement(cl);
+					AbstractModelClass mc = (AbstractModelClass) parser.getElement(cl);
 					out.print(mc.getFullName(true));
 					out.print(".class");
 					separator = ",";
@@ -1012,9 +1013,9 @@ public class ServiceGenerator {
 							+ param.getName(translated)
 							+ " cannot be null\");" + endl
 							+ "\t\t}" );
-					ModelClass modelClass = param.getDataType();
+					AbstractModelClass modelClass = param.getDataType();
 					if ( modelClass != null && modelClass.isValueObject()) {
-						for (ModelAttribute at: modelClass.getAttributes())
+						for (AbstractModelAttribute at: modelClass.getAttributes())
 						{
 							if (at.isRequired())
 							{
@@ -1058,7 +1059,7 @@ public class ServiceGenerator {
 		}
 	}
 
-	void generateOperationBase (ModelClass service, ModelOperation op, boolean translated, PrintStream out)
+	void generateOperationBase (AbstractModelClass service, ModelOperation op, boolean translated, PrintStream out)
 	{
 		out.println ( "\t/**" + endl
 				+ "\t * @see " + service.getFullName(translated) + "#"
@@ -1085,7 +1086,7 @@ public class ServiceGenerator {
 				+ "\t\tcatch ("+rootPkg+".exception.InternalErrorException __internalException)" + endl
 				+ "\t\t{" + endl
 				+ "\t\t\tthrow __internalException;" );
-		for (ModelClass exception: op.getExceptions())
+		for (AbstractModelClass exception: op.getExceptions())
 		{
 			if (! exception.getFullName(this.translated) .equals (rootPkg+".exception.InternalErrorException"))
 				out.println ( "\t\t}" + endl
@@ -1106,7 +1107,7 @@ public class ServiceGenerator {
 
 	}
 
-	void generateBase(ModelClass service, boolean translated) throws FileNotFoundException {
+	void generateBase(AbstractModelClass service, boolean translated) throws FileNotFoundException {
 		if (translated)
 			return;
 
@@ -1158,7 +1159,7 @@ public class ServiceGenerator {
 		// Generate clients
 		//
 
-		for (ModelClass provider: service.getDepends()) {
+		for (AbstractModelClass provider: service.getDepends()) {
 			if (provider != null) {
 				String fullName;
 				String name;
@@ -1232,7 +1233,7 @@ public class ServiceGenerator {
 		out.close();
 	}
 
-	void generateEjbInterface (ModelClass service, boolean translated) throws FileNotFoundException {
+	void generateEjbInterface (AbstractModelClass service, boolean translated) throws FileNotFoundException {
 
 		if (service.isInternal() || service.isServerOnly())
 			return;
@@ -1277,7 +1278,7 @@ public class ServiceGenerator {
 	}
 
 
-	void generateEjbHome (ModelClass service, boolean translated) throws FileNotFoundException {
+	void generateEjbHome (AbstractModelClass service, boolean translated) throws FileNotFoundException {
 
 		if (service.isInternal() || service.isServerOnly())
 			return;
@@ -1328,7 +1329,7 @@ public class ServiceGenerator {
 	}
 
 
-	void generateEjbBean(ModelClass service, boolean translated) throws FileNotFoundException {
+	void generateEjbBean(AbstractModelClass service, boolean translated) throws FileNotFoundException {
 
 		String className= service.getBeanName(translated);
 
@@ -1392,7 +1393,7 @@ public class ServiceGenerator {
 					if (result.getDataType().isCollection() && result.getDataType().getChildClass() != null &&
 							result.getDataType().getChildClass().isTranslated() && result.getDataType().getChildClass().isValueObject())
 					{
-						ModelClass childclass = result.getDataType().getChildClass();
+						AbstractModelClass childclass = result.getDataType().getChildClass();
 						out.print ( childclass.getFullName(translated) + ".to" + childclass.getName(translated) + "List (" + endl + "\t\t\t\t" );
 						invocationSuffix = ")";
 					}
@@ -1430,7 +1431,7 @@ public class ServiceGenerator {
 						+ "\t\tcatch (Exception exception)" + endl
 						+ "\t\t{" + endl
 						+ "\t\t\tfinal Throwable cause = getRootCause(exception);" );
-				for (ModelClass ex: op.getExceptions()) {
+				for (AbstractModelClass ex: op.getExceptions()) {
 					out.println ( "\t\t\tif (cause instanceof " + ex.getFullName(this.translated) + ")" + endl
 							+ "\t\t\t\tthrow (" + ex.getFullName(this.translated) + ") cause;" );
 				}
@@ -1519,7 +1520,7 @@ public class ServiceGenerator {
 		out.close();
 	}
 
-	void generateUml (ModelClass service, boolean translated) throws IOException {
+	void generateUml (AbstractModelClass service, boolean translated) throws IOException {
 		String file;
 		file = generator.getUmlDir();
 		String packageName = service.getPackage(translated);
@@ -1539,27 +1540,27 @@ public class ServiceGenerator {
 				"BackgroundColor<<ValueObject>> Pink"+endl+
 				"BackgroundColor<<Service>> LightBlue"+endl+
 				"}" +endl );
-		source.append (service.generatePlantUml(translated, false, true));
+		source.append (service.generatePlantUml(service,translated, false, true));
 
 		boolean generate = Util.isModifiedClass(service, f);
-		for (ModelClass provider: service.getDepends()) {
+		for (AbstractModelClass provider: service.getDepends()) {
 			generate = generate || Util.isModifiedClass(provider, f);
 			if (provider.isEntity())
 			{
-				source.append( provider.generatePlantUml(translated, true, false) );
-				for (ModelClass vo: provider.getDepends())
+				source.append( provider.generatePlantUml(service,translated, true, false) );
+				for (AbstractModelClass vo: provider.getDepends())
 				{
 					if (vo.isValueObject())
 					{
 						generate = generate || Util.isModifiedClass(vo, f);
-						source.append (vo.generatePlantUml(translated, true, false));
+						source.append (vo.generatePlantUml(service, translated, true, false));
 						source.append (provider.getName(translated) + " ..> "+vo.getName(translated)+endl);
 					}
 				}
 			}
 			else 
 			{
-				source.append( provider.generatePlantUml(translated, false, false) );
+				source.append( provider.generatePlantUml(service,translated, false, false) );
 			}
 			source.append (service.getName(translated) + " ..> "+provider.getName(translated)+endl);
 		}
@@ -1574,7 +1575,7 @@ public class ServiceGenerator {
 		}
 	}
 
-	void generateUmlUseCase (ModelClass service, boolean translated) throws IOException {
+	void generateUmlUseCase (AbstractModelClass service, boolean translated) throws IOException {
 		String file;
 		file = generator.getUmlDir();
 		String packageName = service.getPackage(translated);
@@ -1600,7 +1601,7 @@ public class ServiceGenerator {
 					"("+service.getName(translated)+")"+ endl );
 			
 			boolean left = true;
-			for (ModelClass actor: service.getAllActors())
+			for (AbstractModelClass actor: service.getAllActors())
 			{
 				actor.left = left;
 				source.append ("actor "+actor.getName(translated) +endl);
@@ -1609,9 +1610,9 @@ public class ServiceGenerator {
 			
 			source.append ("rectangle "+service.getName()+ " {"+ endl);
 			for (ModelOperation op: service.getOperations()) {
-				Set<ModelClass> actors = op.getActors();
+				Set<AbstractModelClass> actors = op.getActors();
 				source.append ("usecase ").append(op.getName(translated)).append("\n");
-				for (ModelClass actor: actors)
+				for (AbstractModelClass actor: actors)
 				{
 					if (actor.left)
 						source.append (actor.getName(translated) + " -- ("+op.getName(translated)+")"+endl);
@@ -1623,6 +1624,7 @@ public class ServiceGenerator {
 			source.append ("@enduml");
 			
 			SourceStringReader reader = new SourceStringReader(source.toString());
+			
 			reader.generateImage(new FileOutputStream(f), new FileFormatOption(FileFormat.SVG));
 		}
 	}

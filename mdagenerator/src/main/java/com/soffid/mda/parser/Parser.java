@@ -49,9 +49,9 @@ public class Parser {
 		
 		for (ModelElement element: getModelElements())
 		{
-			if (element instanceof ModelClass)
+			if (element instanceof AbstractModelClass)
 			{
-				((ModelClass) element).fixup();
+				((AbstractModelClass) element).fixup();
 			}
 		}
 	}
@@ -69,7 +69,7 @@ public class Parser {
 		classFile = Thread.currentThread().getContextClassLoader().
 				loadClass(diff);
 		
-		ModelClass mc = (ModelClass) getElement (classFile);
+		AbstractModelClass mc = (AbstractModelClass) getElement (classFile);
 		mc.setGenerated(true);
 	}
 
@@ -93,6 +93,12 @@ public class Parser {
 		
 	}
 	
+	public void register (Object id, ModelElement element) {
+		if (!elements.containsKey(id))
+			elements.put(id, element);
+		
+	}
+
 	List<ModelClass> services = null;
 	public List<ModelClass> getServices ()
 	{
@@ -101,7 +107,7 @@ public class Parser {
 			services = new LinkedList<ModelClass>();
 			for (ModelElement element: elements.values())
 			{
-				if (element instanceof ModelClass && ((ModelClass) element).isService() && ((ModelClass) element).isGenerated())
+				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isService() && ((AbstractModelClass) element).isGenerated())
 					services.add((ModelClass) element);
 			}
 		}
@@ -116,7 +122,7 @@ public class Parser {
 			entities = new LinkedList<ModelClass>();
 			for (ModelElement element: elements.values())
 			{
-				if (element instanceof ModelClass && ((ModelClass) element).isEntity() && ((ModelClass) element).isGenerated())
+				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isEntity() && ((AbstractModelClass) element).isGenerated())
 					entities.add((ModelClass) element);
 			}
 		}
@@ -131,7 +137,7 @@ public class Parser {
 			indexes = new LinkedList<ModelClass>();
 			for (ModelElement element: elements.values())
 			{
-				if (element instanceof ModelClass && ((ModelClass) element).isIndex() && ((ModelClass) element).isGenerated())
+				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isIndex() && ((AbstractModelClass) element).isGenerated())
 					indexes.add((ModelClass) element);
 			}
 		}
@@ -147,7 +153,7 @@ public class Parser {
 			valueObjects = new LinkedList<ModelClass>();
 			for (ModelElement element: elements.values())
 			{
-				if (element instanceof ModelClass && ((ModelClass) element).isValueObject() && ((ModelClass) element).isGenerated())
+				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isValueObject() && ((AbstractModelClass) element).isGenerated())
 					valueObjects.add((ModelClass) element);
 			}
 		}
@@ -170,7 +176,7 @@ public class Parser {
 			actors = new LinkedList<ModelClass>();
 			for (ModelElement element: elements.values())
 			{
-				if (element instanceof ModelClass && ((ModelClass) element).isRole() && ((ModelClass) element).isGenerated())
+				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isRole() && ((AbstractModelClass) element).isGenerated())
 					actors.add((ModelClass) element);
 			}
 		}
@@ -183,7 +189,7 @@ public class Parser {
 			criterias = new LinkedList<ModelClass>();
 			for (ModelElement element: elements.values())
 			{
-				if (element instanceof ModelClass && ((ModelClass) element).isCriteria() && ((ModelClass) element).isGenerated())
+				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isCriteria() && ((AbstractModelClass) element).isGenerated())
 					criterias.add((ModelClass) element);
 			}
 		}
@@ -196,7 +202,7 @@ public class Parser {
 			enumerations = new LinkedList<ModelClass>();
 			for (ModelElement element: elements.values())
 			{
-				if (element instanceof ModelClass && ((ModelClass) element).isEnumeration() && ((ModelClass) element).isGenerated())
+				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isEnumeration() && ((AbstractModelClass) element).isGenerated())
 					enumerations.add((ModelClass) element);
 			}
 		}
@@ -209,7 +215,7 @@ public class Parser {
 			exceptions = new LinkedList<ModelClass>();
 			for (ModelElement element: elements.values())
 			{
-				if (element instanceof ModelClass && ((ModelClass) element).isException() && ((ModelClass) element).isGenerated())
+				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isException() && ((AbstractModelClass) element).isGenerated())
 					exceptions.add((ModelClass) element);
 			}
 		}

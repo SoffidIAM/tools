@@ -19,7 +19,7 @@ public class ModelParameter extends ModelElement {
 	private Method method;
 	private int param;
 	private Annotation[] annotations;
-	private ModelClass modelClass;
+	private AbstractModelClass modelClass;
 	String name;
 	private String translated;
 
@@ -52,10 +52,10 @@ public class ModelParameter extends ModelElement {
 					throw new RuntimeException ("Missing attribute name for "+param+" parameter of "+method.toString()+"\nSet method non abstract or add @Param annotation");
 			}
 		}
-		modelClass = (ModelClass) parser.getElement(objectClass) ;
+		modelClass = (AbstractModelClass) parser.getElement(objectClass) ;
 	}
 
-	public ModelClass getDataType() {
+	public AbstractModelClass getDataType() {
 		return modelClass;
 	}
 

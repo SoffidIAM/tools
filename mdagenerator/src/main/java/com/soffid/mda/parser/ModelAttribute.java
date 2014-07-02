@@ -13,7 +13,7 @@ import com.soffid.mda.annotation.Identifier;
 import com.soffid.mda.annotation.Nullable;
 import com.soffid.mda.generator.Util;
 
-public class ModelAttribute extends ModelElement {
+public class ModelAttribute extends AbstractModelAttribute {
 	private Field field;
 
 	public ModelAttribute (Parser parser, Field m)
@@ -41,10 +41,7 @@ public class ModelAttribute extends ModelElement {
 			return null;
 	}
 
-	public String getName() {
-		return getName(false);
-	}
-	
+	@Override
 	public String getName(boolean translated) {
 		if (translated)
 		{
@@ -64,10 +61,12 @@ public class ModelAttribute extends ModelElement {
 		return field.getName();
 	}
 
+	@Override
 	public ModelClass getDataType() {
 		return (ModelClass) parser.getElement(field.getGenericType());
 	}
 
+	@Override
 	public String getDefaultValue() {
 		Column annotation = (Column) field.getAnnotation (Column.class);
 		if (annotation != null)
@@ -77,7 +76,7 @@ public class ModelAttribute extends ModelElement {
 			else
 				return annotation.defaultValue();
 		}
-		Attribute annotation2 = (Attribute) field.getAnnotation (Column.class);
+		Attribute annotation2 = (Attribute) field.getAnnotation (Attribute.class);
 		if (annotation2 != null)
 		{
 			if (annotation2.defaultValue() == null || annotation2.defaultValue().length() == 0)
@@ -89,6 +88,7 @@ public class ModelAttribute extends ModelElement {
 			return null;
 	}
 
+	@Override
 	public String getLength() {
 		Column annotation = (Column) field.getAnnotation (Column.class);
 		if (annotation != null)
@@ -102,6 +102,7 @@ public class ModelAttribute extends ModelElement {
 			return null;
 	}
 
+	@Override
 	public int getIntegerLength() {
 		Column annotation = (Column) field.getAnnotation (Column.class);
 		if (annotation != null)
@@ -116,6 +117,7 @@ public class ModelAttribute extends ModelElement {
 	}
 
 	
+	@Override
 	public String getColumn() {
 		Column annotation = (Column) field.getAnnotation (Column.class);
 		if (annotation != null)
@@ -129,21 +131,12 @@ public class ModelAttribute extends ModelElement {
 			return null;
 	}
 
-	public String getterName(boolean translated) {
-		if (getDataType().getJavaType().equals("boolean"))
-			return "is"+Util.firstUpper(getName(translated));
-		else
-			return "get"+Util.firstUpper(getName(translated));
-	}
-
-	public String setterName(boolean translate) {
-		return "set"+Util.firstUpper(getName(translate));
-	}
-
+	@Override
 	public boolean isIdentifier() {
 		return field.getAnnotation(Identifier.class) != null;
 	}
 
+	@Override
 	public String getCriteriaParameter() {
 		CriteriaColumn annotation = (CriteriaColumn) field.getAnnotation (CriteriaColumn.class);
 		if (annotation != null)
@@ -154,6 +147,7 @@ public class ModelAttribute extends ModelElement {
 		return null;
 	}
 
+	@Override
 	public String getCriteriaComparator() {
 		CriteriaColumn annotation = (CriteriaColumn) field.getAnnotation (CriteriaColumn.class);
 		if (annotation != null)
@@ -164,14 +158,12 @@ public class ModelAttribute extends ModelElement {
 		return null;
 	}
 
-	public String getJavaType(boolean translated) {
-		return getDataType().getJavaType(translated);
-	}
-
+	@Override
 	public boolean isRequired() {
 		return field.getAnnotation(Nullable.class) == null;
 	}
 
+	@Override
 	public String getHibernateType(boolean translated) {
 		String t = getJavaType(translated);
 		if (getDataType().getName().equals ("Blob") || t.equals("byte[]"))
@@ -190,6 +182,7 @@ public class ModelAttribute extends ModelElement {
 		
 	}
 
+	@Override
 	public String getForeignKey ()
 	{
 		ForeignKey fk = field.getAnnotation(ForeignKey.class);
@@ -199,10 +192,12 @@ public class ModelAttribute extends ModelElement {
 			return null;
 	}
 
+	@Override
 	public ModelClass getModelClass() {
 		return (ModelClass) parser.getElement(field.getDeclaringClass());
 	}
 
+	@Override
 	public String getDdlType(boolean translated) {
 		if (getDataType() == null)
 		{
@@ -211,19 +206,19 @@ public class ModelAttribute extends ModelElement {
 
 		String javaType = getDataType().getJavaType();
 		int length = getIntegerLength();
-		ModelClass dataType = getDataType();
+		AbstractModelClass dataType = getDataType();
 		
 		if (getDataType().isEntity())
 		{
-			ModelClass foreign = getDataType();
-			ModelAttribute foreignKey = foreign.getIdentifier();
+			AbstractModelClass foreign = getDataType();
+			AbstractModelAttribute foreignKey = foreign.getIdentifier();
 			javaType = foreignKey.getDataType().getJavaType();
 			length = foreignKey.getIntegerLength();
 		}
 		else if (getDataType().isEnumeration())
 		{
-			ModelClass enumeration = getDataType();
-			ModelAttribute sample = enumeration.getAttributes().get(0);
+			AbstractModelClass enumeration = getDataType();
+			AbstractModelAttribute sample = enumeration.getAttributes().get(0);
 			javaType = sample.getJavaType(translated);
 			if (length <= 0)
 				length = sample.getIntegerLength();
@@ -290,6 +285,7 @@ public class ModelAttribute extends ModelElement {
 		}
 	}
 
+	@Override
 	public String getConstantValue() {
 		Object obj;
 		try {
@@ -321,8 +317,54 @@ public class ModelAttribute extends ModelElement {
 			throw new RuntimeException("Unsupported constant value of class "+value.getClass().getName());
 	}
 
+	@Override
 	public String getJavaType(boolean translated, boolean translated2) {
 		return getDataType().getJavaType(translated, translated2);
 	}
 
+	@Override
+	public AbstractModelAttribute getReverseAttribute() {
+		Column c = field.getAnnotation(Column.class);
+		if (c != null && c.reverseAttribute().length() > 0)
+		{
+			ReverseModelAttribute ra = new ReverseModelAttribute(parser, this, c.reverseAttribute());
+			ReverseModelAttribute ra2 = (ReverseModelAttribute) parser.getElement(ra.getId());
+			if (ra2 == null)
+			{
+				parser.register(ra.getId(), ra);
+				return ra;
+			}
+			else
+				return ra2;
+		}
+		else
+			return null;
+	}
+
+	@Override
+	public boolean isCascadeDelete() {
+		Column c = field.getAnnotation(Column.class);
+		if (c != null )
+			return c.cascadeDelete();
+		else
+			return false;
+	}
+
+	@Override
+	public boolean isCascadeNullify() {
+		Column c = field.getAnnotation(Column.class);
+		if (c != null )
+			return c.cascadeNullify();
+		else
+			return false;
+	}
+
+	@Override
+	public boolean isComposition() {
+		Column c = field.getAnnotation(Column.class);
+		if (c != null )
+			return c.composition();
+		else
+			return false;
+	}
 }

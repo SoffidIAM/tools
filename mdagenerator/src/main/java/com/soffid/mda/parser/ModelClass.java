@@ -35,25 +35,30 @@ import com.soffid.mda.annotation.ValueObject;
 import com.soffid.mda.generator.Generator;
 import com.soffid.mda.generator.Util;
 
-public class ModelClass extends ModelElement {
+public class ModelClass extends AbstractModelClass {
 
 	private Type objectClass;
 	private List<ModelOperation> operations;
-	private LinkedList<ModelAttribute> attributes;
-	private LinkedList<ModelClass> depends;
-	private LinkedList<ModelClass> provides = new LinkedList<ModelClass>();
-	private LinkedList<ModelClass> specializations = new LinkedList<ModelClass>();
-	private LinkedList<ModelAttribute> foreignKeys = new LinkedList<ModelAttribute>();
+	private LinkedList<AbstractModelAttribute> attributes;
+	private LinkedList<AbstractModelClass> depends;
+	private LinkedList<AbstractModelClass> provides = new LinkedList<AbstractModelClass>();
+	private LinkedList<AbstractModelClass> specializations = new LinkedList<AbstractModelClass>();
+
+	private LinkedList<AbstractModelAttribute> foreignKeys = new LinkedList<AbstractModelAttribute>();
 	
-	public LinkedList<ModelAttribute> getForeignKeys() {
+	@Override
+	public LinkedList<AbstractModelAttribute> getForeignKeys() {
 		return foreignKeys;
 	}
 
-	public LinkedList<ModelClass> getProvides() {
+
+	@Override
+	public LinkedList<AbstractModelClass> getProvides() {
 		return provides;
 	}
 
-	public LinkedList<ModelClass> getSpecializations() {
+	@Override
+	public LinkedList<AbstractModelClass> getSpecializations() {
 		return specializations;
 	}
 
@@ -62,6 +67,7 @@ public class ModelClass extends ModelElement {
 	ModelClass childClass = null;
 	private String javaType;
 
+	@Override
 	public boolean isGenerated() {
 		return generated;
 	}
@@ -70,6 +76,7 @@ public class ModelClass extends ModelElement {
 	private boolean _array;
 	private Class _collectionClass;
 
+	@Override
 	public boolean isArray() {
 		return _array;
 	}
@@ -123,6 +130,7 @@ public class ModelClass extends ModelElement {
 		}
 	}
 
+	@Override
 	public ModelClass getChildClass() {
 		return childClass;
 	}
@@ -141,6 +149,7 @@ public class ModelClass extends ModelElement {
 			return null;
 	}
 	
+	@Override
 	public boolean isEntity ()
 	{
 		if (getAnnotation(Entity.class) != null)
@@ -150,6 +159,7 @@ public class ModelClass extends ModelElement {
 	}
 
 
+	@Override
 	public boolean isService ()
 	{
 		if (getAnnotation(Service.class) != null)
@@ -159,6 +169,7 @@ public class ModelClass extends ModelElement {
 	}
 	
 
+	@Override
 	public boolean isValueObject ()
 	{
 		if (getAnnotation(ValueObject.class) != null)
@@ -167,6 +178,7 @@ public class ModelClass extends ModelElement {
 			return false;
 	}
 
+	@Override
 	public boolean isEnumeration ()
 	{
 		if (getAnnotation(Enumeration.class) != null)
@@ -175,6 +187,7 @@ public class ModelClass extends ModelElement {
 			return false;
 	}
 
+	@Override
 	public boolean isRole ()
 	{
 		if (getAnnotation(Role.class) != null)
@@ -183,6 +196,7 @@ public class ModelClass extends ModelElement {
 			return false;
 	}
 
+	@Override
 	public boolean isIndex ()
 	{
 		if (getAnnotation(Index.class) != null)
@@ -191,6 +205,7 @@ public class ModelClass extends ModelElement {
 			return false;
 	}
 	
+	@Override
 	public String[] getIndexColumns ()
 	{
 		Index index = (Index) getAnnotation(Index.class);
@@ -200,18 +215,20 @@ public class ModelClass extends ModelElement {
 			return null;
 	}
 	
-	public ModelClass getIndexEntity ()
+	@Override
+	public AbstractModelClass getIndexEntity ()
 	{
 		Index index = (Index) getAnnotation(Index.class);
 		if (index != null)
 		{
 			Class cl = index.entity();
-			return (ModelClass) parser.getElement(cl);
+			return (AbstractModelClass) parser.getElement(cl);
 		}
 		else
 			return null;
 	}
 	
+	@Override
 	public String getIndexName ()
 	{
 		Index index = (Index) getAnnotation(Index.class);
@@ -223,6 +240,7 @@ public class ModelClass extends ModelElement {
 			return null;
 	}
 
+	@Override
 	public boolean isIndexUnique ()
 	{
 		Index index = (Index) getAnnotation(Index.class);
@@ -234,6 +252,7 @@ public class ModelClass extends ModelElement {
 			return false;
 	}
 
+	@Override
 	public List<ModelOperation> getOperations ()
 	{
 		if (operations == null)
@@ -252,28 +271,30 @@ public class ModelClass extends ModelElement {
 	}
 
 	
-	public List<ModelAttribute> getAttributes ()
+	@Override
+	public List<AbstractModelAttribute> getAttributes ()
 	{
 		if (attributes == null)
 		{
-			attributes = new LinkedList<ModelAttribute>();
+			attributes = new LinkedList<AbstractModelAttribute>();
 		
 			if (underlyingClass != null)
 			{
 				for (Field f: underlyingClass.getDeclaredFields())
 				{
-					attributes.add((ModelAttribute) parser.getElement(f));
+					attributes.add((AbstractModelAttribute) parser.getElement(f));
 				}
 			}
 		}
 		return attributes;
 	}
 
-	public List<ModelClass> getDepends ()
+	@Override
+	public List<AbstractModelClass> getDepends ()
 	{
 		if (depends == null)
 		{
-			depends = new LinkedList<ModelClass>();
+			depends = new LinkedList<AbstractModelClass>();
 		
 			if (underlyingClass != null)
 			{
@@ -290,6 +311,7 @@ public class ModelClass extends ModelElement {
 		return depends;
 	}
 
+	@Override
 	public String getPackageDir( boolean translated) {
 		if (underlyingClass == null)
 			return null;
@@ -297,6 +319,7 @@ public class ModelClass extends ModelElement {
 			return  getPackagePrefix(translated).replace('.', java.io.File.separatorChar);
 	}
 
+	@Override
 	public String getFile() {
 		if (underlyingClass == null)
 			return null;
@@ -304,6 +327,7 @@ public class ModelClass extends ModelElement {
 			return  underlyingClass.getName().replace('.', java.io.File.separatorChar)+".java";
 	}
 
+	@Override
 	public String getPackage() {
 		if (underlyingClass == null)
 			return null;
@@ -313,6 +337,7 @@ public class ModelClass extends ModelElement {
 			return underlyingClass.getPackage().getName();
 	}
 
+	@Override
 	public String getName() {
 		if (underlyingClass != null)
 			return underlyingClass.getSimpleName();
@@ -336,7 +361,8 @@ public class ModelClass extends ModelElement {
 		return null;
 	}
 
-	public ModelClass getSuperClass() {
+	@Override
+	public AbstractModelClass getSuperClass() {
 		if (underlyingClass == null)
 			return null;
 		
@@ -344,9 +370,10 @@ public class ModelClass extends ModelElement {
 				underlyingClass.getSuperclass() == Object.class)
 			return null;
 		else
-			return (ModelClass) parser.getElement(underlyingClass.getSuperclass());
+			return (AbstractModelClass) parser.getElement(underlyingClass.getSuperclass());
 	}
 
+	@Override
 	public String getPackagePrefix ()
 	{
 		if (getPackage() == null)
@@ -355,32 +382,39 @@ public class ModelClass extends ModelElement {
 			return getPackage()+".";
 			
 	}
+	@Override
 	public String getFullName() {
 		return getPackagePrefix()+getName();
 	}
 
+	@Override
 	public String getImplFullName() {
 		return getPackagePrefix()+getImplName();
 	}
 	
+	@Override
 	public String getFullName(boolean translated) {
 		return getPackagePrefix(translated)+getName(translated);
 	}
 
+	@Override
 	public String getImplFullName(boolean translated) {
 		return getPackagePrefix(translated)+getImplName(translated);
 	}
 	
+	@Override
 	public String getImplName ()
 	{
 		return getName() + "Impl";
 	}
 
+	@Override
 	public String getImplName (boolean translated)
 	{
 		return getName(translated) + "Impl";
 	}
 
+	@Override
 	public String getSerialVersion() {
 		if (underlyingClass == null)
 			return "0";
@@ -396,15 +430,18 @@ public class ModelClass extends ModelElement {
 	}
 
 
+	@Override
 	public boolean isCollection()
 	{
 		return _collection;
 	}
 
+	@Override
 	public String getJavaType() {
 		return javaType;
 	}
 
+	@Override
 	public boolean isCriteria() {
 		if (getAnnotation(Criteria.class) != null)
 			return true;
@@ -412,6 +449,7 @@ public class ModelClass extends ModelElement {
 			return false;
 	}
 
+	@Override
 	public String getJavaType(boolean translated) {
 		if (isCollection() && _collectionClass != null && getChildClass() != null)
 		{
@@ -441,6 +479,7 @@ public class ModelClass extends ModelElement {
 		}
 	}
 
+	@Override
 	public String getName(boolean translated) {
 		if (!translated || underlyingClass == null)
 			return getName ();
@@ -467,6 +506,7 @@ public class ModelClass extends ModelElement {
 	}
 	
 	
+	@Override
 	public String getPackagePrefix(boolean translated) {
 		if (!translated || underlyingClass == null)
 			return getPackagePrefix();
@@ -492,6 +532,7 @@ public class ModelClass extends ModelElement {
 		}
 	}
 
+	@Override
 	public String getPackage(boolean translated) {
 		if (!translated || underlyingClass == null)
 			return getPackage();
@@ -517,33 +558,59 @@ public class ModelClass extends ModelElement {
 		}
 	}
 
+	@Override
 	public void setGenerated(boolean b) {
 		this.generated = b;
 		
 	}
 
+	@Override
 	public void fixup() {
-		ModelClass mc = getSuperClass();
+		AbstractModelClass mc = getSuperClass();
 		if (mc != null && ! mc.getSpecializations().contains(this))
 			mc.getSpecializations().add(this);
-		for (ModelClass depend: getDepends())
+		if (isEntity())
+		{
+			for (AbstractModelAttribute att: new LinkedList<AbstractModelAttribute>(getAttributes()))
+			{
+				if (att.getDataType().isEntity() && att.getDataType() != this)
+				{
+					if ( ! getDepends().contains(att.getDataType()))
+						getDepends().add(att.getDataType());
+				} 
+				else if (att.getDataType().isCollection() && att.getDataType().getChildClass().isEntity() &&
+						att.getDataType().getChildClass() != this)
+				{
+					if (! getDepends().contains(att.getDataType().getChildClass()))
+						getDepends().add(att.getDataType().getChildClass());
+				}
+				AbstractModelAttribute ra = att.getReverseAttribute();
+				if (ra != null)
+				{
+					AbstractModelClass foreignClass = ra.getModelClass();
+					if (! foreignClass.getAttributes().contains(ra))
+					{
+						foreignClass.getAttributes().add(ra);
+						if (foreignClass != this && ! foreignClass.getDepends().contains(this))
+							foreignClass.getDepends().add(this);
+					}
+				}
+				if (att.getDataType().isEntity() && ! att.getDataType().getForeignKeys().contains(att))
+					att.getDataType().getForeignKeys().add(att);
+			}
+		}
+
+		for (AbstractModelClass depend: getDepends())
 		{
 			if (! depend.getProvides().contains(this))
 				depend.getProvides().add(this);
 		}
-		if (isEntity())
-		{
-			for (ModelAttribute att: getAttributes())
-			{
-				if (att.getDataType().isEntity() && ! att.getDataType().foreignKeys.contains(att))
-					att.getDataType().foreignKeys.add(att);
-			}
-		}
 	}
-	
-	public ModelAttribute getIdentifier ()
+
+	@Override
+	public AbstractModelAttribute getIdentifier ()
 	{
-		for (ModelAttribute att: getAttributes())
+		for (AbstractModelAttribute att: getAttributes())
 		{
 			if (att.isIdentifier())
 				return att;
@@ -554,14 +621,17 @@ public class ModelClass extends ModelElement {
 			throw new RuntimeException ("Missing identifier for entity "+getName());
 	}
 
+	@Override
 	public String getDaoName(boolean translated) {
 		return getName (translated)+"Dao";
 	}
 
+	@Override
 	public String getDaoFullName(boolean translated) {
 		return getPackagePrefix(translated)+getDaoName(translated);
 	}
 
+	@Override
 	public boolean hasNonStaticMethods() {
 		for (ModelOperation op: getOperations())
 		{
@@ -571,34 +641,42 @@ public class ModelClass extends ModelElement {
 		return false;
 	}
 
+	@Override
 	public String getDaoImplName(boolean translated) {
 		return getName(translated)+"DaoImpl";
 	}
 
+	@Override
 	public String getDaoBaseName(boolean translated) {
 		return getName(translated)+"DaoBase";
 	}
 
+	@Override
 	public String getVarName() {
 		return Util.firstLower(getName());
 	}
 
+	@Override
 	public boolean isPrimitive() {
 		return underlyingClass != null && underlyingClass.isPrimitive();
 	}
 
+	@Override
 	public boolean isString() {
 		return String.class == underlyingClass;
 	}
 
+	@Override
 	public boolean isVoid() {
 		return void.class == underlyingClass;
 	}
 
+	@Override
 	public String getDaoImplFullName(boolean translated) {
 		return getPackagePrefix(translated)+getDaoImplName(translated);
 	}
 
+	@Override
 	public String getTableName() {
 		if (underlyingClass != null)
 		{
@@ -609,6 +687,7 @@ public class ModelClass extends ModelElement {
 		return null;
 	}
 
+	@Override
 	public String getDiscriminatorValue () {
 		if (underlyingClass != null)
 		{
@@ -619,6 +698,7 @@ public class ModelClass extends ModelElement {
 		return null;
 	}
 
+	@Override
 	public String getDiscriminatorColumn() {
 		if (underlyingClass != null)
 		{
@@ -629,45 +709,12 @@ public class ModelClass extends ModelElement {
 		return null;
 	}
 
+	@Override
 	public boolean isAbstract() {
 		return underlyingClass != null && Modifier.isAbstract(underlyingClass.getModifiers());
 	}
 	
-	public ModelAttribute searchForeignKey (ModelClass foreignClass, ModelAttribute foreignAttribute)
-	{
-		if (foreignClass == null || foreignAttribute == null)
-			return null;
-		String column = foreignAttribute.getForeignKey();
-
-		
-		for (ModelAttribute att2: getAttributes())
-		{
-			if (column.equals(att2.getColumn()))
-			{
-				return att2;
-			}
-		}
-		return null;
-	}
-	
-	
-	public ModelAttribute searchReverseForeignKey (ModelClass foreignClass, ModelAttribute foreignAttribute)
-	{
-		if (foreignClass == null || foreignAttribute == null)
-			return null;
-		String column = foreignAttribute.getColumn();
-
-		
-		for (ModelAttribute att2: getAttributes())
-		{
-			if (column.equals(att2.getForeignKey()))
-			{
-				return att2;
-			}
-		}
-		return null;
-	}
-	
+	@Override
 	public boolean isInternal()
 	{
 		if (underlyingClass == null)
@@ -679,6 +726,19 @@ public class ModelClass extends ModelElement {
 			return false;
 	}
 
+	@Override
+	public boolean isStateful()
+	{
+		if (underlyingClass == null)
+			return false;
+		Service service = (Service) underlyingClass.getAnnotation(Service.class);
+		if (service != null)
+			return service.stateful();
+		else
+			return false;
+	}
+
+	@Override
 	public boolean isServerOnly()
 	{
 		if (underlyingClass == null)
@@ -690,6 +750,19 @@ public class ModelClass extends ModelElement {
 			return false;
 	}
 
+	@Override
+	public boolean isConsoleOnly()
+	{
+		if (underlyingClass == null)
+			return false;
+		Service service = (Service) underlyingClass.getAnnotation(Service.class);
+		if (service != null)
+			return service.consoleOnly();
+		else
+			return false;
+	}
+
+	@Override
 	public String getServerPath()
 	{
 		if (underlyingClass == null)
@@ -701,6 +774,7 @@ public class ModelClass extends ModelElement {
 			return null;
 	}
 
+	@Override
 	public String getServerRole ()
 	{
 		if (underlyingClass == null)
@@ -712,11 +786,12 @@ public class ModelClass extends ModelElement {
 			return null;
 	}
 
-	Set<ModelClass> allActors = null;
-	public Set<ModelClass> getAllActors() {
+	Set<AbstractModelClass> allActors = null;
+	@Override
+	public Set<AbstractModelClass> getAllActors() {
 		if (allActors == null)
 		{
-			allActors = new HashSet<ModelClass>();
+			allActors = new HashSet<AbstractModelClass>();
 			allActors.addAll(getActors());
 			for (ModelOperation op: getOperations())
 			{
@@ -726,13 +801,13 @@ public class ModelClass extends ModelElement {
 		return allActors;
 	}
 
-	List<ModelClass> actors = null;
-	private LinkedList<ModelAttribute> allAttributes;
-	public boolean left;
-	public List<ModelClass> getActors() {
+	List<AbstractModelClass> actors = null;
+	private LinkedList<AbstractModelAttribute> allAttributes;
+	@Override
+	public List<AbstractModelClass> getActors() {
 		if (actors == null)
 		{
-			actors = new LinkedList<ModelClass>();
+			actors = new LinkedList<AbstractModelClass>();
 			Service op = (Service) underlyingClass.getAnnotation(Service.class);
 			if (op != null)
 			{
@@ -745,22 +820,27 @@ public class ModelClass extends ModelElement {
 		return actors;
 	}
 
+	@Override
 	public String getBeanName(boolean translated) {
 		return getName(translated)+"Bean";
 	}
 
+	@Override
 	public String getEjbInterfaceFullName(boolean translated) {
 		return getEjbPackage(translated)+"."+getName(translated);
 	}
 
+	@Override
 	public String getEjbPackage(boolean translated) {
 		return getPackage(translated) + ".ejb";
 	}
 
+	@Override
 	public String getEjbHomeFullName(boolean translated) {
 		return getEjbPackage(translated)+"."+getName(translated)+"Home";
 	}
 
+	@Override
 	public boolean isTranslated() {
 		if (underlyingClass == null)
 			return false;
@@ -786,6 +866,7 @@ public class ModelClass extends ModelElement {
 			return false; 
 	}
 
+	@Override
 	public String getSpringBeanName(Generator generator, boolean translated) {
 		String name = "";
 		if (generator.isPlugin() && isGenerated())
@@ -799,6 +880,7 @@ public class ModelClass extends ModelElement {
 		return name;
 	}
 
+	@Override
 	public String getEjbName(boolean translated) {
 		if (translated)
 			return getName(false)+"-translated";
@@ -806,10 +888,12 @@ public class ModelClass extends ModelElement {
 			return getName(false);
 	}
 
+	@Override
 	public String getBeanFullName(boolean translated) {
 		return getEjbPackage(translated)+"."+getBeanName(translated);
 	}
 
+	@Override
 	public String getRoleName() {
 		if (underlyingClass == null)
 			return null;
@@ -821,6 +905,7 @@ public class ModelClass extends ModelElement {
 			return r.name();
 	}
 
+	@Override
 	public String getRawType() {
 		if (objectClass instanceof Class)
 			return javaType;
@@ -840,10 +925,12 @@ public class ModelClass extends ModelElement {
 			return null;
 	}
 
+	@Override
 	public String getLocalServiceName(boolean translated) {
 		return Util.firstLower(getName(translated));
 	}
 
+	@Override
 	public String getBaseName(boolean translated) {
 		if (isEntity())
 			return getDaoName(translated) + "Base";
@@ -851,17 +938,19 @@ public class ModelClass extends ModelElement {
 			return getName(translated) + "Base";
 	}
 
+	@Override
 	public String getBaseFullName(boolean translated) {
 		return getPackagePrefix(translated)+getBaseName(translated);
 	}
 
-	public List<ModelAttribute> getAllAttributes ()
+	@Override
+	public List<AbstractModelAttribute> getAllAttributes ()
 	{
 		if (allAttributes == null)
 		{
-			allAttributes = new LinkedList<ModelAttribute>();
+			allAttributes = new LinkedList<AbstractModelAttribute>();
 			
-			ModelClass m = getSuperClass();
+			AbstractModelClass m = getSuperClass();
 			if ( m != null)
 				allAttributes.addAll (m.getAllAttributes());
 			allAttributes.addAll(getAttributes());
@@ -869,10 +958,12 @@ public class ModelClass extends ModelElement {
 		return allAttributes;
 	}
 
+	@Override
 	public String getXmlId() {
 		return "class."+getFullName().replace('<', '_').replace('"', '_').replace('>', '_');
 	}
 
+	@Override
 	public boolean isException() {
 		if (getAnnotation(ApplicationException.class) != null)
 			return true;
@@ -880,74 +971,7 @@ public class ModelClass extends ModelElement {
 			return false;
 	}
 
-	public String generatePlantUml(boolean translated, boolean attributes, boolean methods)
-	{
-		return generatePlantUml(translated, attributes, methods, "");
-	}
-	
-	public String generatePlantUml(boolean translated, boolean attributes, boolean methods, String extraAttributes)
-	{
-		StringBuffer b = new StringBuffer();
-		if (isRole())
-		{
-			b.append("actor "+getName(translated));
-		}
-		else if (isEntity ())
-		{
-			b.append ("class "+getName(translated)+" <<(E,#ff4040) Entity>>");
-		} 
-		else if (isService())
-		{
-			b.append ("class "+getName(translated)+" <<(S,#ffff00) Service>>");
-		}
-		else if (isEnumeration())
-		{
-			b.append ("class "+getName(translated)+" <<(E,#ffff00) Enumeration>>");
-		}
-		else if (isValueObject())
-		{
-			b.append ("class "+getName(translated)+" <<(V,#4040ff) ValueObject>>");
-		}
-		b.append(extraAttributes);
-		if (isGenerated() && (attributes || methods))
-		{			
-			b.append ("{\n");
-			if (attributes)
-				for (ModelAttribute attribute: getAttributes())
-				{
-					b.append ("  ")
-						.append (attribute.getName(translated))
-						.append(":")
-						.append (attribute.getDataType().getJavaType(true));
-					if (!attribute.isRequired())
-						b.append (" \"0..1\"");
-					b.append ("\n");
-				}
-			if (methods)
-				for (ModelOperation operation: getOperations())
-				{
-					b.append ("  ")
-					.append (operation.getName(translated))
-					.append("(");
-					boolean first = true;
-					for (ModelParameter p: operation.getParameters())
-					{
-						if (!first) b.append(",");
-						first = false;
-						b.append (p.getName(translated));
-						if (!p.isRequired())
-							b.append (" \"0..1\"");
-						
-					}
-					b.append(")\n");
-				}
-			b.append ("}");
-		}
-		b.append ("\n");
-		
-		return b.toString();
-	}
-
+	@Override
 	public long lastModified() {
 		Class cl;
 		if (isCollection())
@@ -971,6 +995,7 @@ public class ModelClass extends ModelElement {
 		return 0;
 	}
 
+	@Override
 	public String getFile(boolean translated) {
 		if (underlyingClass == null)
 			return null;
@@ -978,6 +1003,7 @@ public class ModelClass extends ModelElement {
 			return  getFullName(translated).replace('.', java.io.File.separatorChar)+".java";
 	}
 
+	@Override
 	public String getJavaType(boolean translated, boolean translatedOnly) {
 		if (translatedOnly || isValueObject() || isService() ||
 				(isCollection() && getChildClass() != null && (getChildClass().isValueObject() || getChildClass().isEntity())))

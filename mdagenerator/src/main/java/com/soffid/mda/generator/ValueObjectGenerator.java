@@ -21,7 +21,7 @@ public class ValueObjectGenerator {
 		this.parser = parser;
 		this.translated = generator.isTranslatedOnly();
 		
-		for (ModelClass vo: parser.getValueObjects()) {
+		for (AbstractModelClass vo: parser.getValueObjects()) {
 			if (!generator.isTranslatedOnly())
 				generateValueObject (vo, false);
 			if (vo.isTranslated() || generator.isTranslatedOnly())
@@ -31,20 +31,20 @@ public class ValueObjectGenerator {
 		}
 
 
-		for (ModelClass vo: parser.getCriterias() ){
+		for (AbstractModelClass vo: parser.getCriterias() ){
 			generateValueObject (vo, translated);
 			if ( ! translated && vo.isTranslated())
 				generateValueObject (vo, true);
 		}
 
-		for (ModelClass exception: parser.getExceptions ())
+		for (AbstractModelClass exception: parser.getExceptions ())
 		{
 			generateException (exception, translated);
 			if ( ! translated && exception.isTranslated())
 				generateException (exception, true);
 		}
 
-		for (ModelClass enumeration: parser.getEnumerations ()) {
+		for (AbstractModelClass enumeration: parser.getEnumerations ()) {
 			if (!enumeration.getAttributes().isEmpty()) {
 				generateEnumeration (enumeration, generator.isTranslatedOnly());
 				generateHibernateEnumeration (enumeration, generator.isTranslatedOnly());
@@ -58,7 +58,7 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateEnumeration(com.soffid.mda.parser.ModelClass vo, boolean translated) throws FileNotFoundException {
+	void generateEnumeration(AbstractModelClass vo, boolean translated) throws FileNotFoundException {
 		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(translated) + vo.getName(translated) + ".java";
 		System.out.println( "Generating " + file );
 		File f = new File(file);
@@ -99,7 +99,7 @@ public class ValueObjectGenerator {
 			String dataType;
 			dataType = vo.getAttributes().get(0).getJavaType(translated, this.translated);
 			int values = 0;
-			for (ModelAttribute att: vo.getAttributes())
+			for (AbstractModelAttribute att: vo.getAttributes())
 			{
 				if (! att.getName(translated).isEmpty()) {
 					values ++;
@@ -244,7 +244,7 @@ public class ValueObjectGenerator {
 				+ "\tstatic" + endl
 				+ "\t{" );
 
-			for (ModelAttribute att: vo.getAttributes())
+			for (AbstractModelAttribute att: vo.getAttributes())
 			{
 				if (! att.getName(translated).isEmpty()) {
 					out.println( "\t\tvalues.put(" + Util.toUpper(att.getName(translated)) + ".value, "
@@ -263,7 +263,7 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateHibernateEnumeration(ModelClass vo, boolean translated) throws FileNotFoundException {
+	void generateHibernateEnumeration(AbstractModelClass vo, boolean translated) throws FileNotFoundException {
 		String file = generator.getCoreDir() + "/" + vo.getPackageDir(translated) + vo.getName(translated) + "Enum.java";
 		System.out.println( "Generating " + file );
 		File f = new File(file);
@@ -447,7 +447,7 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateException(ModelClass vo, boolean translated) throws FileNotFoundException {
+	void generateException(AbstractModelClass vo, boolean translated) throws FileNotFoundException {
 		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(translated) + vo.getName(translated) + ".java";
 		System.out.println( "Generating " + file );
 		File f = new File(file);
@@ -572,7 +572,7 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateValueObject(ModelClass vo, boolean translated) throws FileNotFoundException {
+	void generateValueObject(AbstractModelClass vo, boolean translated) throws FileNotFoundException {
 		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(translated) + vo.getName(translated) + ".java";
 		System.out.println( "Generating " + file );
 		File f = new File(file);
@@ -609,7 +609,7 @@ public class ValueObjectGenerator {
 		//
 		// Attributes
 		//
-		for (ModelAttribute att: vo.getAttributes())
+		for (AbstractModelAttribute att: vo.getAttributes())
 		{
 			if (! att.getName(translated).isEmpty()) {
 				String dataType = att.getDataType().getJavaType(translated, this.translated);
@@ -632,12 +632,12 @@ public class ValueObjectGenerator {
 	        + "\t}" + endl );
 
 		// Required attributes constructor
-		List<ModelAttribute> allAttributes = vo.getAllAttributes();
+		List<AbstractModelAttribute> allAttributes = vo.getAllAttributes();
 		boolean allRequired = true;
 		boolean anyRequired = false;
 		out.print( "\tpublic " + vo.getName(translated) + "(" );
 		boolean first = true;
-		for (ModelAttribute att: allAttributes)
+		for (AbstractModelAttribute att: allAttributes)
 		{
 			if (! att.getName(translated).isEmpty()) {
 				if (att.isRequired())
@@ -657,7 +657,7 @@ public class ValueObjectGenerator {
 				+ "\t\tsuper(") ;
 		boolean superAttributes = true;
 		boolean firstSuperAttribute = true;
-		for (ModelAttribute att: allAttributes)
+		for (AbstractModelAttribute att: allAttributes)
 		{
 			if (! att.getName(translated).isEmpty()) {
 				if (superAttributes) {
@@ -689,7 +689,7 @@ public class ValueObjectGenerator {
 			firstSuperAttribute = true;
 			out.print( "\tpublic " + vo.getName(translated) + "(" );
 			first = true;
-			for (ModelAttribute att: allAttributes)
+			for (AbstractModelAttribute att: allAttributes)
 			{
 				if (! att.getName(translated).isEmpty() && att.isRequired()) {
 					if (first)
@@ -702,7 +702,7 @@ public class ValueObjectGenerator {
 			out.print( ")" + endl
 					+ "\t{" + endl
 					+ "\t\tsuper(" ) ;
-			for (ModelAttribute att: allAttributes)
+			for (AbstractModelAttribute att: allAttributes)
 			{
 				if (! att.getName(translated).isEmpty() && att.isRequired()) {
 					if (superAttributes) {
@@ -733,7 +733,7 @@ public class ValueObjectGenerator {
 				+ "\t{" + endl
 				+ "\t\tthis(");
 		first = true;
-		for (ModelAttribute att: allAttributes)
+		for (AbstractModelAttribute att: allAttributes)
 		{
 			if (! att.getName(translated).isEmpty()) {
 				if (first)
@@ -751,7 +751,7 @@ public class ValueObjectGenerator {
 		//
 		// Attributes getter & setter
 		//
-		for (ModelAttribute att: vo.getAttributes())
+		for (AbstractModelAttribute att: vo.getAttributes())
 		{
 			if (! att.getName(translated).isEmpty()) {
 				out.println( "\t/**" + endl
@@ -857,7 +857,7 @@ public class ValueObjectGenerator {
 	        + "\t\tStringBuffer b = new StringBuffer();" + endl
 	        + "\t\tb.append (getClass().getName());" );
 		first = true;
-		for (ModelAttribute att: vo.getAttributes())
+		for (AbstractModelAttribute att: vo.getAttributes())
 		{
 			if (! att.getName(translated).isEmpty()) {
 			    out.print ( "\t\tb.append (\"" );
@@ -890,13 +890,13 @@ public class ValueObjectGenerator {
 				+ "\t\t\treturn null;" + endl
 				+ "\t\t" + vo.getName(translated) + " target = new " + vo.getName(translated) + "();" );
 			first = true;
-			for (ModelAttribute att: vo.getAttributes())
+			for (AbstractModelAttribute att: vo.getAttributes())
 			{
 				if (! att.getName(translated).isEmpty()) {
 					if (att.getDataType().isCollection() && att.getDataType().getChildClass() != null && 
 						att.getDataType().getChildClass().isTranslated() && att.getDataType().getChildClass().isValueObject())
 					{
-						ModelClass child = att.getDataType().getChildClass();
+						AbstractModelClass child = att.getDataType().getChildClass();
 						out.println( "\t\ttarget." + att.getName(translated) + " = "
 							+ child.getFullName(translated) + ".to"
 							+ child.getName(translated) + "List (vo."

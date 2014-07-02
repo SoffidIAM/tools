@@ -12,4 +12,8 @@ public @interface Column {
 	String name ();
 	int length() default 0;
 	String defaultValue () default ""; 
+	String reverseAttribute() default "";
+	boolean cascadeDelete() default false;
+	boolean cascadeNullify() default false;
+	boolean composition() default false;
 }
