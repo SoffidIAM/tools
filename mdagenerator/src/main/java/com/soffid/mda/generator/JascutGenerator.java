@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.soffid.mda.parser.ModelAttribute;
-import com.soffid.mda.parser.ModelClass;
+import com.soffid.mda.parser.AbstractModelAttribute;
+import com.soffid.mda.parser.AbstractModelClass;
 import com.soffid.mda.parser.ModelElement;
 import com.soffid.mda.parser.ModelOperation;
 import com.soffid.mda.parser.ModelParameter;
@@ -46,17 +46,17 @@ public class JascutGenerator {
 					+"xmlns='jascut'>");
 		out.println ("\t<description>Soffid generated translator</description>");
 
-		for (ModelClass cl: parser.getServices())
+		for (AbstractModelClass cl: parser.getServices())
 		{
 			translateMethods (cl, out);
 		}
 		out.println();
-		for (ModelClass cl: parser.getEntities())
+		for (AbstractModelClass cl: parser.getEntities())
 		{
 			translateMethods (cl, out);
 		}
 		out.println();
-		for (ModelClass cl: parser.getValueObjects())
+		for (AbstractModelClass cl: parser.getValueObjects())
 		{
 			translateMethods (cl, out);
 		}
@@ -64,9 +64,9 @@ public class JascutGenerator {
 		
 		for (ModelElement el: parser.getModelElements())
 		{
-			if (el instanceof ModelClass)
+			if (el instanceof AbstractModelClass)
 			{
-				ModelClass cl = (ModelClass) el;
+				AbstractModelClass cl = (AbstractModelClass) el;
 				translateClass (cl, out);
 			}
 		}
@@ -75,7 +75,7 @@ public class JascutGenerator {
 		
 	}
 
-	private void translateClass(ModelClass cl, PrintStream out) {
+	private void translateClass(AbstractModelClass cl, PrintStream out) {
 		String name = cl.getFullName(false);
 		String transName = cl.getFullName(true);
 		if (!name.equals(transName))
@@ -99,9 +99,9 @@ public class JascutGenerator {
 		
 	}
 
-	private void translateMethods(ModelClass cl, PrintStream out) {
+	private void translateMethods(AbstractModelClass cl, PrintStream out) {
 		// Translates getters & setters
-		for (ModelAttribute att: cl.getAttributes())
+		for (AbstractModelAttribute att: cl.getAttributes())
 		{
 			String name = att.getName(false);
 			String transName = att.getName(true);

@@ -14,6 +14,8 @@ import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
 
+import com.soffid.mda.parser.AbstractModelAttribute;
+import com.soffid.mda.parser.AbstractModelClass;
 import com.soffid.mda.parser.ModelAttribute;
 import com.soffid.mda.parser.ModelClass;
 import com.soffid.mda.parser.ModelElement;
@@ -62,12 +64,12 @@ public class EntityGenerator<E> {
 		}
 		for (ModelClass element: parser.getEntities())
 		{
-			generateEntity ((ModelClass) element);
-			generateEntityDao ((ModelClass) element);
-			generateEntityImpl((ModelClass) element);
-			generateEntityDaoBase((ModelClass) element);
-			generateEntityDaoImpl ((ModelClass) element);
-			generateHibernateDescriptor((ModelClass) element);
+			generateEntity ((AbstractModelClass) element);
+			generateEntityDao ((AbstractModelClass) element);
+			generateEntityImpl((AbstractModelClass) element);
+			generateEntityDaoBase((AbstractModelClass) element);
+			generateEntityDaoImpl ((AbstractModelClass) element);
+			generateHibernateDescriptor((AbstractModelClass) element);
 			if (generator.isGenerateUml())
 			{
 				generateUml (element);
@@ -81,7 +83,7 @@ public class EntityGenerator<E> {
 		generateTestImpl();
 	}
 
-	private void generateEntityDaoImpl(ModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
+	private void generateEntityDaoImpl(AbstractModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
 		boolean sourceTemplate = false;
 		String file;
 		if ( entity.getSuperClass() == null ||
@@ -118,7 +120,7 @@ public class EntityGenerator<E> {
 		out.close();
 	}
 
-	private void generateEntityImpl(ModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
+	private void generateEntityImpl(AbstractModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
 		String file;
 		if ( entity.hasNonStaticMethods()) {
 			file = generator.getCoreSrcDir();
@@ -168,7 +170,7 @@ public class EntityGenerator<E> {
 		out.close();
 	}
 
-	private void generateEntity(ModelClass element) throws FileNotFoundException, UnsupportedEncodingException {
+	private void generateEntity(AbstractModelClass element) throws FileNotFoundException, UnsupportedEncodingException {
 		
 		File f = new File (generator.getCoreDir() + File.separator + element.getFile (translated));
 		f.getParentFile().mkdirs();
@@ -204,7 +206,7 @@ public class EntityGenerator<E> {
 		out.println ("\t " + endComment);
 		out.println ("\tprivate static final long serialVersionUID = " + element.getSerialVersion() + ";") ;
 		
-		for (ModelAttribute att: element.getAttributes())
+		for (AbstractModelAttribute att: element.getAttributes())
 		{
 			out.println ("\t/**");
 			out.println ("\t * Attribute " + att.getName(translated));
@@ -313,7 +315,7 @@ public class EntityGenerator<E> {
 		out.println ("\t*" + endComment);
 	}
 	
-	private void generateDaoMethods  (Generator generator, PrintStream out, ModelClass entity, ModelClass subClass)
+	private void generateDaoMethods  (Generator generator, PrintStream out, AbstractModelClass entity, AbstractModelClass subClass)
 	{
 		//
 		// Methods
@@ -324,7 +326,7 @@ public class EntityGenerator<E> {
 				generateOperationComments(op, out);
 				out.println ("\tpublic " + op.getPrettySpec (false) + " " + op.getThrowsClause(translated) + " ;\n");
 				boolean criteria = false;
-				ModelClass criteriaClazz = null;
+				AbstractModelClass criteriaClazz = null;
 				if (op.getParameters().size() == 1)
 				{
 					ModelParameter param = op.getParameters().get(0);
@@ -357,7 +359,7 @@ public class EntityGenerator<E> {
 		//
 		// Value Objects dependencies
 		//
-		for (ModelClass cl: subClass.getDepends())
+		for (AbstractModelClass cl: subClass.getDepends())
 		{
 			if (cl.isValueObject())
 			{
@@ -423,7 +425,7 @@ public class EntityGenerator<E> {
 		// Subclasses
 		//
 		int i = 0;
-		for (ModelClass cl: subClass.getSpecializations() )
+		for (AbstractModelClass cl: subClass.getSpecializations() )
 		{
 			
 			out.println ( "\n" + "\t// " + cl.getName(translated) + " methods" );
@@ -433,7 +435,7 @@ public class EntityGenerator<E> {
 		}
 	}
 
-	public void generateEntityDao(ModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
+	public void generateEntityDao(AbstractModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
 		File f = new File (generator.getCoreDir() + File.separator + entity.getPackageDir(translated) + entity.getName(translated)+"Dao.java");
 		f.getParentFile().mkdirs();
 		PrintStream out = new PrintStream(f, "UTF-8");
@@ -459,7 +461,7 @@ public class EntityGenerator<E> {
 				+ "{" + "\n"
 				+ "}" );
 		} else {
-			ModelAttribute id = entity.getIdentifier();
+			AbstractModelAttribute id = entity.getIdentifier();
 			out.println ( "\n" + "{" );
 			generateDaoMethods(generator, out, entity, entity);
 			// create, update remove
@@ -635,9 +637,9 @@ public class EntityGenerator<E> {
 		int numTest = 1;
 		for (ModelElement element: parser.getEntities())
 		{
-			if (element instanceof ModelClass)
+			if (element instanceof AbstractModelClass)
 			{
-				ModelClass entity = (ModelClass) element; 
+				AbstractModelClass entity = (AbstractModelClass) element; 
 				for (ModelOperation op: entity.getOperations())
 				{
 					if (op.isQuery())
@@ -694,7 +696,7 @@ public class EntityGenerator<E> {
 		out.close();
 	}
 
-	void generateDependency(ModelClass provider, PrintStream out) {
+	void generateDependency(AbstractModelClass provider, PrintStream out) {
 		if (provider != null && (provider.isEntity() || provider.isService())) {
 			String fullName;
 			String name;
@@ -722,13 +724,13 @@ public class EntityGenerator<E> {
 		}
 	}
 
-	void generateDependencies (ModelClass entity, PrintStream out)
+	void generateDependencies (AbstractModelClass entity, PrintStream out)
 	{
 		//
 		// Generate clients
 		//
 
-		for (ModelClass provider: entity.getDepends()) {
+		for (AbstractModelClass provider: entity.getDepends()) {
 			generateDependency(provider, out);
 
 		}
@@ -737,7 +739,7 @@ public class EntityGenerator<E> {
 
 
 
-	void generateFinderMethod  (PrintStream out, ModelClass entity,
+	void generateFinderMethod  (PrintStream out, AbstractModelClass entity,
 			ModelOperation op) {
 		String sqlString;
 
@@ -765,7 +767,7 @@ public class EntityGenerator<E> {
 		// Test if it is a Criteria Method
 		boolean criteria = false;
 		ModelParameter criteriaParam = null;
-		ModelClass criteriaClazz = null;
+		AbstractModelClass criteriaClazz = null;
 		ModelParameter result = op.getReturnParameter();
 		if (op.getParameters().size() == 1)
 		{
@@ -790,7 +792,7 @@ public class EntityGenerator<E> {
 					+ "\t\t\tcriteriaSearch.getConfiguration().setFetchSize(" + criteriaParam.getName(translated)+ ".getFetchSize());" + "\n"
 					+ "\t\t\tcriteriaSearch.getConfiguration().setMaximumResultSize(" + criteriaParam.getName(false)+ ".getMaximumResultSize());" );
 			int i = 0;
-			for ( ModelAttribute att: criteriaClazz.getAttributes()) {
+			for ( AbstractModelAttribute att: criteriaClazz.getAttributes()) {
 				i++;
 				String tab = "";
 				if (! att.getDataType().isPrimitive()) {
@@ -918,8 +920,8 @@ public class EntityGenerator<E> {
 
 	void generateCopy (PrintStream out,
 			String prefix,
-			String srcName, ModelAttribute source,
-			String targetName, ModelAttribute target) {
+			String srcName, AbstractModelAttribute source,
+			String targetName, AbstractModelAttribute target) {
 		String result;
 		if (source.getDataType().getJavaType(translated).equals ( target.getDataType().getJavaType(translated)))
 		{
@@ -957,18 +959,18 @@ public class EntityGenerator<E> {
 	}
 
 	void generateCopyObject (PrintStream out,
-			String srcName, ModelClass source,
-			String targetName, ModelClass target) {
-		ModelClass baseTarget = target;
+			String srcName, AbstractModelClass source,
+			String targetName, AbstractModelClass target) {
+		AbstractModelClass baseTarget = target;
 		do
 		{
 			out.println ( "\t\t// Attributes for " + baseTarget.getName(translated) );
-			for (ModelAttribute targetAttribute: baseTarget.getAttributes()) {
-				ModelAttribute sourceAttribute = null;
-				ModelClass baseClass = source;
+			for (AbstractModelAttribute targetAttribute: baseTarget.getAttributes()) {
+				AbstractModelAttribute sourceAttribute = null;
+				AbstractModelClass baseClass = source;
 				do
 				{
-					for (ModelAttribute att: baseClass.getAttributes())
+					for (AbstractModelAttribute att: baseClass.getAttributes())
 					{
 						if (att.getName(translated).equals ( targetAttribute.getName(translated)) )
 						{
@@ -992,20 +994,20 @@ public class EntityGenerator<E> {
 	}
 
 	void generateCopyEntity (PrintStream out,
-			String srcName, ModelClass source,
-			String targetName, ModelClass target) {
-		ModelClass baseTarget = target;
+			String srcName, AbstractModelClass source,
+			String targetName, AbstractModelClass target) {
+		AbstractModelClass baseTarget = target;
 		do
 		{
 			out.println ( "\t\t// Attributes for " + baseTarget.getName(translated) );
-			ModelAttribute id = target.getIdentifier();
-			for (ModelAttribute targetAttribute: baseTarget.getAttributes()) {
+			AbstractModelAttribute id = target.getIdentifier();
+			for (AbstractModelAttribute targetAttribute: baseTarget.getAttributes()) {
 				if (targetAttribute != id && ! targetAttribute.getName(translated).isEmpty()) {
-					ModelAttribute sourceAttribute = null;
-					ModelClass baseClass = source;
+					AbstractModelAttribute sourceAttribute = null;
+					AbstractModelClass baseClass = source;
 					do
 					{
-						for (ModelAttribute att: baseClass.getAttributes())
+						for (AbstractModelAttribute att: baseClass.getAttributes())
 						{
 							if (att.getName(translated).equals (targetAttribute.getName(translated)))
 							{
@@ -1038,7 +1040,7 @@ public class EntityGenerator<E> {
 
 	}
 
-	void generateBusinessMethod (PrintStream out, ModelClass service, ModelOperation op) {
+	void generateBusinessMethod (PrintStream out, AbstractModelClass service, ModelOperation op) {
 		out.println ( "\t/**" + "\n"
 				+ "\t * @see " + service.getFullName(translated) + "#"
 				+ op.getSpec(false) + "\n"
@@ -1092,9 +1094,9 @@ public class EntityGenerator<E> {
 							+ param.getName(translated)
 							+ " cannot be null\");" + "\n"
 							+ "\t\t}" );
-					ModelClass modelClass = param.getDataType();
+					AbstractModelClass modelClass = param.getDataType();
 					if ( modelClass != null && param.getDataType().isValueObject()) {
-						for (ModelAttribute at: modelClass.getAttributes())
+						for (AbstractModelAttribute at: modelClass.getAttributes())
 						{
 							if (at.isRequired())
 							{
@@ -1144,7 +1146,7 @@ public class EntityGenerator<E> {
 				+ "\t\tcatch ("+generator.getRootPkg()+".exception.InternalErrorException __internalException)" + "\n"
 				+ "\t\t{" + "\n"
 				+ "\t\t\tthrow __internalException;" );
-		for (ModelClass exception: op.getExceptions())
+		for (AbstractModelClass exception: op.getExceptions())
 		{
 			if (! exception.getFullName(translated).equals(""+generator.getRootPkg()+".exception.InternalErrorException"))
 				out.println ( "\t\t}" + "\n"
@@ -1165,8 +1167,8 @@ public class EntityGenerator<E> {
 	}
 
 	void generateDaoBaseMethods  (PrintStream out,
-			ModelClass entity,
-			ModelClass subClass) {
+			AbstractModelClass entity,
+			AbstractModelClass subClass) {
 		//
 		// Methods
 		//
@@ -1186,7 +1188,7 @@ public class EntityGenerator<E> {
 		//
 		// Value Objects
 		//
-		for (ModelClass cl: subClass.getDepends())
+		for (AbstractModelClass cl: subClass.getDepends())
 		{
 			if (cl != null && cl . isValueObject()) {
 				// Copy to Value Object
@@ -1250,9 +1252,9 @@ public class EntityGenerator<E> {
 				out.println ( "\t}" + "\n" );
 
 				// Create entity from value object
-				ModelAttribute entityPk = entity.getIdentifier();
-				ModelAttribute voPk = null;
-				for (ModelAttribute att: cl.getAttributes()) {
+				AbstractModelAttribute entityPk = entity.getIdentifier();
+				AbstractModelAttribute voPk = null;
+				for (AbstractModelAttribute att: cl.getAttributes()) {
 					if (att.getName(translated).equals(entityPk.getName(translated))) {
 						voPk = att;
 						break;
@@ -1380,7 +1382,7 @@ public class EntityGenerator<E> {
 		//
 		// Subclasses
 		//
-		for (ModelClass cl: subClass.getSpecializations())
+		for (AbstractModelClass cl: subClass.getSpecializations())
 		{
 			out.println ( "\n" + "\t// " + cl.getName(translated) + " methods" + "\n" );
 			generateDaoBaseMethods( out, entity, cl);
@@ -1389,7 +1391,7 @@ public class EntityGenerator<E> {
 
 
 	void generateCasts(PrintStream out, String indent,
-			String entityName, String method, ModelClass entity, ModelClass subClass)
+			String entityName, String method, AbstractModelClass entity, AbstractModelClass subClass)
 	{
 		if (entity == subClass) {
 			out.print ( indent );
@@ -1398,7 +1400,7 @@ public class EntityGenerator<E> {
 		//
 		// Subclasses
 		//
-		for (ModelClass cl: subClass.getSpecializations())
+		for (AbstractModelClass cl: subClass.getSpecializations())
 		{
 			generateCasts (out,  indent, entityName, method, entity, cl);
 			anyChild = true;
@@ -1417,7 +1419,7 @@ public class EntityGenerator<E> {
 	}
 
 
-	public void generateEntityDaoBase(ModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
+	public void generateEntityDaoBase(AbstractModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
 		File f = new File (generator.getCoreDir() + File.separator + entity.getPackageDir(translated) + entity.getDaoBaseName(translated)+ ".java");
 		f.getParentFile().mkdirs();
 		PrintStream out = new PrintStream(f, "UTF-8");
@@ -1444,7 +1446,7 @@ public class EntityGenerator<E> {
 				+ "{" + "\n"
 				+ "}" );
 		} else {
-			ModelAttribute id = entity.getIdentifier();
+			AbstractModelAttribute id = entity.getIdentifier();
 			out.println ( "\textends org.springframework.orm.hibernate3.support.HibernateDaoSupport" + "\n"
 				+ "\timplements " + entity.getDaoFullName(translated)
 				+ "\n" + "{" );
@@ -2959,7 +2961,7 @@ public class EntityGenerator<E> {
 		int num = 1;
 		for (ModelElement element: parser.getEntities())
 		{
-			if (element instanceof ModelClass && ((ModelClass) element).isEntity() && ((ModelClass) element).isGenerated()) 
+			if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isEntity() && ((AbstractModelClass) element).isGenerated()) 
 			{
 				out.println ( "\t\tinitialize" + num + "();" );
 				num++;
@@ -2970,18 +2972,18 @@ public class EntityGenerator<E> {
 		num = 1;
 		for (ModelElement element: parser.getEntities())
 		{
-			if (element instanceof ModelClass && ((ModelClass) element).isEntity() && ((ModelClass) element).isGenerated()) 
+			if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isEntity() && ((AbstractModelClass) element).isGenerated()) 
 			{
-				ModelClass entity = (ModelClass ) element;
+				AbstractModelClass entity = (AbstractModelClass ) element;
 				out.println ( "\tprivate static final void initialize" + (num++) + "()" + "\n"
 				+ "\t{" + "\n"
 				+ "\t\tembeddedValuesByType.put(" + "\n"
 				+ "\t\t\t" + entity.getImplFullName(translated) + ".class," + "\n"
 				+ "\t\t\tnull);" );
 	
-				List<ModelAttribute> associations = new LinkedList<ModelAttribute>();
+				List<AbstractModelAttribute> associations = new LinkedList<AbstractModelAttribute>();
 	
-				for (ModelAttribute att: entity.getAttributes())
+				for (AbstractModelAttribute att: entity.getAttributes())
 				{
 					if (att.getDataType().isEntity())
 						associations.add(att);
@@ -2999,9 +3001,9 @@ public class EntityGenerator<E> {
 							+ "\t\t\t\tnew AssociationType[] " + "\n"
 							+ "\t\t\t\t{" );
 					int i  = 1;
-					for (ModelAttribute att: associations)
+					for (AbstractModelAttribute att: associations)
 					{
-						ModelClass type = att.getDataType();
+						AbstractModelClass type = att.getDataType();
 						out.print ( "\t\t\t\t\tnew AssociationType(\"" + att.getName(translated) + "\", "
 								+ type.getImplFullName(translated) + ".class)") ;
 						if (i != associations.size())
@@ -3069,7 +3071,7 @@ public class EntityGenerator<E> {
 	}
 
 
-	void generateHibernateDescriptor(ModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
+	void generateHibernateDescriptor(AbstractModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
 		String file;
 		file = generator.getCoreResourcesDir();
 
@@ -3110,10 +3112,10 @@ public class EntityGenerator<E> {
 			out.print ( "discriminator-value='" +d+"' ");
 		out.println ( ">" );
 
-		ModelAttribute pk = entity . getIdentifier();
+		AbstractModelAttribute pk = entity . getIdentifier();
 		if ( entity.getSuperClass() == null)
 		{
-			ModelAttribute att = entity . getIdentifier();
+			AbstractModelAttribute att = entity . getIdentifier();
 			String g = ""+generator.getRootPkg()+".model.identity.IdentityGenerator";
 			out.println ( "\t\t<id "
 				+ "name='"+att.getName(translated)+"' "
@@ -3133,7 +3135,7 @@ public class EntityGenerator<E> {
 		//
 		// Attributes
 		//
-		for (ModelAttribute att : entity.getAttributes())
+		for (AbstractModelAttribute att : entity.getAttributes())
 		{
 			if (!att.getName(translated).isEmpty() && att != pk) {
 				if (att.getDataType().isEntity()) {
@@ -3151,13 +3153,16 @@ public class EntityGenerator<E> {
 				} 
 				else if (att.getDataType().isCollection() && att.getDataType().getChildClass().isEntity())
 				{
-					ModelClass foreignClass = att.getDataType().getChildClass();
-					ModelAttribute foreignAtt = foreignClass.searchForeignKey(entity, att);
+					AbstractModelClass foreignClass = att.getDataType().getChildClass();
+					AbstractModelAttribute foreignAtt = foreignClass.searchForeignKey(entity, att);
 					if (foreignClass == null || foreignAtt == null) {
 						// Nothing to do
 					} else  {
 						out.println ( "\t\t<set name='" + att.getName(translated)
-								+"' lazy='true' fetch='select' inverse='true'>" + "\n"
+								+"' lazy='true' fetch='select' inverse='true'"+
+//								+"' lazy='true' fetch='select' inverse='" + (! foreignAtt.isComposition())+"'"+
+								(foreignAtt.isComposition() ? " cascade='all,delete-orphan'": "") +
+								">" + "\n"
 								+ "\t\t\t<key foreign-key='" +
 									foreignClass.getTableName()
 									+ "_" +
@@ -3206,7 +3211,7 @@ public class EntityGenerator<E> {
 		generateRelationshipUml(entity);
 	}
 
-	private void generateDaoUml(ModelClass entity) throws IOException {
+	private void generateDaoUml(AbstractModelClass entity) throws IOException {
 		String file;
 		file = generator.getUmlDir();
 		String packageName = entity.getPackage(translated);
@@ -3227,16 +3232,16 @@ public class EntityGenerator<E> {
 				"BackgroundColor<<ValueObject>> Pink"+endl+
 				"BackgroundColor<<Service>> LightBlue"+endl+
 				"}" +endl);
-		source.append (entity.generatePlantUml(translated, true, true));
+		source.append (entity.generatePlantUml(entity, translated, true, true));
 
-		for (ModelAttribute foreignAtt: entity.getForeignKeys())
+		for (AbstractModelAttribute foreignAtt: entity.getForeignKeys())
 		{
-			ModelClass foreignClass = foreignAtt.getModelClass();
+			AbstractModelClass foreignClass = foreignAtt.getModelClass();
 			if (foreignClass.isEntity() && foreignClass != entity)
 			{
 				generate = generate || Util.isModifiedClass(foreignClass, f);
-				source.append (foreignClass.generatePlantUml(translated, true, false));
-				ModelAttribute att = entity.searchReverseForeignKey(foreignClass, foreignAtt);
+				source.append (foreignClass.generatePlantUml(entity, translated, true, false));
+				AbstractModelAttribute att = entity.searchReverseForeignKey(foreignClass, foreignAtt);
 				source.append (entity.getName(translated));
 				if (foreignAtt.isRequired())
 					source.append (" \"1 "+foreignAtt.getName(translated)+"\" ");
@@ -3245,25 +3250,32 @@ public class EntityGenerator<E> {
 
 				if (att == null)
 					source.append (" <-- \"0..*\" ");
+				else if (foreignAtt.isComposition())
+					source.append (" *-- \"0..* "+att.getName(translated)+"\" ");
 				else
 					source.append (" -- \"0..* "+att.getName(translated)+"\" ");
 				source.append (foreignClass.getName(translated))
 					.append (endl);
 			}
 		}
-		for (ModelAttribute att: entity.getAttributes())
+		for (AbstractModelAttribute att: entity.getAttributes())
 		{
 			if (att.getDataType().isEntity())
 			{
-				ModelClass foreignClass = att.getDataType();
+				AbstractModelClass foreignClass = att.getDataType();
 				generate = generate || Util.isModifiedClass(foreignClass, f);
-				source.append (att.getDataType().generatePlantUml(translated, true, false));
-				ModelAttribute foreignAtt = foreignClass.searchReverseForeignKey(entity, att);
+				source.append (att.getDataType().generatePlantUml(entity, translated, true, false));
+				AbstractModelAttribute foreignAtt = foreignClass.searchReverseForeignKey(entity, att);
 				source.append (entity.getName(translated));
 				if (foreignAtt == null)
 					source.append ("\"0..*\" -->");
 				else
+				{
 					source.append ("\"0..* "+foreignAtt.getName(translated)+"\" --");
+					if (att.isComposition())
+						source.append ("*");
+				}
+				
 				if (att.isRequired())
 					source.append (" \"1 "+att.getName(translated)+"\" ");
 				else
@@ -3272,19 +3284,19 @@ public class EntityGenerator<E> {
 				source.append(endl);
 			}
 		}
-		for (ModelClass provider: entity.getDepends()) {
+		for (AbstractModelClass provider: entity.getDepends()) {
 			generate = generate || Util.isModifiedClass(provider, f);
 			if (provider.isEntity())
 			{
-				source.append( provider.generatePlantUml(translated, false, false) );
+				source.append( provider.generatePlantUml(entity, translated, false, false) );
 			}
 			else if (provider.isValueObject())
 			{
-				source.append( provider.generatePlantUml(translated, true, false) );
+				source.append( provider.generatePlantUml(entity, translated, true, false) );
 			}
 			else
 			{
-				source.append( provider.generatePlantUml(translated, false, false) );
+				source.append( provider.generatePlantUml(entity, translated, false, false) );
 			}
 			source.append (entity.getName(translated) + " ..> "+provider.getName(translated)+endl);
 		}
@@ -3298,32 +3310,32 @@ public class EntityGenerator<E> {
 		}
 	}
 
-	private void addEntities (ModelClass entity, List<ModelClass> entities, int depth, StringBuffer source)
+	private void addEntities (ModelClass entity, List<AbstractModelClass> entities, int depth, StringBuffer source)
 	{
-		LinkedList<ModelClass> entitiesToParse = new LinkedList<ModelClass>();
+		LinkedList<AbstractModelClass> entitiesToParse = new LinkedList<AbstractModelClass>();
 		entitiesToParse.add(entity);
 		entities.add(entity);
-		source.append (entity.generatePlantUml(translated, depth > 0, false, "#8080ff"));
+		source.append (entity.generatePlantUml(entity, translated, depth > 0, false, "#8080ff"));
 		while (depth > 0)
 		{
 			depth --;
-			LinkedList <ModelClass> nextLevel = new LinkedList<ModelClass>();
-			for (ModelClass e: entitiesToParse)
+			LinkedList <AbstractModelClass> nextLevel = new LinkedList<AbstractModelClass>();
+			for (AbstractModelClass e: entitiesToParse)
 			{
 				if (e.isGenerated())
 				{
-					for (ModelAttribute foreignAtt: e.getForeignKeys())
+					for (AbstractModelAttribute foreignAtt: e.getForeignKeys())
 					{
-						ModelClass foreignClass = foreignAtt.getModelClass();
+						AbstractModelClass foreignClass = foreignAtt.getModelClass();
 						if (foreignClass.isEntity())
 						{
 							nextLevel.add (foreignClass);
 						}
 					}
 					
-					for (ModelAttribute att: e.getAttributes())
+					for (AbstractModelAttribute att: e.getAttributes())
 					{
-						ModelClass foreignClass = att.getDataType();
+						AbstractModelClass foreignClass = att.getDataType();
 						if (foreignClass.isEntity())
 						{
 							nextLevel.add (foreignClass);
@@ -3332,13 +3344,13 @@ public class EntityGenerator<E> {
 				}
 			}
 			entitiesToParse.clear();
-			for (ModelClass e: nextLevel)
+			for (AbstractModelClass e: nextLevel)
 			{
 				if (! entities.contains(e))
 				{
 					entitiesToParse.add(e);
 					entities.add(e);
-					source.append (e.generatePlantUml(translated, depth >= 0, false));
+					source.append (e.generatePlantUml(entity, translated, depth >= 0, false));
 				}
 			}
 		}
@@ -3358,7 +3370,7 @@ public class EntityGenerator<E> {
 		f.getParentFile().mkdirs();
 
 		boolean generate = Util.isModifiedClass(entity, f);
-		LinkedList<ModelClass> entities = new LinkedList<ModelClass>();
+		LinkedList<AbstractModelClass> entities = new LinkedList<AbstractModelClass>();
 		
 		StringBuffer source = new StringBuffer();
 		source.append ("@startuml" + endl +
@@ -3372,19 +3384,19 @@ public class EntityGenerator<E> {
 
 		int threshold = 2 * entities.size() / 3;
 		int current = 0;
-		for (Iterator<ModelClass> it = entities.iterator(); it.hasNext();)
+		for (Iterator<AbstractModelClass> it = entities.iterator(); it.hasNext();)
 		{
-			ModelClass e = it.next();
+			AbstractModelClass e = it.next();
 			generate = generate || Util.isModifiedClass(e, f);
 
 			String separator = current > threshold ? "--" : "---";
 			current ++;
 			
-			for (ModelAttribute foreignAtt: e.getForeignKeys())
+			for (AbstractModelAttribute foreignAtt: e.getForeignKeys())
 			{
-				ModelClass foreignClass = foreignAtt.getModelClass();
+				AbstractModelClass foreignClass = foreignAtt.getModelClass();
 				generate = generate || Util.isModifiedClass(foreignClass, f);
-				ModelAttribute myAtt = e.searchReverseForeignKey(foreignClass, foreignAtt);
+				AbstractModelAttribute myAtt = e.searchReverseForeignKey(foreignClass, foreignAtt);
 
 				if (foreignClass.isEntity() && entities.contains(foreignClass) && foreignClass != e)
 				{
@@ -3392,7 +3404,12 @@ public class EntityGenerator<E> {
 					if (myAtt == null)
 						source.append (" \"0..*\" "+separator+">");
 					else
+					{
 						source.append (" \"0..* "+myAtt.getName(translated)+"\" "+separator);
+						if (foreignAtt.isComposition())
+							source.append ("*");
+					}
+					
 					if (foreignAtt.isRequired())
 						source.append (" \"1 "+foreignAtt.getName(translated)+"\" ");
 					else
@@ -3403,17 +3420,22 @@ public class EntityGenerator<E> {
 				}
 			}
 			
-			for (ModelAttribute att: e.getAttributes())
+			for (AbstractModelAttribute att: e.getAttributes())
 			{
 				if (att.getDataType().isEntity() && entities.contains(att.getDataType()))
 				{
-					ModelClass foreignClass = att.getDataType();
-					ModelAttribute foreignAtt = foreignClass.searchReverseForeignKey(e, att);
+					AbstractModelClass foreignClass = att.getDataType();
+					AbstractModelAttribute foreignAtt = foreignClass.searchReverseForeignKey(e, att);
 					source.append (e.getName(translated));
 					if (foreignAtt == null)
 						source.append (" \"0..*\" "+separator+">");
 					else
+					{
 						source.append (" \"0..* "+foreignAtt.getName(translated)+"\" "+separator);
+						if (att.isComposition())
+							source.append ("*");
+					}
+					
 					if (att.isRequired())
 						source.append (" \"1 "+att.getName(translated)+"\" ");
 					else

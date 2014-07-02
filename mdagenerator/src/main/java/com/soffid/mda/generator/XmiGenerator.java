@@ -10,7 +10,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.soffid.mda.parser.ModelAttribute;
+import com.soffid.mda.parser.AbstractModelAttribute;
+import com.soffid.mda.parser.AbstractModelClass;
 import com.soffid.mda.parser.ModelClass;
 import com.soffid.mda.parser.ModelElement;
 import com.soffid.mda.parser.ModelOperation;
@@ -93,7 +94,7 @@ public class XmiGenerator {
 	}
 
 	private void generateClasses(PrintStream out, Package masterPkg) {
-		for (ModelClass element: masterPkg.classes)
+		for (AbstractModelClass element: masterPkg.classes)
 		{
 			if (element.isEntity())
 			{
@@ -120,26 +121,26 @@ public class XmiGenerator {
 		}
 	}
 
-	private void generateGenericClass(PrintStream out, ModelClass element) {
+	private void generateGenericClass(PrintStream out, AbstractModelClass element) {
 		out.println ("<UML:Class xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
 				"visibility='public' isActive='false' isSpecification = 'false' isRoot = 'false' isLeaf = 'false' isAbstract = 'false' >" );
 		out.println ("</UML:Class>");
 	}
 
-	private void generateActor(PrintStream out, ModelClass element) {
+	private void generateActor(PrintStream out, AbstractModelClass element) {
 		StringBuffer associations = new StringBuffer();
 		
 		out.println ("<UML:Actor xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
 				"visibility='public' isSpecification = 'false' isRoot = 'false' isLeaf = 'false' isAbstract = 'false' >" );
 
 		LinkedList<String> ids = new LinkedList<String>();
-		for (ModelClass service: parser.getServices())
+		for (AbstractModelClass service: parser.getServices())
 		{
 			int i = 0;
 			for (ModelOperation op: service.getOperations())
 			{
 				 
-				for (ModelClass user: service.getAllActors())
+				for (AbstractModelClass user: service.getAllActors())
 				{
 					if (user == element)
 						ids.add("method."+service.getFullName()+"."+op.getName()+"_"+i);
@@ -173,7 +174,7 @@ public class XmiGenerator {
 		out.println ("</UML:Actor>");
 	}
 
-	private void generateEntity(PrintStream out, ModelClass element) {
+	private void generateEntity(PrintStream out, AbstractModelClass element) {
 		StringBuffer associations = new StringBuffer();
 		
 		out.println ("<UML:Class xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
@@ -191,7 +192,7 @@ public class XmiGenerator {
 		out.println (associations);
 	}
 
-	private void generateEnumeration(PrintStream out, ModelClass element) {
+	private void generateEnumeration(PrintStream out, AbstractModelClass element) {
 		StringBuffer associations = new StringBuffer();
 		
 		out.println ("<UML:Class xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
@@ -209,7 +210,7 @@ public class XmiGenerator {
 		out.println (associations);
 	}
 
-	private void generateValueObject(PrintStream out, ModelClass element) {
+	private void generateValueObject(PrintStream out, AbstractModelClass element) {
 		StringBuffer associations = new StringBuffer();
 		
 		out.println ("<UML:Class xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
@@ -227,7 +228,7 @@ public class XmiGenerator {
 		out.println (associations);
 	}
 
-	private void generateService(PrintStream out, ModelClass element) {
+	private void generateService(PrintStream out, AbstractModelClass element) {
 		StringBuffer associations = new StringBuffer();
 		
 		out.println ("<UML:Class xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
@@ -245,18 +246,18 @@ public class XmiGenerator {
 		out.println (associations);
 	}
 
-	private void generateAssociations(PrintStream out, ModelClass entity,
+	private void generateAssociations(PrintStream out, AbstractModelClass entity,
 			StringBuffer associations) 
 	{
-		for (ModelAttribute att :entity.getAttributes())
+		for (AbstractModelAttribute att :entity.getAttributes())
 		{
 			if (att.getDataType().isEntity())
 			{
 				// Search foreign attribute
-				ModelClass foreign = att.getDataType();
-				ModelAttribute foreignAtt = null;
+				AbstractModelClass foreign = att.getDataType();
+				AbstractModelAttribute foreignAtt = null;
 
-				for (ModelAttribute f: att.getDataType().getAttributes())
+				for (AbstractModelAttribute f: att.getDataType().getAttributes())
 				{
 					if (f.getForeignKey() != null && f.getForeignKey().equals(att.getColumn()))
 					{
@@ -298,8 +299,8 @@ public class XmiGenerator {
 		}
 	}
 
-	private void generateAttritbutes(PrintStream out, ModelClass element) {
-		for (ModelAttribute att :element.getAttributes())
+	private void generateAttritbutes(PrintStream out, AbstractModelClass element) {
+		for (AbstractModelAttribute att :element.getAttributes())
 		{
 			out.println ("<UML:Attribute xmi.id='attr."+element.getFullName()+"."+att.getName()+"' name='"+att.getName()+"' " +
 					"visibility='public' isSpecification = 'false' ownerScope='instance' changeability='changeable' targetScope='instance' >" );
@@ -338,7 +339,7 @@ public class XmiGenerator {
 		}
 	}
 
-	private void generateOperations(PrintStream out, ModelClass element) {
+	private void generateOperations(PrintStream out, AbstractModelClass element) {
 		int i = 0;
 		for (ModelOperation op :element.getOperations())
 		{
@@ -363,16 +364,16 @@ public class XmiGenerator {
 		}
 	}
 
-	private void generateDependenciess(PrintStream out, ModelClass element) {
+	private void generateDependenciess(PrintStream out, AbstractModelClass element) {
 		int i = 0;
 		String newId = newId();
-		for (ModelClass dep :element.getDepends())
+		for (AbstractModelClass dep :element.getDepends())
 		{
 			out.println ("<UML:ModelElement.clientDependency><UML:Dependency xmi.idref='"+newId+"_"+i+"' /></UML:ModelElement.clientDependency>");
 			i++;
 		}
 		out.println ("<UML:Namespace.ownedElement>");
-		for (ModelClass dep :element.getDepends())
+		for (AbstractModelClass dep :element.getDepends())
 		{
 			out.println ("<UML:Dependency xml.id='"+newId+"_"+i+"' isSpecification = 'false' >");
 			out.println ("<UML:Dependency.client><UML:Class xmi.idref='"+element.getXmlId()+"' /></UML:Dependency.client>");
@@ -390,9 +391,9 @@ public class XmiGenerator {
 	private void preparePackages() {
 		for (ModelElement element: parser.getModelElements())
 		{
-			if (element instanceof ModelClass)
+			if (element instanceof AbstractModelClass)
 			{
-				String packageName = ((ModelClass) element).getPackage();
+				String packageName = ((AbstractModelClass) element).getPackage();
 				Package currentPkg = pkg;
 				if (packageName != null)
 				{

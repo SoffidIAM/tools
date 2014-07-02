@@ -15,7 +15,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.soffid.mda.parser.ModelAttribute;
+import com.soffid.mda.parser.AbstractModelAttribute;
+import com.soffid.mda.parser.AbstractModelClass;
 import com.soffid.mda.parser.ModelClass;
 import com.soffid.mda.parser.ModelOperation;
 import com.soffid.mda.parser.ModelParameter;
@@ -188,7 +189,7 @@ public class DocGenerator {
 		p.print("<p class='genfooter'>"+ DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date())+"</p>");
 	}
 
-	private void generateClassReference(PrintStream p, ModelClass mc, boolean translated) {
+	private void generateClassReference(PrintStream p, AbstractModelClass mc, boolean translated) {
 		String pp = mc.getPackage(translated);
 		pp = pp.replaceAll("\\.", "/");
 		if (mc.isRole())
@@ -200,7 +201,7 @@ public class DocGenerator {
 		p.println ("</li>");
 	}
 
-	private void generateClassReference(PrintStream p, ModelClass source, ModelClass mc, boolean translated) {
+	private void generateClassReference(PrintStream p, AbstractModelClass source, AbstractModelClass mc, boolean translated) {
 		if (mc.isGenerated())
 		{
 			p.println("<a href='"+generateRef(source, mc, translated)+"'>"+mc.getName(translated)+"</a>");
@@ -213,7 +214,7 @@ public class DocGenerator {
 			p.println(mc.getName(translated));
 	}
 
-	private void generateDaoReference(PrintStream p, ModelClass source, ModelClass mc, boolean translated) {
+	private void generateDaoReference(PrintStream p, AbstractModelClass source, AbstractModelClass mc, boolean translated) {
 		if (mc.isGenerated())
 		{
 			if (mc.isEntity())
@@ -225,7 +226,7 @@ public class DocGenerator {
 			p.println(mc.getName(translated));
 	}
 
-	private void generateDaoReference(PrintStream p, ModelClass mc, boolean translated) {
+	private void generateDaoReference(PrintStream p, AbstractModelClass mc, boolean translated) {
 		String pp = mc.getPackage(translated);
 		pp = pp.replaceAll("\\.", "/");
 		p.println("<li><a href='"+pp+"/"+mc.getName(translated)+".html'>"+mc.getName(translated)+"</a>");
@@ -238,7 +239,7 @@ public class DocGenerator {
 
 	private List<ClassName>  sortClasses(List<ModelClass> entities, boolean addTranslated) {
 		List<ClassName> cn = new LinkedList<ClassName>();
-		for (ModelClass mc: entities)
+		for (AbstractModelClass mc: entities)
 		{
 			cn.add ( new ClassName (mc, false) );
 			if (addTranslated && mc.isTranslated())
@@ -306,7 +307,7 @@ public class DocGenerator {
 
 	private void generateEntity(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {
 		
-		ModelClass mc = cn.mc;
+		AbstractModelClass mc = cn.mc;
 		boolean translated = cn.translated;
 		File f = new File (getDocFile(mc, translated));
 		f.getParentFile().mkdirs();
@@ -331,7 +332,7 @@ public class DocGenerator {
 		p.println("<h2 class='entitySection'>Attributes</h2>");
 		p.println("<ul class='attributes'>");
 		
-		for (ModelAttribute att: mc.getAttributes())
+		for (AbstractModelAttribute att: mc.getAttributes())
 		{
 			generateAttribute(mc, translated, p, att);
 		}
@@ -339,7 +340,7 @@ public class DocGenerator {
 
 		p.println("<h2 class='entitySection'>Indexes</h2>");
 		p.println("<ul class='attributes'>");
-		for (ModelClass ic: parser.getIndexes())
+		for (AbstractModelClass ic: parser.getIndexes())
 		{
 			if (ic.getIndexEntity() == mc)
 			{
@@ -377,7 +378,7 @@ public class DocGenerator {
 
 	private void generateValueObject(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {
 		
-		ModelClass mc = cn.mc;
+		AbstractModelClass mc = cn.mc;
 		boolean translated = cn.translated;
 		File f = new File (getDocFile(mc, translated));
 		f.getParentFile().mkdirs();
@@ -392,7 +393,7 @@ public class DocGenerator {
 		p.println("<h2 class='entitySection'>Attributes</h2>");
 		p.println("<ul class='attributes'>");
 		
-		for (ModelAttribute att: mc.getAttributes())
+		for (AbstractModelAttribute att: mc.getAttributes())
 		{
 			generateAttribute(mc, translated, p, att);
 		}
@@ -411,7 +412,7 @@ public class DocGenerator {
 		p.println("<h2 class='entitySection'>Related entities</h2>");
 		p.println("<ul class='dependencies'>");
 		
-		for (ModelClass mc2: mc.getProvides())
+		for (AbstractModelClass mc2: mc.getProvides())
 		{
 			if (mc2.isEntity())
 			{
@@ -429,7 +430,7 @@ public class DocGenerator {
 
 	private void generateEnumeration(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {
 		
-		ModelClass mc = cn.mc;
+		AbstractModelClass mc = cn.mc;
 		boolean translated = cn.translated;
 		File f = new File (getDocFile(mc, translated));
 		f.getParentFile().mkdirs();
@@ -444,7 +445,7 @@ public class DocGenerator {
 		p.println("<h2 class='entitySection'>Attributes</h2>");
 		p.println("<ul class='attributes'>");
 		
-		for (ModelAttribute att: mc.getAttributes())
+		for (AbstractModelAttribute att: mc.getAttributes())
 		{
 			generateConstantAttribute(mc, translated, p, att);
 		}
@@ -471,7 +472,7 @@ public class DocGenerator {
 	}
 
 	private void generateEntityDao(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {		
-		ModelClass mc = cn.mc;
+		AbstractModelClass mc = cn.mc;
 		boolean translated = cn.translated;
 		File f = new File (getDaoDocFile(mc, translated));
 		f.getParentFile().mkdirs();
@@ -500,7 +501,7 @@ public class DocGenerator {
 		p.println("<h2 class='entitySection'>DAO Dependencies</h2>");
 		p.println("<ul class='dependencies'>");
 		
-		for (ModelClass mc2: mc.getDepends())
+		for (AbstractModelClass mc2: mc.getDepends())
 		{
 			if (mc2.isEntity())
 			{
@@ -514,7 +515,7 @@ public class DocGenerator {
 		p.println("<h2 class='entitySection'>Managed value objects</h2>");
 		p.println("<ul class='dependencies'>");
 		
-		for (ModelClass mc2: mc.getDepends())
+		for (AbstractModelClass mc2: mc.getDepends())
 		{
 			if (mc2.isValueObject())
 			{
@@ -527,7 +528,7 @@ public class DocGenerator {
 		p.println("<h2 class='entitySection'>Service Dependencies</h2>");
 		p.println("<ul class='dependencies'>");
 		
-		for (ModelClass mc2: mc.getDepends())
+		for (AbstractModelClass mc2: mc.getDepends())
 		{
 			if (mc2.isService())
 			{
@@ -545,7 +546,7 @@ public class DocGenerator {
 	}
 
 	private void generateService(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {		
-		ModelClass mc = cn.mc;
+		AbstractModelClass mc = cn.mc;
 		boolean translated = cn.translated;
 		File f = new File (getDocFile(mc, translated));
 		f.getParentFile().mkdirs();
@@ -555,7 +556,7 @@ public class DocGenerator {
 		PrintStream p = new PrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
-		p.println("<h1>Service "+mc.getFullName(translated)+"</h1>");
+		p.println("<h1>Service "+mc.getFullName(translated)+"<a target='_new' href='"+mc.getName(translated)+"-uc.svg'>[UseCase]</a></h1>");
 		
 		String image = generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(translated))+mc.getName(translated)+".html";
 
@@ -572,7 +573,7 @@ public class DocGenerator {
 		if (!mc.getActors().isEmpty())
 		{
 			p.println ("<li><div class='property'>Actors</div><div class='property-value'>");
-			for (ModelClass actor: mc.getActors())
+			for (AbstractModelClass actor: mc.getActors())
 			{
 				generateClassReference(p, mc, actor, translated);
 			}
@@ -592,7 +593,7 @@ public class DocGenerator {
 		p.println("<h2 class='entitySection'>DAO Dependencies</h2>");
 		p.println("<ul class='dependencies'>");
 		
-		for (ModelClass mc2: mc.getDepends())
+		for (AbstractModelClass mc2: mc.getDepends())
 		{
 			if (mc2.isEntity())
 			{
@@ -607,7 +608,7 @@ public class DocGenerator {
 		p.println("<h2 class='entitySection'>Service Dependencies</h2>");
 		p.println("<ul class='dependencies'>");
 		
-		for (ModelClass mc2: mc.getDepends())
+		for (AbstractModelClass mc2: mc.getDepends())
 		{
 			if (mc2.isService())
 			{
@@ -625,7 +626,7 @@ public class DocGenerator {
 	}
 
 	private void generateActor(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {		
-		ModelClass mc = cn.mc;
+		AbstractModelClass mc = cn.mc;
 		boolean translated = cn.translated;
 		File f = new File (getDocFile(mc, translated));
 		f.getParentFile().mkdirs();
@@ -642,7 +643,7 @@ public class DocGenerator {
 		p.println("<h2 class='entitySection'>Services</h2>");
 		p.println("<ul class='methods'>");
 		
-		for (ModelClass service: parser.getServices())
+		for (AbstractModelClass service: parser.getServices())
 		{
 			if (service.getActors().contains(mc))
 			{
@@ -669,12 +670,12 @@ public class DocGenerator {
 	}
 
 
-	private void generateAttribute(ModelClass mc, boolean translated,
-			PrintStream p, ModelAttribute att) {
+	private void generateAttribute(AbstractModelClass mc, boolean translated,
+			PrintStream p, AbstractModelAttribute att) {
 		p.println("<li><span class='attribute-name'>");
 		p.print(att.getName(translated));
 		p.print("</span> <span class='attribute-type'>");
-		ModelClass dataType = att.getDataType();
+		AbstractModelClass dataType = att.getDataType();
 		generateDataType(mc, translated, p, dataType);
 		p.print("</span> ");
 		if (att.isIdentifier())
@@ -689,12 +690,12 @@ public class DocGenerator {
 		p.println ("</li>");
 	}
 
-	private void generateConstantAttribute(ModelClass mc, boolean translated,
-			PrintStream p, ModelAttribute att) {
+	private void generateConstantAttribute(AbstractModelClass mc, boolean translated,
+			PrintStream p, AbstractModelAttribute att) {
 		p.println("<li><span class='attribute-name'>");
 		p.print(att.getName(translated));
 		p.print("</span> <span class='attribute-type'>");
-		ModelClass dataType = att.getDataType();
+		AbstractModelClass dataType = att.getDataType();
 		generateDataType(mc, translated, p, dataType);
 		p.print("</span> ");
 		p.print ("<span class='attribute-required'>"+ Util.formatHtml(att.getConstantValue())+"</span>");
@@ -705,11 +706,11 @@ public class DocGenerator {
 	}
 
 
-	private void generateDataType(ModelClass mc, boolean translated,
-			PrintStream p, ModelClass dataType) {
+	private void generateDataType(AbstractModelClass mc, boolean translated,
+			PrintStream p, AbstractModelClass dataType) {
 		if (dataType.isCollection())
 		{
-			ModelClass ch = dataType.getChildClass();
+			AbstractModelClass ch = dataType.getChildClass();
 			if (ch != null )
 			{
 				p.println (dataType.getRawType()+"&lt;");
@@ -732,9 +733,9 @@ public class DocGenerator {
 		}
 	}
 
-	private void generateMethod(ModelClass referrer, boolean translated,
+	private void generateMethod(AbstractModelClass referrer, boolean translated,
 			PrintStream p, ModelOperation op) {
-		ModelClass mc = op.getModelClass();
+		AbstractModelClass mc = op.getModelClass();
 		p.println("<li><div class='operation'><div class='operation-header'><div class='operation-name'>");
 		if (referrer != null)
 		{
@@ -749,7 +750,7 @@ public class DocGenerator {
 		if (!op.getActors().isEmpty())
 		{
 			p.print("</div> <div class='operation-actors'>Actors: ");
-			for (ModelClass actor: op.getActors())
+			for (AbstractModelClass actor: op.getActors())
 			{
 				generateClassReference(p, referrer, actor, translated);
 			}
@@ -771,15 +772,15 @@ public class DocGenerator {
 	}
 
 	
-	private String getDocFile(ModelClass mc, boolean translated) {
+	private String getDocFile(AbstractModelClass mc, boolean translated) {
 		return generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(translated))+mc.getName(translated)+".html";
 	}
 
-	private String getDaoDocFile(ModelClass mc, boolean translated) {
+	private String getDaoDocFile(AbstractModelClass mc, boolean translated) {
 		return generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(translated))+mc.getDaoName(translated)+".html";
 	}
 
-	private String generateRef(ModelClass mc, ModelClass ch, boolean translated) {
+	public String generateRef(AbstractModelClass mc, AbstractModelClass ch, boolean translated) {
 		return generateRef (getDocFile(mc, translated), getDocFile(ch, translated));
 	}
 
@@ -805,10 +806,10 @@ public class DocGenerator {
 class ClassName {
 	String pkg;
 	String name;
-	ModelClass mc;
+	AbstractModelClass mc;
 	boolean translated;
 	
-	public ClassName (ModelClass mc, boolean translated)
+	public ClassName (AbstractModelClass mc, boolean translated)
 	{
 		this.mc = mc;
 		this.translated = translated;

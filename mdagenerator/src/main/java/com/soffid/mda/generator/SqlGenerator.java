@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
-import com.soffid.mda.parser.ModelAttribute;
-import com.soffid.mda.parser.ModelClass;
+import com.soffid.mda.parser.AbstractModelAttribute;
+import com.soffid.mda.parser.AbstractModelClass;
 import com.soffid.mda.parser.ModelElement;
 import com.soffid.mda.parser.Parser;
 
@@ -38,9 +38,9 @@ public class SqlGenerator {
 		// Create table
 		for (ModelElement modelElement: parser.getModelElements()) 
 		{
-			if (modelElement instanceof ModelClass && ((ModelClass) modelElement).isEntity())
+			if (modelElement instanceof AbstractModelClass && ((AbstractModelClass) modelElement).isEntity())
 			{
-				ModelClass classElement = (ModelClass) modelElement;
+				AbstractModelClass classElement = (AbstractModelClass) modelElement;
 				if (classElement.getSuperClass() == null) {
 
 					out.println ( endl
@@ -65,9 +65,9 @@ public class SqlGenerator {
 					generateFK (out, classElement);
 				}
 			}
-			if (modelElement instanceof ModelClass && ((ModelClass) modelElement).isIndex())
+			if (modelElement instanceof AbstractModelClass && ((AbstractModelClass) modelElement).isIndex())
 			{
-				generateIndex (out, (ModelClass) modelElement);
+				generateIndex (out, (AbstractModelClass) modelElement);
 			}
 		}
 
@@ -83,10 +83,10 @@ public class SqlGenerator {
 	}
 
 
-	void generateTableSql (ModelClass entity, PrintStream out)
+	void generateTableSql (AbstractModelClass entity, PrintStream out)
 	{
 		// Create columns
-		ModelAttribute pk = entity.getIdentifier();
+		AbstractModelAttribute pk = entity.getIdentifier();
 		// Discriminator
 		String d = entity.getDiscriminatorColumn();
 		if (d != null && ! d.isEmpty())
@@ -99,7 +99,7 @@ public class SqlGenerator {
 				out.println ( "\t\t<column name=\"" + d + "\" type=\"VARCHAR\" length=\"16\" notNull=\"true\"/>" );
 		}
 		//
-		for (ModelAttribute att : entity.getAttributes())
+		for (AbstractModelAttribute att : entity.getAttributes())
 		{
 			String javaType = att.getDataType().getJavaType();
 			String length = att.getLength();
@@ -137,16 +137,16 @@ public class SqlGenerator {
 		}
 
 
-		for (ModelClass specialization: entity.getSpecializations())
+		for (AbstractModelClass specialization: entity.getSpecializations())
 		{
 			generateTableSql( specialization, out);
 		}
 	}
 
 
-	void generateIndex( PrintStream out, ModelClass index )
+	void generateIndex( PrintStream out, AbstractModelClass index )
 	{
-		ModelClass table = index.getIndexEntity();
+		AbstractModelClass table = index.getIndexEntity();
 		String tableName = table.getTableName();
 		
 		String tag = index.getIndexName();
@@ -163,17 +163,20 @@ public class SqlGenerator {
 	}
 
 
-	static void generateFK (PrintStream out, ModelClass entity)
+	static void generateFK (PrintStream out, AbstractModelClass entity)
 	{
 		// Create columns
-		for (ModelAttribute att: entity.getAttributes())
+		for (AbstractModelAttribute att: entity.getAttributes())
 		{
 			if (att.getDataType().isEntity())
 			{
-				ModelClass foreignEntity = att.getDataType(); 
+				AbstractModelClass foreignEntity = att.getDataType(); 
 					out.println ( "\t<foreignKey name='"
 							+ entity.getTableName() + "_FK_" + att.getColumn() + "' "
 							+ "table='" + entity.getTableName() + "' "
+							+ (att.isCascadeDelete()? "cascade='delete' " :
+								att.isCascadeNullify()? "cascade='nullify' " :
+									"")
 							+ "foreignTable='" + foreignEntity.getTableName() + "'> "
 							+ endl
 							+ "\t\t<column name='" + att.getColumn() + "'/>" + endl

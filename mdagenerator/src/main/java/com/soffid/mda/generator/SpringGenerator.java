@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
-import com.soffid.mda.parser.ModelClass;
+import com.soffid.mda.parser.AbstractModelClass;
 import com.soffid.mda.parser.Parser;
 
 public class SpringGenerator {
@@ -92,7 +92,7 @@ public class SpringGenerator {
 				+ "\t\t<property name=\"lobHandler\" ref=\"lobHandler\"/>" + endl
 				+ "\t\t<property name=\"mappingResources\">" + endl
 				+ "\t\t\t<list>" );
-			for (ModelClass entity: parser.getEntities()) {
+			for (AbstractModelClass entity: parser.getEntities()) {
 				out.println ( "\t\t\t\t<value>" + Util.packageToDir(entity.getPackagePrefix())
 					+ entity.getName(translated) + ".hbm.xml</value>" );
 
@@ -132,7 +132,7 @@ public class SpringGenerator {
 				+ "\t<bean id=\"hibernate-addon-" + generator.pluginName + "\" class=\"es.caib.seycon.ng.spring.AddonHibernateBean\">" + endl
 				+ "\t\t<property name=\"mappingResources\">" + endl
 				+ "\t\t\t<list>" );
-			for (ModelClass entity: parser.getEntities()) {
+			for (AbstractModelClass entity: parser.getEntities()) {
 				out.println ( "\t\t\t\t<value>" + Util.packageToDir(entity.getPackagePrefix())
 					+ entity.getName(translated) + ".hbm.xml</value>" );
 
@@ -181,16 +181,16 @@ public class SpringGenerator {
 
 		if (! sync )
 		{
-			for (ModelClass entity: parser.getEntities()) {
+			for (AbstractModelClass entity: parser.getEntities()) {
 				out.println ( "\t<!-- " + entity.getName(translated) + " Entity Proxy with inner " + entity.getName(translated)+" Entity implementation -->" + endl
 					+ "\t<bean id=\"" + entity.getSpringBeanName(generator, false) + "\" class=\"org.springframework.aop.framework.ProxyFactoryBean\">" + endl
 					+ "\t\t<property name=\"target\">" + endl
 					+ "\t\t\t<bean class=\"" + entity.getDaoImplFullName(translated) + "\">" + endl
 					+ "\t\t\t\t<property name=\"sessionFactory\"><ref bean=\"sessionFactory\"/></property>" );
-				ModelClass superClass = entity;
+				AbstractModelClass superClass = entity;
 				do
 				{
-					for (ModelClass dep: superClass.getDepends()) {
+					for (AbstractModelClass dep: superClass.getDepends()) {
 						if (dep != null)
 						{
 							if (dep.isEntity())
@@ -238,16 +238,18 @@ public class SpringGenerator {
 
 		out.println ( "\t<!-- ========================= Start of SERVICE DEFINITIONS ========================= -->" );
 
-		for (ModelClass service: parser.getServices()) {
-			if ( sync ? service.isServerOnly(): ! service.isServerOnly() )
+		for (AbstractModelClass service: parser.getServices()) {
+			if ( (sync ? service.isServerOnly(): ! service.isServerOnly()))
 			{
 				out.println ( "\t<!-- " + service.getSpringBeanName(generator,false) + " Service Proxy with inner " + service.getName(translated) + " Service Implementation -->" + endl
-					+ "\t<bean id=\"" + service.getSpringBeanName(generator,false) + "\" class=\"org.springframework.aop.framework.ProxyFactoryBean\">" + endl
-					+ "\t\t<property name=\"target\">" + endl
-					+ "\t\t\t<bean class=\"" + service.getImplFullName() + "\">" );
-				ModelClass current = service;
+					+ "\t<bean id=\"" + service.getSpringBeanName(generator,false) + "\" class=\"org.springframework.aop.framework.ProxyFactoryBean\">" );
+				if (service.isStateful())
+					out.println ("\t\t<property name=\"singleton\"><value>false</value></property>");
+				out.println("\t\t<property name=\"target\">" + endl +
+						"\t\t\t<bean class=\"" + service.getImplFullName() + "\">" );
+				AbstractModelClass current = service;
 				do {
-					for (ModelClass provider: current.getDepends()) {
+					for (AbstractModelClass provider: current.getDepends()) {
 						if (provider != null && provider.isEntity())
 						{
 							out.println ( "\t\t\t\t<property name=\"" + Util.firstLower(provider.getDaoName(translated))

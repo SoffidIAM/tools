@@ -2,7 +2,7 @@ package com.soffid.mda.generator;
 
 import java.io.File;
 
-import com.soffid.mda.parser.ModelClass;
+import com.soffid.mda.parser.AbstractModelClass;
 
 public class Util {
 
@@ -137,7 +137,7 @@ public class Util {
 		return s;
 	}
 	
-	public static boolean isModifiedClass (ModelClass clazz, File f)
+	public static boolean isModifiedClass (AbstractModelClass clazz, File f)
 	{
 		if (!f.canRead())
 			return true;

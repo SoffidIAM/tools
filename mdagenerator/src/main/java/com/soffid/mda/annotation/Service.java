@@ -9,10 +9,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Service {
 	boolean serverOnly () default false;
+	boolean consoleOnly () default false;
 	boolean internal () default false;
 	String translatedName () default "";
 	String serverPath () default "";
 	String serverRole () default "server";
 	String translatedPackage() default "";
 	Class[] grantees() default {};
+	boolean stateful() default false;
 }
