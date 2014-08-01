@@ -333,4 +333,9 @@ public abstract class AbstractModelClass extends ModelElement {
 		return false;
 	}
 
+
+	public String getDescription() {
+		return null;
+	}
+
 }

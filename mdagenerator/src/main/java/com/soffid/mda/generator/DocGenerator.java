@@ -46,6 +46,7 @@ public class DocGenerator {
 
 		PrintStream p = new PrintStream(f, "UTF-8");
 		
+		p.println("<?xml version='1.0' encoding='utf-8'?>");
 		p.println("<html><head><link rel=\"stylesheet\" href=\"style.css\">");
 		if (generator.isPlugin())
 			p.println("<title>Plugin "+generator.getPluginName()+ " description</title>");
@@ -83,6 +84,7 @@ public class DocGenerator {
 
 		PrintStream p = new PrintStream(f, "UTF-8");
 		
+		p.println("<?xml version='1.0' encoding='utf-8'?>");
 		p.println("<html><head><link rel=\"stylesheet\" href=\"style.css\">");
 		if (generator.isPlugin())
 			p.println("<title>Plugin "+generator.getPluginName()+ " description</title>");
@@ -119,6 +121,7 @@ public class DocGenerator {
 
 		PrintStream p = new PrintStream(f, "UTF-8");
 		
+		p.println("<?xml version='1.0' encoding='utf-8'?>");
 		p.println("<html><head><link rel=\"stylesheet\" href=\"style.css\">");
 		if (generator.isPlugin())
 			p.println("<title>Plugin "+generator.getPluginName()+ " description</title>");
@@ -321,6 +324,7 @@ public class DocGenerator {
 		generateImage (p, mc.getName(translated)+"-er.svg");
 
 		p.println ("<ul class='properties'>");
+		p.println ("<li><div class='property'>Description</div><div class='property-value'>"+Util.formatHtml(mc.getDescription())+"</div></div></div>");
 		p.println ("<li><div class='property'>TableName</div><div class='property-value'>"+Util.formatHtml(mc.getTableName())+"</div></div></div>");
 		if (mc.getDiscriminatorColumn() != null && mc.getDiscriminatorColumn().length() > 0)
 			p.println ("<li><div class='property'>Discriminator column</div><div class='property-value'>"+Util.formatHtml(mc.getDiscriminatorColumn()+"</div></div></li>"));
@@ -390,6 +394,10 @@ public class DocGenerator {
 		generateHeader(f, p);
 		p.println("<h1>ValueObject "+mc.getFullName(translated)+"</h1>");
 		
+		p.println ("<ul class='properties'>");
+		p.println ("<li><div class='property'>Description</div><div class='property-value'>"+Util.formatHtml(mc.getDescription())+"</div></div></div>");
+		p.println ("</ul>");
+
 		p.println("<h2 class='entitySection'>Attributes</h2>");
 		p.println("<ul class='attributes'>");
 		
@@ -442,6 +450,10 @@ public class DocGenerator {
 		generateHeader(f, p);
 		p.println("<h1>Enumeration "+mc.getFullName(translated)+"</h1>");
 		
+		p.println ("<ul class='properties'>");
+		p.println ("<li><div class='property'>Description</div><div class='property-value'>"+Util.formatHtml(mc.getDescription())+"</div></div></div>");
+		p.println ("</ul>");
+
 		p.println("<h2 class='entitySection'>Attributes</h2>");
 		p.println("<ul class='attributes'>");
 		
@@ -461,6 +473,7 @@ public class DocGenerator {
 	}
 
 	private void generateHeader(File f, PrintStream p) {
+		p.println("<?xml version='1.0' encoding='utf-8'?>");
 		p.println("<html><head><link rel=\"stylesheet\" href=\""+generateRef(f.getPath(), getStylePath())+"\">");
 		if (generator.isPlugin())
 			p.println("<title>Plugin "+generator.getPluginName()+ " description</title>");
@@ -487,6 +500,10 @@ public class DocGenerator {
 		String image = generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(translated))+mc.getName(translated)+".html";
 
 		generateImage (p, mc.getName(translated)+"-dao.svg");
+
+		p.println ("<ul class='properties'>");
+		p.println ("<li><div class='property'>Description</div><div class='property-value'>"+Util.formatHtml(mc.getDescription())+"</div></div></div>");
+		p.println ("</ul>");
 
 		p.println("<h2 class='entitySection'>DAO methods</h2>");
 		p.println("<ul class='methods'>");
@@ -564,6 +581,7 @@ public class DocGenerator {
 
 		p.println ("<ul class='properties'>");
 		p.println ("<li><div class='property'>Spring bean name </div><div class='property-value'>"+Util.formatHtml(mc.getBaseName(translated))+"</div></div></div>");
+		p.println ("<li><div class='property'>Description</div><div class='property-value'>"+Util.formatHtml(mc.getDescription())+"</div></div></div>");
 		if (mc.isServerOnly())
 			p.println ("<li><div class='property'>EJB bean name </div><div class='property-value'> - Sync server only -</div></div></div>");
 		else if (mc.isInternal())
