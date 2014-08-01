@@ -241,34 +241,32 @@ public class SpringGenerator {
 		for (AbstractModelClass service: parser.getServices()) {
 			if ( (sync ? service.isServerOnly(): ! service.isServerOnly()))
 			{
-				out.println ( "\t<!-- " + service.getSpringBeanName(generator,false) + " Service Proxy with inner " + service.getName(translated) + " Service Implementation -->" + endl
-					+ "\t<bean id=\"" + service.getSpringBeanName(generator,false) + "\" class=\"org.springframework.aop.framework.ProxyFactoryBean\">" );
+				out.println ( "\t<!-- " + service.getSpringBeanName(generator,false) + " Service Proxy with inner " + service.getName(translated) + " Service Implementation -->" );
 				if (service.isStateful())
-					out.println ("\t\t<property name=\"singleton\"><value>false</value></property>");
-				out.println("\t\t<property name=\"target\">" + endl +
-						"\t\t\t<bean class=\"" + service.getImplFullName() + "\">" );
-				AbstractModelClass current = service;
-				do {
-					for (AbstractModelClass provider: current.getDepends()) {
-						if (provider != null && provider.isEntity())
-						{
-							out.println ( "\t\t\t\t<property name=\"" + Util.firstLower(provider.getDaoName(translated))
-								+ "\"><ref bean=\"" + provider.getSpringBeanName(generator, false)
-								+ "\"/></property>" );
-						}
-						else if (provider != null && provider.isService())
-						{
-							out.println ( "\t\t\t\t<lookup-method name=\"get" + provider.getName(translated)
-								+ "\" bean=\"" + provider.getSpringBeanName(generator, false)
-								+ "\"/>" );
-						}
-					}
-					current = current.getSuperClass();
-				} while (current != null);
+				{
+					out.println ( "\t<bean id=\"" + service.getSpringBeanName(generator,false) + "Target\" "+ 
+							"class=\"" + service.getImplFullName() +"\" singleton=\"false\">" );
+					generateBeanInjections(out, service);
+					out.println ( "\t</bean>" );
+					out.println ();
+				}
 
-				out.println ( "\t\t\t</bean>" + endl
-					+ "\t\t</property>" + endl
-					+ "\t\t<property name=\"proxyInterfaces\">" + endl
+				out.println ("\t<bean id=\"" + service.getSpringBeanName(generator,false) + "\" class=\"org.springframework.aop.framework.ProxyFactoryBean\">" );
+				if (service.isStateful())
+				{
+					out.println ("\t\t<property name=\"singleton\"><value>false</value></property>");
+					out.println("\t\t<property name=\"target\"><ref bean=\""+service.getSpringBeanName(generator,false)+"Target\"/></property>");
+					out.println("\t\t<property name=\"targetName\" value=\""+service.getSpringBeanName(generator,false)+"Target\"/>");
+				} else {
+					out.print("\t\t<property name=\"target\">" + endl +
+							"\t\t\t<bean class=\"" + service.getImplFullName() +"\">" );
+					generateBeanInjections(out, service);
+
+					out.println ( "\t\t\t</bean>" );
+					out.println ( "\t\t</property>");
+				}
+				
+				out.println ( "\t\t<property name=\"proxyInterfaces\">" + endl
 					+ "\t\t\t<value>" + service.getFullName() + "</value>" + endl
 					+ "\t\t</property>" + endl
 					+ "\t\t<property name=\"interceptorNames\">" + endl
@@ -281,11 +279,34 @@ public class SpringGenerator {
 					+ "\t\t</property>" + endl
 					+ "\t</bean>" + endl
 					+ "" );
+				
 			}
 		}
 		out.println ( "\t<!-- ========================= End of SERVICE DEFINITIONS ========================= -->" + endl
 				+ "" + endl
 				+ "</beans>" );
+	}
+
+	private void generateBeanInjections(PrintStream out,
+			AbstractModelClass service) {
+		AbstractModelClass current = service;
+		do {
+			for (AbstractModelClass provider: current.getDepends()) {
+				if (provider != null && provider.isEntity())
+				{
+					out.println ( "\t\t\t\t<property name=\"" + Util.firstLower(provider.getDaoName(translated))
+						+ "\"><ref bean=\"" + provider.getSpringBeanName(generator, false)
+						+ "\"/></property>" );
+				}
+				else if (provider != null && provider.isService())
+				{
+					out.println ( "\t\t\t\t<lookup-method name=\"get" + provider.getName(translated)
+						+ "\" bean=\"" + provider.getSpringBeanName(generator, false)
+						+ "\"/>" );
+				}
+			}
+			current = current.getSuperClass();
+		} while (current != null);
 	}
 
 

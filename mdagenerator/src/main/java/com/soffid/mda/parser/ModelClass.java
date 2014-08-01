@@ -1014,4 +1014,12 @@ public class ModelClass extends AbstractModelClass {
 			return getJavaType (false);
 	}
 
+	public String getDescription() {
+		Description desc = (Description) getAnnotation(Description.class);
+		if (desc != null)
+			return desc.value();
+		else
+			return "";
+	}
+
 }
