@@ -170,8 +170,12 @@ public class SqlGenerator {
 		{
 			if (att.getDataType().isEntity())
 			{
-				AbstractModelClass foreignEntity = att.getDataType(); 
-					out.println ( "\t<foreignKey name='"
+				AbstractModelClass foreignEntity = att.getDataType();
+				while (foreignEntity.getSuperClass() != null && foreignEntity.getSuperClass().isEntity())
+				{
+					foreignEntity = foreignEntity.getSuperClass();
+				}
+				out.println ( "\t<foreignKey name='"
 							+ entity.getTableName() + "_FK_" + att.getColumn() + "' "
 							+ "table='" + entity.getTableName() + "' "
 							+ (att.isCascadeDelete()? "cascade='delete' " :
