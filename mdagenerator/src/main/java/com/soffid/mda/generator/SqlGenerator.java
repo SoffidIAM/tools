@@ -38,7 +38,8 @@ public class SqlGenerator {
 		// Create table
 		for (ModelElement modelElement: parser.getModelElements()) 
 		{
-			if (modelElement instanceof AbstractModelClass && ((AbstractModelClass) modelElement).isEntity())
+			if (modelElement instanceof AbstractModelClass && ((AbstractModelClass) modelElement).isEntity() &&
+					((AbstractModelClass) modelElement).isGenerated())
 			{
 				AbstractModelClass classElement = (AbstractModelClass) modelElement;
 				if (classElement.getSuperClass() == null) {
@@ -71,11 +72,14 @@ public class SqlGenerator {
 			}
 		}
 
-		out.println ( "\t<table name='SC_SEQUENCE'>" + endl
-				+ "\t\t<column name='SEQ_NEXT' type='BIGINT' notNull='true'/>" + endl
-				+ "\t\t<column name='SEQ_CACHE' type='BIGINT' notNull='true'/>" + endl
-				+ "\t\t<column name='SEQ_INCREMENT' type='BIGINT' notNull='true'/>" + endl
-				+ "\t</table>" + endl );
+		if (! generator.isPlugin())
+		{
+			out.println ( "\t<table name='SC_SEQUENCE'>" + endl
+					+ "\t\t<column name='SEQ_NEXT' type='BIGINT' notNull='true'/>" + endl
+					+ "\t\t<column name='SEQ_CACHE' type='BIGINT' notNull='true'/>" + endl
+					+ "\t\t<column name='SEQ_INCREMENT' type='BIGINT' notNull='true'/>" + endl
+					+ "\t</table>" + endl );
+		}
 
 
 		out.println ( "</database>" );
@@ -170,8 +174,12 @@ public class SqlGenerator {
 		{
 			if (att.getDataType().isEntity())
 			{
-				AbstractModelClass foreignEntity = att.getDataType(); 
-					out.println ( "\t<foreignKey name='"
+				AbstractModelClass foreignEntity = att.getDataType();
+				while (foreignEntity.getSuperClass() != null && foreignEntity.getSuperClass().isEntity())
+				{
+					foreignEntity = foreignEntity.getSuperClass();
+				}
+				out.println ( "\t<foreignKey name='"
 							+ entity.getTableName() + "_FK_" + att.getColumn() + "' "
 							+ "table='" + entity.getTableName() + "' "
 							+ (att.isCascadeDelete()? "cascade='delete' " :
