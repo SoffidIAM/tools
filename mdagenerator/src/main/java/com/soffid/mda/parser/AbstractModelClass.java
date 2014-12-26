@@ -184,11 +184,11 @@ public abstract class AbstractModelClass extends ModelElement {
 	public abstract LinkedList<AbstractModelAttribute> getForeignKeys();
 
 	public String generatePlantUml(AbstractModelClass fromClass, boolean translated, boolean attributes, boolean methods) {
-		return generatePlantUml(fromClass, translated, attributes, methods, "");
+		return generatePlantUml(fromClass, translated, attributes, methods, "", false);
 	}
 
 	public String generatePlantUml(AbstractModelClass fromPath, boolean translated, boolean attributes, boolean methods,
-			String extraAttributes) {
+			String extraAttributes, boolean columns) {
 				String relative = "";
 				if (isService() || isEntity() || isRole() || isValueObject())
 					relative = " [["+generateRef (fromPath, this, false)+"]]";
@@ -196,12 +196,12 @@ public abstract class AbstractModelClass extends ModelElement {
 				StringBuffer b = new StringBuffer();
 				if (isRole())
 				{
-					b.append("actor "+getName(translated)+relative);
+					b.append("actor "+getName(translated )+relative);
 				}
 				else if (isEntity ())
 				{
 					b.append ("class "+
-							getName(translated)+" <<(E,#ff4040) Entity>>"+relative);
+							(columns ? getTableName() : getName(translated))+" <<(E,#ff4040) Entity>>"+relative);
 				} 
 				else if (isService())
 				{
@@ -223,18 +223,29 @@ public abstract class AbstractModelClass extends ModelElement {
 					if (attributes)
 						for (AbstractModelAttribute attribute: getAttributes())
 						{
-							b.append ("  ")
-								.append (attribute.getName(translated))
-								.append(":")
-								.append (attribute.getDataType().getJavaType(true));
-							if (!attribute.isRequired())
-								b.append (" \"0..1\"");
-/*							if (attribute.getDataType().isGenerated() &&
-									attribute.getDataType().isEntity() ||
-									attribute.getDataType().isService() ||
-									attribute.getDataType().isValueObject())
-								b.append (" [["+generateRef(fromPath, this, translated)+"]]");
-*/							b.append ("\n");
+							if (columns && isEntity())
+							{
+								if (attribute.getColumn() != null && attribute.getColumn().trim().length()> 0)
+								{
+									b.append ("  ")
+									.append (attribute.getColumn())
+									.append(" ")
+									.append (attribute.getDdlType(translated));
+								if (!attribute.isRequired())
+									b.append (" \"0..1\"");
+								b.append ("\n");
+								}
+							}
+							else
+							{
+								b.append ("  ")
+									.append (attribute.getName(translated))
+									.append(":")
+									.append (attribute.getDataType().getJavaType(true));
+								if (!attribute.isRequired())
+									b.append (" \"0..1\"");
+								b.append ("\n");
+							}
 						}
 					if (methods)
 						for (ModelOperation operation: getOperations())

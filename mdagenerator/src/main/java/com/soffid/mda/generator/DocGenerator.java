@@ -320,7 +320,10 @@ public class DocGenerator {
 		PrintStream p = new PrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
-		p.println("<h1>Entity "+mc.getFullName(translated)+" <a href='"+mc.getDaoName(translated)+".html'>[DAO]</a></h1>");
+		p.println("<h1>Entity "+mc.getFullName(translated));
+		p.println(" <a target='_new' href='"+mc.getName(translated)+"-erc.svg'>[Tables]</a>");
+		p.println(" <a href='"+mc.getDaoName(translated)+".html'>[DAO]</a>");
+		p.println("</h1>");
 		generateImage (p, mc.getName(translated)+"-er.svg");
 
 		p.println ("<ul class='properties'>");
@@ -338,7 +341,7 @@ public class DocGenerator {
 		
 		for (AbstractModelAttribute att: mc.getAttributes())
 		{
-			generateAttribute(mc, translated, p, att);
+			generateAttribute(mc, translated, p, att, true);
 		}
 		p.println ("</ul>");
 
@@ -690,18 +693,26 @@ public class DocGenerator {
 
 	private void generateAttribute(AbstractModelClass mc, boolean translated,
 			PrintStream p, AbstractModelAttribute att) {
+		generateAttribute(mc, translated, p, att, false);
+	}
+	private void generateAttribute(AbstractModelClass mc, boolean translated,
+			PrintStream p, AbstractModelAttribute att, boolean columnName) {
 		p.println("<li><span class='attribute-name'>");
 		p.print(att.getName(translated));
 		p.print("</span> <span class='attribute-type'>");
 		AbstractModelClass dataType = att.getDataType();
 		generateDataType(mc, translated, p, dataType);
 		p.print("</span> ");
+		p.print("<span> ");
+		if (columnName && att.getColumn() != null)
+			p.print(att.getColumn()+" ");
 		if (att.isIdentifier())
 			p.print ("<span class='attribute-identifier'>Identifier</span>");
 		else if (att.isRequired() && ! att.getDataType().isCollection())
 			p.print ("<span class='attribute-required'>Required</span>");
 		else
 			p.print ("<span class='attribute-optional'>Optional</span>");
+		p.print("</span> ");
 		p.print("<span class='attribute-description'>");
 		p.print(Util.formatHtml(att.getComments()));
 		p.print("</span> ");

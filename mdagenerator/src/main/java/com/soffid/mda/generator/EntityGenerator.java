@@ -3310,12 +3310,12 @@ public class EntityGenerator<E> {
 		}
 	}
 
-	private void addEntities (ModelClass entity, List<AbstractModelClass> entities, int depth, StringBuffer source)
+	private void addEntities (ModelClass entity, List<AbstractModelClass> entities, int depth, StringBuffer source, boolean columns)
 	{
 		LinkedList<AbstractModelClass> entitiesToParse = new LinkedList<AbstractModelClass>();
 		entitiesToParse.add(entity);
 		entities.add(entity);
-		source.append (entity.generatePlantUml(entity, translated, depth > 0, false, "#8080ff"));
+		source.append (entity.generatePlantUml(entity, translated, depth > 0, false, "#8080ff", columns));
 		while (depth > 0)
 		{
 			depth --;
@@ -3350,7 +3350,7 @@ public class EntityGenerator<E> {
 				{
 					entitiesToParse.add(e);
 					entities.add(e);
-					source.append (e.generatePlantUml(entity, translated, depth >= 0, false));
+					source.append (e.generatePlantUml(entity, translated, depth >= 0, false, "", columns));
 				}
 			}
 		}
@@ -3358,6 +3358,10 @@ public class EntityGenerator<E> {
 	}
 	
 	private void generateRelationshipUml(ModelClass entity) throws IOException {
+		generateRelationshipUml(entity, false);
+		generateRelationshipUml(entity, true);
+	}
+	private void generateRelationshipUml(ModelClass entity, boolean columns) throws IOException {
 		String file;
 		file = generator.getUmlDir();
 		String packageName = entity.getPackage(translated);
@@ -3365,7 +3369,10 @@ public class EntityGenerator<E> {
 		file = file + File.separator + Util.packageToDir(packageName);
 
 		file += entity.getName(translated);
-		file += "-er.svg";
+		if (columns)
+			file += "-erc.svg";
+		else
+			file += "-er.svg";
 		File f = new File (file);
 		f.getParentFile().mkdirs();
 
@@ -3380,7 +3387,7 @@ public class EntityGenerator<E> {
 				"BackgroundColor<<Service>> LightBlue"+endl+
 				"}" +endl);
 
-		addEntities (entity, entities, 2, source);
+		addEntities (entity, entities, 2, source, columns);
 
 		int threshold = 2 * entities.size() / 3;
 		int current = 0;
@@ -3400,22 +3407,22 @@ public class EntityGenerator<E> {
 
 				if (foreignClass.isEntity() && entities.contains(foreignClass) && foreignClass != e)
 				{
-					source.append (foreignClass.getName(translated));			
+					source.append (columns ? foreignClass.getTableName(): foreignClass.getName(translated));			
 					if (myAtt == null)
 						source.append (" \"0..*\" "+separator+">");
 					else
 					{
-						source.append (" \"0..* "+myAtt.getName(translated)+"\" "+separator);
+						source.append (" \"0..* "+ (columns? "": myAtt.getName(translated))+"\" "+separator);
 						if (foreignAtt.isComposition())
 							source.append ("*");
 					}
 					
 					if (foreignAtt.isRequired())
-						source.append (" \"1 "+foreignAtt.getName(translated)+"\" ");
+						source.append (" \"1 "+(columns ? foreignAtt.getColumn(): foreignAtt.getName(translated))+"\" ");
 					else
-						source.append (" \"0..1 "+foreignAtt.getName(translated)+"\" ");
+						source.append (" \"0..1 "+(columns ? foreignAtt.getColumn(): foreignAtt.getName(translated))+"\" ");
 	
-					source.append(e.getName(translated));
+					source.append(columns ? e.getTableName(): e.getName(translated));
 					source.append(endl);
 				}
 			}
@@ -3426,21 +3433,21 @@ public class EntityGenerator<E> {
 				{
 					AbstractModelClass foreignClass = att.getDataType();
 					AbstractModelAttribute foreignAtt = foreignClass.searchReverseForeignKey(e, att);
-					source.append (e.getName(translated));
+					source.append (columns ? e.getTableName(): e.getName(translated));
 					if (foreignAtt == null)
 						source.append (" \"0..*\" "+separator+">");
 					else
 					{
-						source.append (" \"0..* "+foreignAtt.getName(translated)+"\" "+separator);
+						source.append (" \"0..* "+(columns ? "": foreignAtt.getName(translated))+"\" "+separator);
 						if (att.isComposition())
 							source.append ("*");
 					}
 					
 					if (att.isRequired())
-						source.append (" \"1 "+att.getName(translated)+"\" ");
+						source.append (" \"1 "+(columns ? att.getColumn(): att.getName(translated))+"\" ");
 					else
-						source.append (" \"0..1 "+att.getName(translated)+"\" ");
-					source.append(foreignClass.getName(translated));
+						source.append (" \"0..1 "+(columns ? att.getColumn(): att.getName(translated))+"\" ");
+					source.append( columns ? foreignClass.getTableName(): foreignClass.getName(translated));
 					source.append(endl);
 				}
 			}
