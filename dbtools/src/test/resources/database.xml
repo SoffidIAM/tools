@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+	<table name="t1">
+		<column name="vc" type="VARCHAR" length="49" notNull="true" />
+		<column name="id" type="LONG" notNull="true" autoIncrement="true" primaryKey="true"/>
+		<column name="data" type="DATETIME" />
+		<column name="userid" type="LONG"  />
+		<column name="tempB" type="BLOB"  />
+		<column name="tempC" type="CLOB"  />
+		<column name="tempZ" type="BOOLEAN"  />
+		<column name="nopeta" type="VARCHAR" length="10"/>
+		<column name="tempX" type="INTEGER" notNull="true"  />
+	</table>
+	
+	<index name="i1" table="t1" unique="true">
+		<column name="userid"/>
+	</index>
+	
+	<index name="i2" table="t1">
+		<column name="vc"/>
+	</index>
+	
+</database>

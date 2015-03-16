@@ -1,0 +1,1385 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<database name='Soffid'>
+	<sequence name ='HIBERNATE_SEQUENCE'/>
+
+	<!-- es.caib.seycon.ng.model.SecretEntity -->
+
+	<table name='SC_SECRET'>
+		<column name='SEC_IDSRV' type='BIGINT' notNull='true'/>
+		<column name='SEC_IDUSU' type='BIGINT' notNull='true'/>
+		<column name='SEC_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='SEC_VALOR' type='BLOB' length='64000' notNull='true'/>
+	</table>
+	<foreignKey name='SC_SECRET_FK_SEC_IDSRV' table='SC_SECRET' foreignTable='SC_SERVER'> 
+		<column name='SEC_IDSRV'/>
+		<foreignColumn name='SRV_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_SECRET_FK_SEC_IDUSU' table='SC_SECRET' foreignTable='SC_USUARI'> 
+		<column name='SEC_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.ExecucioPuntEntradaEntity -->
+
+	<table name='SC_EXEPUE'>
+		<column name='EPE_ID' type='BIGINT' notNull='false' primaryKey='true' autoIncrement='true'/>
+		<column name='EPE_AMBIT' type='VARCHAR' length='1' notNull='true'/>
+		<column name='EPE_CONTIN' type='VARCHAR' length='4000' notNull='false'/>
+		<column name='EPE_IDPUE' type='BIGINT' notNull='true'/>
+		<column name='EPE_CODEXE' type='VARCHAR' length='10' notNull='false'/>
+	</table>
+	<foreignKey name='SC_EXEPUE_FK_EPE_IDPUE' table='SC_EXEPUE' foreignTable='SC_PUNENT'> 
+		<column name='EPE_IDPUE'/>
+		<foreignColumn name='PUE_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.AutoritzacioPUERolEntity -->
+
+	<table name='SC_ROLPUE'>
+		<column name='RPE_IDPUE' type='BIGINT' notNull='true'/>
+		<column name='RPE_NIVAUT' type='VARCHAR' length='1' notNull='true'/>
+		<column name='RPE_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='RPE_IDROL' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_ROLPUE_FK_RPE_IDPUE' table='SC_ROLPUE' foreignTable='SC_PUNENT'> 
+		<column name='RPE_IDPUE'/>
+		<foreignColumn name='PUE_ID'/>
+	</foreignKey>
+	<index name='PU_ROL_2' table='SC_ROLPUE' unique='false'>
+		<column name='RPE_IDROL'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.ArbrePuntEntradaEntity -->
+
+	<table name='SC_PUEPUE'>
+		<column name='PPE_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='PPE_ORDRE' type='INTEGER' notNull='true'/>
+		<column name='PPE_IDPEPA' type='BIGINT' notNull='true'/>
+		<column name='PPE_IDPEFI' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_PUEPUE_FK_PPE_IDPEPA' table='SC_PUEPUE' foreignTable='SC_PUNENT'> 
+		<column name='PPE_IDPEPA'/>
+		<foreignColumn name='PUE_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_PUEPUE_FK_PPE_IDPEFI' table='SC_PUEPUE' foreignTable='SC_PUNENT'> 
+		<column name='PPE_IDPEFI'/>
+		<foreignColumn name='PUE_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.AutoritzacioPUEUsuariEntity -->
+
+	<table name='SC_USUPUE'>
+		<column name='UPE_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='UPE_NIVAUT' type='VARCHAR' length='1' notNull='true'/>
+		<column name='UPE_IDPUE' type='BIGINT' notNull='true'/>
+		<column name='UPE_IDUSU' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_USUPUE_FK_UPE_IDPUE' table='SC_USUPUE' foreignTable='SC_PUNENT'> 
+		<column name='UPE_IDPUE'/>
+		<foreignColumn name='PUE_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.AutoritzacioPUEGrupEntity -->
+
+	<table name='SC_GRUPUE'>
+		<column name='GPE_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='GPE_NIVAUT' type='VARCHAR' length='1' notNull='true'/>
+		<column name='GPE_IDPUE' type='BIGINT' notNull='true'/>
+		<column name='GPE_IDGRU' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_GRUPUE_FK_GPE_IDPUE' table='SC_GRUPUE' foreignTable='SC_PUNENT'> 
+		<column name='GPE_IDPUE'/>
+		<foreignColumn name='PUE_ID'/>
+	</foreignKey>
+	<index name='GRU_PUE_1' table='SC_GRUPUE' unique='true'>
+		<column name='GPE_IDGRU'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.IconaEntity -->
+
+	<table name='SC_ICONES'>
+		<column name='ICO_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='ICO_ICONA' type='BLOB' length='20000' notNull='true'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.AliasMaquinaEntity -->
+
+	<table name='SC_MAQUINALIAS'>
+		<column name='MAL_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='MAL_ALIAS' type='VARCHAR' length='2048' notNull='true'/>
+		<column name='MAL_MAQID' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_MAQUINALIAS_FK_MAL_MAQID' table='SC_MAQUINALIAS' foreignTable='SC_MAQUIN'> 
+		<column name='MAL_MAQID'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.ControlAccessEntity -->
+
+	<table name='SC_CONACC'>
+		<column name='CAC_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='CAC_GEN_USU' type='VARCHAR' length='2048' notNull='false'/>
+		<column name='CAC_GEN_MAQ' type='VARCHAR' length='2048' notNull='false'/>
+		<column name='CAC_PROGRAM' type='VARCHAR' length='2048' notNull='true'/>
+		<column name='CAC_ROL_ID' type='BIGINT' notNull='false'/>
+		<column name='CAC_DIS_ID' type='BIGINT' notNull='true'/>
+		<column name='CAC_IPMAQ_ORA' type='VARCHAR' length='2048' notNull='false'/>
+	</table>
+	<foreignKey name='SC_CONACC_FK_CAC_ROL_ID' table='SC_CONACC' foreignTable='SC_ROLES'> 
+		<column name='CAC_ROL_ID'/>
+		<foreignColumn name='ROL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_CONACC_FK_CAC_DIS_ID' table='SC_CONACC' foreignTable='SC_DISPAT'> 
+		<column name='CAC_DIS_ID'/>
+		<foreignColumn name='DIS_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.AutoritzacioAccesHostComAdministradorEntity -->
+
+	<table name='SC_ADMMAQ'>
+		<column name='ADM_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='ADM_DATCAD' type='DATE' notNull='true'/>
+		<column name='ADM_USUID' type='BIGINT' notNull='true'/>
+		<column name='ADM_MAQID' type='BIGINT' notNull='true'/>
+		<column name='ADM_IDWF' type='BIGINT' notNull='true'/>
+		<column name='ADM_DATINI' type='DATE' notNull='false'/>
+	</table>
+	<foreignKey name='SC_ADMMAQ_FK_ADM_USUID' table='SC_ADMMAQ' foreignTable='SC_USUARI'> 
+		<column name='ADM_USUID'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ADMMAQ_FK_ADM_MAQID' table='SC_ADMMAQ' foreignTable='SC_MAQUIN'> 
+		<column name='ADM_MAQID'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.UsuariSEUEntity -->
+
+	<table name='SC_USUSEU'>
+		<column name='USE_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='USE_DATSEU' type='DATE' notNull='true'/>
+		<column name='USE_VERSEU' type='VARCHAR' length='50' notNull='true'/>
+		<column name='USE_FAVS' type='VARCHAR' length='1024' notNull='false'/>
+		<column name='USE_USUID' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_USUSEU_FK_USE_USUID' table='SC_USUSEU' foreignTable='SC_USUARI'> 
+		<column name='USE_USUID'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.NotificacioEntity -->
+
+	<table name='SC_NOTIFICA'>
+		<column name='NTF_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='NTF_DATA' type='DATE' notNull='true'/>
+		<column name='NTF_INFO' type='VARCHAR' length='512' notNull='true'/>
+		<column name='NTF_USU' type='BIGINT' notNull='true'/>
+		<column name='NTF_ROL' type='BIGINT' notNull='false'/>
+		<column name='NTF_APL' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_NOTIFICA_FK_NTF_USU' table='SC_NOTIFICA' foreignTable='SC_USUARI'> 
+		<column name='NTF_USU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_NOTIFICA_FK_NTF_ROL' table='SC_NOTIFICA' foreignTable='SC_ROLES'> 
+		<column name='NTF_ROL'/>
+		<foreignColumn name='ROL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_NOTIFICA_FK_NTF_APL' table='SC_NOTIFICA' foreignTable='SC_APLICA'> 
+		<column name='NTF_APL'/>
+		<foreignColumn name='APL_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.AutoritzacioRolEntity -->
+
+	<table name='SC_AUTROL'>
+		<column name='AUR_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='AUR_AUTCOD' type='VARCHAR' length='100' notNull='true'/>
+		<column name='AUR_ROL' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_AUTROL_FK_AUR_ROL' table='SC_AUTROL' foreignTable='SC_ROLES'> 
+		<column name='AUR_ROL'/>
+		<foreignColumn name='ROL_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.DominiContrasenyaEntity -->
+
+	<table name='SC_DOMCON'>
+		<column name='DCN_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='DCN_CODI' type='VARCHAR' length='50' notNull='true'/>
+		<column name='DCN_DESC' type='VARCHAR' length='100' notNull='false'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.UsuariWFProcessEntity -->
+
+	<table name='SC_USUPRO'>
+		<column name='UPR_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='UPR_USUCOD' type='VARCHAR' length='20' notNull='false'/>
+		<column name='UPR_IDPROC' type='BIGINT' notNull='true'/>
+		<column name='UPR_END' type='BIT' notNull='true'/>
+		<column name='UPR_USUNIF' type='VARCHAR' length='50' notNull='false'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.LlistaCorreuUsuariEntity -->
+
+	<table name='SC_USULCO'>
+		<column name='ULC_IDLCO' type='BIGINT' notNull='true'/>
+		<column name='ULC_IDUSU' type='BIGINT' notNull='true'/>
+		<column name='ULC_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+	</table>
+	<foreignKey name='SC_USULCO_FK_ULC_IDLCO' table='SC_USULCO' foreignTable='SC_LLICOR'> 
+		<column name='ULC_IDLCO'/>
+		<foreignColumn name='LCO_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_USULCO_FK_ULC_IDUSU' table='SC_USULCO' foreignTable='SC_USUARI'> 
+		<column name='ULC_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.RelacioLlistaCorreuEntity -->
+
+	<table name='SC_LCOLCO'>
+		<column name='LLC_IDLCO1' type='BIGINT' notNull='true'/>
+		<column name='LLC_IDLCO2' type='BIGINT' notNull='true'/>
+		<column name='LLC_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+	</table>
+	<foreignKey name='SC_LCOLCO_FK_LLC_IDLCO1' table='SC_LCOLCO' foreignTable='SC_LLICOR'> 
+		<column name='LLC_IDLCO1'/>
+		<foreignColumn name='LCO_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_LCOLCO_FK_LLC_IDLCO2' table='SC_LCOLCO' foreignTable='SC_LLICOR'> 
+		<column name='LLC_IDLCO2'/>
+		<foreignColumn name='LCO_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.DominiAplicacioEntity -->
+
+	<table name='SC_DOMAPP'>
+		<column name='DOM_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='DOM_NOM' type='VARCHAR' length='30' notNull='true'/>
+		<column name='DOM_APP' type='BIGINT' notNull='false'/>
+		<column name='DOM_DESC' type='VARCHAR' length='50' notNull='false'/>
+	</table>
+	<foreignKey name='SC_DOMAPP_FK_DOM_APP' table='SC_DOMAPP' foreignTable='SC_APLICA'> 
+		<column name='DOM_APP'/>
+		<foreignColumn name='APL_ID'/>
+	</foreignKey>
+	<index name='DOM_UK_NOM_APP' table='SC_DOMAPP' unique='true'>
+		<column name='DOM_APP'/>
+		<column name='DOM_NOM'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.ValorDominiAplicacioEntity -->
+
+	<table name='SC_VALOR_DOMINI'>
+		<column name='VDO_VALOR' type='VARCHAR' length='30' notNull='true'/>
+		<column name='VDO_DOM' type='BIGINT' notNull='true'/>
+		<column name='VDO_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='VDO_DESC' type='VARCHAR' length='50' notNull='true'/>
+	</table>
+	<foreignKey name='SC_VALOR_DOMINI_FK_VDO_DOM' table='SC_VALOR_DOMINI' foreignTable='SC_DOMAPP'> 
+		<column name='VDO_DOM'/>
+		<foreignColumn name='DOM_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.TipusUnitatOrganitzativaEntity -->
+
+	<table name='SC_TIPUSUO'>
+		<column name='TUO_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='TUO_CODI' type='VARCHAR' length='20' notNull='true'/>
+		<column name='TUO_DESC' type='VARCHAR' length='50' notNull='false'/>
+		<column name='TUO_PARE' type='BIGINT' notNull='false'/>
+	</table>
+	<foreignKey name='SC_TIPUSUO_FK_TUO_PARE' table='SC_TIPUSUO' foreignTable='SC_TIPUSUO'> 
+		<column name='TUO_PARE'/>
+		<foreignColumn name='TUO_ID'/>
+	</foreignKey>
+	<index name='TUO_UK_CODI' table='SC_TIPUSUO' unique='true'>
+		<column name='TUO_CODI'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.RolAssociacioRolEntity -->
+
+	<table name='SC_ROLROL'>
+		<column name='RRL_CONTINGUT' type='BIGINT' notNull='true'/>
+		<column name='RRL_CONTENIDOR' type='BIGINT' notNull='true'/>
+		<column name='RRL_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='RRL_TIPDOM' type='VARCHAR' length='20' notNull='false'/>
+		<column name='RRL_APLICA' type='BIGINT' notNull='false'/>
+		<column name='RRL_GRUP' type='BIGINT' notNull='false'/>
+		<column name='RRL_VALDOM' type='BIGINT' notNull='false'/>
+	</table>
+	<foreignKey name='SC_ROLROL_FK_RRL_CONTINGUT' table='SC_ROLROL' foreignTable='SC_ROLES'> 
+		<column name='RRL_CONTINGUT'/>
+		<foreignColumn name='ROL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLROL_FK_RRL_CONTENIDOR' table='SC_ROLROL' foreignTable='SC_ROLES'> 
+		<column name='RRL_CONTENIDOR'/>
+		<foreignColumn name='ROL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLROL_FK_RRL_APLICA' table='SC_ROLROL' foreignTable='SC_APLICA'> 
+		<column name='RRL_APLICA'/>
+		<foreignColumn name='APL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLROL_FK_RRL_GRUP' table='SC_ROLROL' foreignTable='SC_GRUPS'> 
+		<column name='RRL_GRUP'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLROL_FK_RRL_VALDOM' table='SC_ROLROL' foreignTable='SC_VALOR_DOMINI'> 
+		<column name='RRL_VALDOM'/>
+		<foreignColumn name='VDO_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.TipusUsuariDispatcherEntity -->
+
+	<table name='SC_TIPDIS'>
+		<column name='TPD_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='TPD_IDDIS' type='BIGINT' notNull='true'/>
+		<column name='TPD_TUS_ID' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_TIPDIS_FK_TPD_IDDIS' table='SC_TIPDIS' foreignTable='SC_DISPAT'> 
+		<column name='TPD_IDDIS'/>
+		<foreignColumn name='DIS_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_TIPDIS_FK_TPD_TUS_ID' table='SC_TIPDIS' foreignTable='SC_TIPUSU'> 
+		<column name='TPD_TUS_ID'/>
+		<foreignColumn name='TUS_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.GrupDispatcherEntity -->
+
+	<table name='SC_GRUDIS'>
+		<column name='GRD_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='GRD_IDGRUP' type='BIGINT' notNull='true'/>
+		<column name='GRD_IDDIS' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_GRUDIS_FK_GRD_IDGRUP' table='SC_GRUDIS' foreignTable='SC_GRUPS'> 
+		<column name='GRD_IDGRUP'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_GRUDIS_FK_GRD_IDDIS' table='SC_GRUDIS' foreignTable='SC_DISPAT'> 
+		<column name='GRD_IDDIS'/>
+		<foreignColumn name='DIS_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.ServerPluginModuleEntity -->
+
+	<table name='SC_SEPLMO'>
+		<column name='SPM_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='SPM_NAME' type='VARCHAR' length='255' notNull='true'/>
+		<column name='SPM_DATA' type='BLOB' length='40000000' notNull='true'/>
+		<column name='SPM_TYPE' type='VARCHAR' length='255' notNull='true'/>
+		<column name='SPM_SPL_ID' type='BIGINT' notNull='true'/>
+		<column name='SPM_CLASS' type='VARCHAR' length='255' notNull='false'/>
+		<column name='SPM_RESNAM' type='VARCHAR' length='255' notNull='false'/>
+	</table>
+	<foreignKey name='SC_SEPLMO_FK_SPM_SPL_ID' table='SC_SEPLMO' foreignTable='SC_SERPLU'> 
+		<column name='SPM_SPL_ID'/>
+		<foreignColumn name='SPL_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.UserAccountEntity -->
+
+	<table name='SC_USUACC'>
+		<column name='UAC_USU_ID' type='BIGINT' notNull='true'/>
+		<column name='UAC_ACC_ID' type='BIGINT' notNull='true'/>
+		<column name='UAC_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+	</table>
+	<foreignKey name='SC_USUACC_FK_UAC_USU_ID' table='SC_USUACC' foreignTable='SC_USUARI'> 
+		<column name='UAC_USU_ID'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_USUACC_FK_UAC_ACC_ID' table='SC_USUACC' foreignTable='SC_ACCOUN'> 
+		<column name='UAC_ACC_ID'/>
+		<foreignColumn name='ACC_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.AccountEntity -->
+
+	<table name='SC_ACCOUN'>
+		<column name='ACC_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='ACC_TYPE' type='VARCHAR' length='1' notNull='true'/>
+		<column name='ACC_NAME' type='VARCHAR' length='128' notNull='false'/>
+		<column name='ACC_DIS_ID' type='BIGINT' notNull='true'/>
+		<column name='ACC_DESCRI' type='VARCHAR' length='255' notNull='false'/>
+		<column name='ACC_LASUPD' type='DATE' notNull='false'/>
+		<column name='ACC_LASPAS' type='DATE' notNull='false'/>
+		<column name='ACC_PASEXP' type='DATE' notNull='false'/>
+		<column name='ACC_SECRET' type='VARCHAR' length='65000' notNull='false'/>
+		<column name='ACC_DISABL' type='BIT' notNull='true'/>
+		<column name='ACC_TUS_ID' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_ACCOUN_FK_ACC_DIS_ID' table='SC_ACCOUN' foreignTable='SC_DISPAT'> 
+		<column name='ACC_DIS_ID'/>
+		<foreignColumn name='DIS_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ACCOUN_FK_ACC_TUS_ID' table='SC_ACCOUN' foreignTable='SC_TIPUSU'> 
+		<column name='ACC_TUS_ID'/>
+		<foreignColumn name='TUS_ID'/>
+	</foreignKey>
+	<index name='SC_ACCOUN_NAME' table='SC_ACCOUN' unique='true'>
+		<column name='ACC_NAME'/>
+		<column name='ACC_DIS_ID'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.AccountAccessEntity -->
+
+	<table name='SC_ACCACC'>
+		<column name='AAC_ROL_ID' type='BIGINT' notNull='false'/>
+		<column name='AAC_GRU_ID' type='BIGINT' notNull='false'/>
+		<column name='AAC_USU_ID' type='BIGINT' notNull='false'/>
+		<column name='AAC_ACC_ID' type='BIGINT' notNull='true'/>
+		<column name='AAC_ID' type='BIGINT' notNull='false' primaryKey='true' autoIncrement='true'/>
+	</table>
+	<foreignKey name='SC_ACCACC_FK_AAC_ROL_ID' table='SC_ACCACC' foreignTable='SC_ROLES'> 
+		<column name='AAC_ROL_ID'/>
+		<foreignColumn name='ROL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ACCACC_FK_AAC_GRU_ID' table='SC_ACCACC' foreignTable='SC_GRUPS'> 
+		<column name='AAC_GRU_ID'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ACCACC_FK_AAC_USU_ID' table='SC_ACCACC' foreignTable='SC_USUARI'> 
+		<column name='AAC_USU_ID'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ACCACC_FK_AAC_ACC_ID' table='SC_ACCACC' foreignTable='SC_ACCOUN'> 
+		<column name='AAC_ACC_ID'/>
+		<foreignColumn name='ACC_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.AccountPasswordEntity -->
+
+	<table name='SC_ACCPWD'>
+		<column name='APW_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='APW_PASSWD' type='VARCHAR' length='255' notNull='true'/>
+		<column name='APW_ORDER' type='BIGINT' notNull='true'/>
+		<column name='APW_DATE' type='DATE' notNull='true'/>
+		<column name='APW_EXPDAT' type='DATE' notNull='true'/>
+		<column name='APW_ACTIVE' type='VARCHAR' length='255' notNull='true'/>
+		<column name='APW_ACC_ID' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_ACCPWD_FK_APW_ACC_ID' table='SC_ACCPWD' foreignTable='SC_ACCOUN'> 
+		<column name='APW_ACC_ID'/>
+		<foreignColumn name='ACC_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.RolsGrupEntity -->
+
+	<table name='SC_ROLGRUP'>
+		<column name='RLG_GRUP' type='BIGINT' notNull='true'/>
+		<column name='RLG_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='RLG_ROL' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_ROLGRUP_FK_RLG_GRUP' table='SC_ROLGRUP' foreignTable='SC_GRUPS'> 
+		<column name='RLG_GRUP'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLGRUP_FK_RLG_ROL' table='SC_ROLGRUP' foreignTable='SC_ROLES'> 
+		<column name='RLG_ROL'/>
+		<foreignColumn name='ROL_ID'/>
+	</foreignKey>
+
+	<!-- com.soffid.iam.reconcile.model.ReconcileAccountEntity -->
+
+	<table name='SC_RECACO'>
+		<column name='RAC_ID' type='BIGINT' notNull='false' primaryKey='true' autoIncrement='true'/>
+		<column name='RAC_ACNAME' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RAC_DESC' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RAC_PROCID' type='BIGINT' notNull='true'/>
+		<column name='RAC_ACTION' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RAC_DISPAT' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RAC_USUCOD' type='VARCHAR' length='256' notNull='false'/>
+		<column name='RAC_GROUP' type='VARCHAR' length='256' notNull='false'/>
+		<column name='RAC_USUTYP' type='VARCHAR' length='256' notNull='false'/>
+		<column name='RAC_USUNAM' type='VARCHAR' length='256' notNull='false'/>
+		<column name='RAC_ACTYPE' type='VARCHAR' length='256' notNull='false'/>
+		<column name='RAC_ACTIVE' type='BIT' notNull='true'/>
+	</table>
+
+	<!-- com.soffid.iam.reconcile.model.ReconcileRoleEntity -->
+
+	<table name='SC_RECROL'>
+		<column name='RRL_ID' type='BIGINT' notNull='false' primaryKey='true' autoIncrement='true'/>
+		<column name='RRL_ROLNAM' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RRL_DESC' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RRL_PROCID' type='BIGINT' notNull='true'/>
+		<column name='RRL_ACTION' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RRL_DISPAT' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RRL_APPNAM' type='VARCHAR' length='256' notNull='false'/>
+	</table>
+
+	<!-- com.soffid.iam.reconcile.model.ReconcileAssignmentEntity -->
+
+	<table name='SC_RECASI'>
+		<column name='RAS_ID' type='BIGINT' notNull='false' primaryKey='true' autoIncrement='true'/>
+		<column name='RAS_ASINAM' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RAS_PROCID' type='BIGINT' notNull='true'/>
+		<column name='RAS_ACCNAM' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RAS_ROLNAM' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RAS_ACTION' type='VARCHAR' length='256' notNull='true'/>
+		<column name='RAS_DISPAT' type='VARCHAR' length='256' notNull='true'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.BlobConfigurationEntity -->
+
+	<table name='SC_BLOCON'>
+		<column name='BCO_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='BCO_NAME' type='VARCHAR' length='255' notNull='true'/>
+		<column name='BCO_VALUE' type='BLOB' length='10240000' notNull='true'/>
+		<column name='BCO_VERSIO' type='VARCHAR' length='20' notNull='false'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.ServerPluginEntity -->
+
+	<table name='SC_SERPLU'>
+		<column name='SPL_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='SPL_VERSION' type='VARCHAR' length='30' notNull='true'/>
+		<column name='SPL_CONTEN' type='BLOB' length='40000000' notNull='false'/>
+		<column name='SPL_NAME' type='VARCHAR' length='100' notNull='true'/>
+		<column name='SPL_ENABLE' type='BIT' notNull='true'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.AgentDescriptorEntity -->
+
+	<table name='SC_AGEDES'>
+		<column name='ADE_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='ADE_DESCRI' type='VARCHAR' length='512' notNull='true'/>
+		<column name='ADE_CLASS' type='VARCHAR' length='512' notNull='true'/>
+		<column name='ADE_UI' type='BLOB' length='65000' notNull='true'/>
+		<column name='ADE_IDSPL' type='BIGINT' notNull='false'/>
+		<column name='ADE_CAC' type='BIT' notNull='true'/>
+		<column name='ADE_SPM_ID' type='BIGINT' notNull='false'/>
+	</table>
+	<foreignKey name='SC_AGEDES_FK_ADE_IDSPL' table='SC_AGEDES' foreignTable='SC_SERPLU'> 
+		<column name='ADE_IDSPL'/>
+		<foreignColumn name='SPL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_AGEDES_FK_ADE_SPM_ID' table='SC_AGEDES' foreignTable='SC_SEPLMO'> 
+		<column name='ADE_SPM_ID'/>
+		<foreignColumn name='SPM_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.TaskLogEntity -->
+
+	<table name='SC_TASKLOG'>
+		<column name='TLO_COMPLETE' type='VARCHAR' length='1' notNull='false'/>
+		<column name='TLO_MISSAT' type='VARCHAR' length='1024' notNull='false'/>
+		<column name='TLO_DATCREA' type='DATE' notNull='false'/>
+		<column name='TLO_DADAEX' type='BIGINT' notNull='false'/>
+		<column name='TLO_PRDAEX' type='BIGINT' notNull='false'/>
+		<column name='TLO_NUMEXE' type='BIGINT' notNull='false'/>
+		<column name='TLO_STACK' type='VARCHAR' length='4000' notNull='false'/>
+		<column name='TLO_IDTASQUE' type='BIGINT' notNull='true'/>
+		<column name='TLO_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='TLO_DIS_ID' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_TASKLOG_FK_TLO_IDTASQUE' table='SC_TASKLOG' foreignTable='SC_TASQUE'> 
+		<column name='TLO_IDTASQUE'/>
+		<foreignColumn name='TAS_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_TASKLOG_FK_TLO_DIS_ID' table='SC_TASKLOG' foreignTable='SC_DISPAT'> 
+		<column name='TLO_DIS_ID'/>
+		<foreignColumn name='DIS_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.ServerEntity -->
+
+	<table name='SC_SERVER'>
+		<column name='SRV_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='SRV_NOM' type='VARCHAR' length='100' notNull='true'/>
+		<column name='SRV_PK' type='BLOB' notNull='false'/>
+		<column name='SRV_AUTH' type='VARCHAR' length='50' notNull='true'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.DominiUsuariEntity -->
+
+	<table name='SC_DOMUSU'>
+		<column name='DOU_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='DOU_CODI' type='VARCHAR' length='50' notNull='true'/>
+		<column name='DOU_DESC' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DOU_TIPUS' type='VARCHAR' length='1' notNull='false'/>
+		<column name='DOU_EXPRES' type='VARCHAR' length='1024' notNull='false'/>
+		<column name='DOU_GENERA' type='VARCHAR' length='64' notNull='false'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.TipusUsuariEntity -->
+
+	<table name='SC_TIPUSU'>
+		<column name='TUS_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='TUS_CODI' type='VARCHAR' length='1' notNull='true'/>
+		<column name='TUS_DESC' type='VARCHAR' length='50' notNull='false'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.PoliticaContrasenyaEntity -->
+
+	<table name='SC_POCODO'>
+		<column name='PCD_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='PCD_DESC' type='VARCHAR' length='100' notNull='false'/>
+		<column name='PCD_TUS_ID' type='BIGINT' notNull='false'/>
+		<column name='PCD_TIPUS' type='VARCHAR' length='1' notNull='true'/>
+		<column name='PCD_RENAGE' type='BIGINT' notNull='false'/>
+		<column name='PCD_AGE' type='BIGINT' notNull='false'/>
+		<column name='PCD_GRACE' type='BIGINT' notNull='false'/>
+		<column name='PCD_MINLEN' type='BIGINT' notNull='false'/>
+		<column name='PCD_MAXLEN' type='BIGINT' notNull='false'/>
+		<column name='PCD_REGEX' type='VARCHAR' length='50' notNull='false'/>
+		<column name='PCD_MINUPP' type='BIGINT' notNull='false'/>
+		<column name='PCD_MAXUPP' type='BIGINT' notNull='false'/>
+		<column name='PCD_MINLOW' type='BIGINT' notNull='false'/>
+		<column name='PCD_MAXLOW' type='BIGINT' notNull='false'/>
+		<column name='PCD_MINNUM' type='BIGINT' notNull='false'/>
+		<column name='PCD_MAXNUM' type='BIGINT' notNull='false'/>
+		<column name='PCD_MINPUN' type='BIGINT' notNull='false'/>
+		<column name='PCD_MAXPUN' type='BIGINT' notNull='false'/>
+		<column name='PCD_MAXHIST' type='BIGINT' notNull='false'/>
+		<column name='PCD_DCN_ID' type='BIGINT' notNull='false'/>
+		<column name='ALLOW_PASSWORD_QUERY' type='BIT' notNull='false'/>
+		<column name='ALLOW_PASSWORD_CHANGE' type='BIT' notNull='false'/>
+	</table>
+	<foreignKey name='SC_POCODO_FK_PCD_TUS_ID' table='SC_POCODO' foreignTable='SC_TIPUSU'> 
+		<column name='PCD_TUS_ID'/>
+		<foreignColumn name='TUS_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_POCODO_FK_PCD_DCN_ID' table='SC_POCODO' foreignTable='SC_DOMCON'> 
+		<column name='PCD_DCN_ID'/>
+		<foreignColumn name='DCN_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.ParaulesProhibidesEntity -->
+
+	<table name='SC_BADWORD'>
+		<column name='BDW_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='BDW_WORD' type='VARCHAR' length='200' notNull='true'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.ParaulaProhibidaPoliticaContrasenyaEntity -->
+
+	<table name='SC_BADCON'>
+		<column name='BDC_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='BDC_BDW_ID' type='BIGINT' notNull='false'/>
+		<column name='BDC_PCD_ID' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_BADCON_FK_BDC_BDW_ID' table='SC_BADCON' foreignTable='SC_BADWORD'> 
+		<column name='BDC_BDW_ID'/>
+		<foreignColumn name='BDW_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_BADCON_FK_BDC_PCD_ID' table='SC_BADCON' foreignTable='SC_POCODO'> 
+		<column name='BDC_PCD_ID'/>
+		<foreignColumn name='PCD_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.UsuariGrupEntity -->
+
+	<table name='SC_USUGRU'>
+		<column name='UGR_IDUSU' type='BIGINT' notNull='false'/>
+		<column name='UGR_IDGRU' type='BIGINT' notNull='false'/>
+		<column name='UGR_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+	</table>
+	<foreignKey name='SC_USUGRU_FK_UGR_IDUSU' table='SC_USUGRU' foreignTable='SC_USUARI'> 
+		<column name='UGR_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_USUGRU_FK_UGR_IDGRU' table='SC_USUGRU' foreignTable='SC_GRUPS'> 
+		<column name='UGR_IDGRU'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.SsoEntity -->
+
+	<table name='SC_SSO'>
+		<column name='SSO_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='SSO_ORDRE' type='BIGINT' notNull='true'/>
+		<column name='SSO_NOMAPL' type='VARCHAR' length='250' notNull='false'/>
+		<column name='SSO_SOCKET' type='BIGINT' notNull='true'/>
+		<column name='SSO_TIPUS' type='VARCHAR' length='1' notNull='false'/>
+		<column name='SSO_IDGRU' type='BIGINT' notNull='false'/>
+		<column name='SSO_IDMAQ' type='BIGINT' notNull='true'/>
+		<column name='SSO_IDSER' type='BIGINT' notNull='true'/>
+		<column name='SSO_IDUSU' type='BIGINT' notNull='false'/>
+	</table>
+	<foreignKey name='SC_SSO_FK_SSO_IDGRU' table='SC_SSO' foreignTable='SC_GRUPS'> 
+		<column name='SSO_IDGRU'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_SSO_FK_SSO_IDMAQ' table='SC_SSO' foreignTable='SC_MAQUIN'> 
+		<column name='SSO_IDMAQ'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_SSO_FK_SSO_IDSER' table='SC_SSO' foreignTable='SC_SERVEI'> 
+		<column name='SSO_IDSER'/>
+		<foreignColumn name='SER_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_SSO_FK_SSO_IDUSU' table='SC_SSO' foreignTable='SC_USUARI'> 
+		<column name='SSO_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.XarxaACEntity -->
+
+	<table name='SC_AUTXAR'>
+		<column name='AXA_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='AXA_NIVELL' type='INTEGER' notNull='true'/>
+		<column name='AXA_MASMAQ' type='VARCHAR' length='50' notNull='false'/>
+		<column name='AXA_IDXAR' type='BIGINT' notNull='true'/>
+		<column name='AXA_IDROL' type='BIGINT' notNull='false'/>
+		<column name='AXA_IDGRU' type='BIGINT' notNull='false'/>
+		<column name='AXA_IDUSU' type='BIGINT' notNull='false'/>
+	</table>
+	<foreignKey name='SC_AUTXAR_FK_AXA_IDXAR' table='SC_AUTXAR' foreignTable='SC_XARXES'> 
+		<column name='AXA_IDXAR'/>
+		<foreignColumn name='XAR_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_AUTXAR_FK_AXA_IDROL' table='SC_AUTXAR' foreignTable='SC_ROLES'> 
+		<column name='AXA_IDROL'/>
+		<foreignColumn name='ROL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_AUTXAR_FK_AXA_IDGRU' table='SC_AUTXAR' foreignTable='SC_GRUPS'> 
+		<column name='AXA_IDGRU'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_AUTXAR_FK_AXA_IDUSU' table='SC_AUTXAR' foreignTable='SC_USUARI'> 
+		<column name='AXA_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.DispatcherEntity -->
+
+	<table name='SC_DISPAT'>
+		<column name='DIS_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='DIS_CODI' type='VARCHAR' length='50' notNull='false'/>
+		<column name='DIS_NOMCLA' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_URL' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_PARAM0' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_PARAM1' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_PARAM2' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_PARAM3' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_PARAM4' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_PARAM5' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_PARAM6' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_PARAM7' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_PARAM8' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_PARAM9' type='VARCHAR' length='100' notNull='false'/>
+		<column name='DIS_BASROL' type='VARCHAR' length='1' notNull='false'/>
+		<column name='DIS_SEGUR' type='VARCHAR' length='1' notNull='false'/>
+		<column name='DIS_CONAC' type='VARCHAR' length='1' notNull='false'/>
+		<column name='DIS_DCN_ID' type='BIGINT' notNull='true'/>
+		<column name='DIS_DOU_ID' type='BIGINT' notNull='false'/>
+		<column name='DIS_MAIN' type='BIT' notNull='true'/>
+		<column name='DIS_RDONLY' type='BIT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_DISPAT_FK_DIS_DCN_ID' table='SC_DISPAT' foreignTable='SC_DOMCON'> 
+		<column name='DIS_DCN_ID'/>
+		<foreignColumn name='DCN_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_DISPAT_FK_DIS_DOU_ID' table='SC_DISPAT' foreignTable='SC_DOMUSU'> 
+		<column name='DIS_DOU_ID'/>
+		<foreignColumn name='DOU_ID'/>
+	</foreignKey>
+	<index name='DIS_UK_CODI' table='SC_DISPAT' unique='true'>
+		<column name='DIS_CODI'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.DadaUsuariEntity -->
+
+	<table name='SC_DADUSU'>
+		<column name='DUS_VALOR' type='VARCHAR' length='1024' notNull='false'/>
+		<column name='DUS_IDUSU' type='BIGINT' notNull='true'/>
+		<column name='DUS_TDAID' type='BIGINT' notNull='true'/>
+		<column name='DUS_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+	</table>
+	<foreignKey name='SC_DADUSU_FK_DUS_IDUSU' table='SC_DADUSU' foreignTable='SC_USUARI'> 
+		<column name='DUS_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_DADUSU_FK_DUS_TDAID' table='SC_DADUSU' foreignTable='SC_TIPDAD'> 
+		<column name='DUS_TDAID'/>
+		<foreignColumn name='TDA_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.ScContar -->
+
+	<table name='SC_CONTAR'>
+		<column name='CTA_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='CTA_FILCOL' type='VARCHAR' length='10' notNull='true'/>
+		<column name='CTA_VALOR' type='VARCHAR' length='10' notNull='true'/>
+		<column name='CTA_DADAUS' type='DATE' notNull='false'/>
+		<column name='CTA_IDTAR' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_CONTAR_FK_CTA_IDTAR' table='SC_CONTAR' foreignTable='SC_TARGET'> 
+		<column name='CTA_IDTAR'/>
+		<foreignColumn name='TAR_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.LlistaCorreuEntity -->
+
+	<table name='SC_LLICOR'>
+		<column name='LCO_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='LCO_DESCRI' type='VARCHAR' length='50' notNull='false'/>
+		<column name='LCO_NOM' type='VARCHAR' length='25' notNull='true'/>
+		<column name='LCO_IDDCO' type='BIGINT' notNull='false'/>
+	</table>
+	<foreignKey name='SC_LLICOR_FK_LCO_IDDCO' table='SC_LLICOR' foreignTable='SC_DOMCOR'> 
+		<column name='LCO_IDDCO'/>
+		<foreignColumn name='DCO_ID'/>
+	</foreignKey>
+	<index name='LCO_UK_NOM_IDDCO' table='SC_LLICOR' unique='true'>
+		<column name='LCO_NOM'/>
+		<column name='LCO_IDDCO'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.ImpressoraEntity -->
+
+	<table name='SC_IMPRES'>
+		<column name='IMP_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='IMP_MODEL' type='VARCHAR' length='50' notNull='false'/>
+		<column name='IMP_CODI' type='VARCHAR' length='12' notNull='true'/>
+		<column name='IMP_LOCAL' type='VARCHAR' length='1' notNull='false'/>
+		<column name='IMP_IDMAQ' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_IMPRES_FK_IMP_IDMAQ' table='SC_IMPRES' foreignTable='SC_MAQUIN'> 
+		<column name='IMP_IDMAQ'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+	<index name='IMP_UK_CODI' table='SC_IMPRES' unique='true'>
+		<column name='IMP_CODI'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.ScTarget -->
+
+	<table name='SC_TARGET'>
+		<column name='TAR_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='TAR_CODI' type='VARCHAR' length='10' notNull='true'/>
+		<column name='TAR_DATEMI' type='DATE' notNull='true'/>
+		<column name='TAR_DATCAD' type='DATE' notNull='true'/>
+		<column name='TAR_ACTIVA' type='VARCHAR' length='1' notNull='true'/>
+		<column name='TAR_IDUSU' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_TARGET_FK_TAR_IDUSU' table='SC_TARGET' foreignTable='SC_USUARI'> 
+		<column name='TAR_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+	<index name='TAR_UK_CODI' table='SC_TARGET' unique='true'>
+		<column name='TAR_CODI'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.RolAccountEntity -->
+
+	<table name='SC_ROLUSU'>
+		<column name='RLU_ROLUSU_GRU' type='BIGINT' notNull='false'/>
+		<column name='RLU_IDROL' type='BIGINT' notNull='true'/>
+		<column name='RLU_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='RLU_VALDOM' type='BIGINT' notNull='false'/>
+		<column name='RLU_TIPDOM' type='VARCHAR' length='20' notNull='false'/>
+		<column name='RLU_ADMAPP' type='BIGINT' notNull='false'/>
+		<column name='RLU_ACC_ID' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_ROLUSU_FK_RLU_ROLUSU_GRU' table='SC_ROLUSU' foreignTable='SC_GRUPS'> 
+		<column name='RLU_ROLUSU_GRU'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLUSU_FK_RLU_IDROL' table='SC_ROLUSU' foreignTable='SC_ROLES'> 
+		<column name='RLU_IDROL'/>
+		<foreignColumn name='ROL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLUSU_FK_RLU_VALDOM' table='SC_ROLUSU' foreignTable='SC_VALOR_DOMINI'> 
+		<column name='RLU_VALDOM'/>
+		<foreignColumn name='VDO_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLUSU_FK_RLU_ADMAPP' table='SC_ROLUSU' foreignTable='SC_APLICA'> 
+		<column name='RLU_ADMAPP'/>
+		<foreignColumn name='APL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLUSU_FK_RLU_ACC_ID' table='SC_ROLUSU' foreignTable='SC_ACCOUN'> 
+		<column name='RLU_ACC_ID'/>
+		<foreignColumn name='ACC_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.MaquinaEntity -->
+
+	<table name='SC_MAQUIN'>
+		<column name='MAQ_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='MAQ_NOM' type='VARCHAR' length='50' notNull='true'/>
+		<column name='MAQ_SISOPE' type='VARCHAR' length='3' notNull='true'/>
+		<column name='MAQ_ADRIP' type='VARCHAR' length='25' notNull='false'/>
+		<column name='MAQ_DESCRI' type='VARCHAR' length='50' notNull='false'/>
+		<column name='MAQ_PARDHC' type='VARCHAR' length='50' notNull='false'/>
+		<column name='MAQ_CORREU' type='VARCHAR' length='1' notNull='true'/>
+		<column name='MAQ_OFIMAT' type='VARCHAR' length='1' notNull='true'/>
+		<column name='MAQ_IDXAR' type='BIGINT' notNull='false'/>
+		<column name='MAQ_IMPRES' type='VARCHAR' length='1' notNull='true'/>
+		<column name='MAQ_ADRMAC' type='VARCHAR' length='25' notNull='false'/>
+		<column name='MAQ_USUADM' type='VARCHAR' length='50' notNull='false'/>
+		<column name='MAQ_CONTRA' type='VARCHAR' length='50' notNull='false'/>
+		<column name='MAQ_DATCON' type='DATE' notNull='false'/>
+		<column name='MAQ_SERIAL' type='VARCHAR' length='255' notNull='false'/>
+		<column name='MAQ_DYNIP' type='BIT' notNull='false'/>
+		<column name='MAQ_LASTSEEN' type='DATE' notNull='false'/>
+		<column name='MAQ_DELETED' type='BIT' notNull='false'/>
+	</table>
+	<foreignKey name='SC_MAQUIN_FK_MAQ_IDXAR' table='SC_MAQUIN' foreignTable='SC_XARXES'> 
+		<column name='MAQ_IDXAR'/>
+		<foreignColumn name='XAR_ID'/>
+	</foreignKey>
+	<index name='MAQ_UK_IP' table='SC_MAQUIN' unique='true'>
+		<column name='MAQ_ADRIP'/>
+	</index>
+	<index name='MAQ_UK_SERIAL' table='SC_MAQUIN' unique='true'>
+		<column name='MAQ_SERIAL'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.PuntEntradaEntity -->
+
+	<table name='SC_PUNENT'>
+		<column name='PUE_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='PUE_CODI' type='VARCHAR' length='10' notNull='false'/>
+		<column name='PUE_NOM' type='VARCHAR' length='128' notNull='true'/>
+		<column name='PUE_VISIBL' type='VARCHAR' length='1' notNull='true'/>
+		<column name='PUE_MENU' type='VARCHAR' length='1' notNull='true'/>
+		<column name='PUE_NUMCOL' type='BIGINT' notNull='false'/>
+		<column name='PUE_PUBLIC' type='VARCHAR' length='1' notNull='false'/>
+		<column name='PUE_TIPMEN' type='VARCHAR' length='1' notNull='false'/>
+		<column name='PUE_ICON' type='BIGINT' notNull='false'/>
+		<column name='PUE_ICON2' type='BIGINT' notNull='false'/>
+		<column name='PUE_IDAPL' type='BIGINT' notNull='true'/>
+		<column name='PUE_XML' type='VARCHAR' length='64000' notNull='false'/>
+	</table>
+	<index name='PUE_APL_1' table='SC_PUNENT' unique='false'>
+		<column name='PUE_IDAPL'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.DominiCorreuEntity -->
+
+	<table name='SC_DOMCOR'>
+		<column name='DCO_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='DCO_CODI' type='VARCHAR' length='10' notNull='true'/>
+		<column name='DCO_DESCRI' type='VARCHAR' length='50' notNull='false'/>
+		<column name='DCO_OBSOLET' type='VARCHAR' length='5' notNull='true'/>
+	</table>
+	<index name='DCO_UK_CODI' table='SC_DOMCOR' unique='true'>
+		<column name='DCO_CODI'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.TipusExecucioPuntEntradaEntity -->
+
+	<table name='SC_TIPEXE'>
+		<column name='EXE_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='EXE_CODI' type='VARCHAR' length='10' notNull='true'/>
+		<column name='EXE_MIME' type='VARCHAR' length='50' notNull='true'/>
+		<column name='EXE_PLANTI' type='VARCHAR' length='2000' notNull='false'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.UsuariImpressoraEntity -->
+
+	<table name='SC_USUIMP'>
+		<column name='UIM_ORDRE' type='BIGINT' notNull='false'/>
+		<column name='UIM_IDIMP' type='BIGINT' notNull='true'/>
+		<column name='UIM_IDUSU' type='BIGINT' notNull='true'/>
+		<column name='UIM_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+	</table>
+	<foreignKey name='SC_USUIMP_FK_UIM_IDIMP' table='SC_USUIMP' foreignTable='SC_IMPRES'> 
+		<column name='UIM_IDIMP'/>
+		<foreignColumn name='IMP_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_USUIMP_FK_UIM_IDUSU' table='SC_USUIMP' foreignTable='SC_USUARI'> 
+		<column name='UIM_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.SessioEntity -->
+
+	<table name='SC_SESSIO'>
+		<column name='SES_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='SES_PORT' type='BIGINT' notNull='false'/>
+		<column name='SES_IDUSU' type='BIGINT' notNull='true'/>
+		<column name='SES_IDMACL' type='BIGINT' notNull='false'/>
+		<column name='SES_IDMAQ' type='BIGINT' notNull='true'/>
+		<column name='SES_DATA' type='DATE' notNull='true'/>
+		<column name='SES_DAKEAL' type='DATE' notNull='false'/>
+		<column name='SES_EXCLIP' type='VARCHAR' length='30' notNull='false'/>
+		<column name='SES_KEY2' type='VARCHAR' length='50' notNull='false'/>
+		<column name='SES_TIPUS' type='VARCHAR' length='256' notNull='false'/>
+		<column name='SES_WEBURL' type='VARCHAR' length='4000' notNull='false'/>
+		<column name='SES_KEY' type='VARCHAR' length='50' notNull='false'/>
+		<column name='SES_IDRAC' type='BIGINT' notNull='false'/>
+	</table>
+	<foreignKey name='SC_SESSIO_FK_SES_IDUSU' table='SC_SESSIO' foreignTable='SC_USUARI'> 
+		<column name='SES_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_SESSIO_FK_SES_IDMACL' table='SC_SESSIO' foreignTable='SC_MAQUIN'> 
+		<column name='SES_IDMACL'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_SESSIO_FK_SES_IDMAQ' table='SC_SESSIO' foreignTable='SC_MAQUIN'> 
+		<column name='SES_IDMAQ'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_SESSIO_FK_SES_IDRAC' table='SC_SESSIO' foreignTable='SC_REGACC'> 
+		<column name='SES_IDRAC'/>
+		<foreignColumn name='RAC_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.ConfiguracioEntity -->
+
+	<table name='SC_CONFIG'>
+		<column name='CON_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='CON_CODI' type='VARCHAR' length='50' notNull='true'/>
+		<column name='CON_VALOR' type='VARCHAR' length='250' notNull='true'/>
+		<column name='CON_IDXAR' type='BIGINT' notNull='false'/>
+		<column name='CON_DESC' type='VARCHAR' length='255' notNull='false'/>
+	</table>
+	<foreignKey name='SC_CONFIG_FK_CON_IDXAR' table='SC_CONFIG' foreignTable='SC_XARXES'> 
+		<column name='CON_IDXAR'/>
+		<foreignColumn name='XAR_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.TasqueEntity -->
+
+	<table name='SC_TASQUE'>
+		<column name='TAS_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='TAS_USUARI' type='VARCHAR' length='10' notNull='false'/>
+		<column name='TAS_CONTRA' type='VARCHAR' length='128' notNull='false'/>
+		<column name='TAS_CANCON' type='VARCHAR' length='1' notNull='false'/>
+		<column name='TAS_CARPET' type='VARCHAR' length='50' notNull='false'/>
+		<column name='TAS_TIPCAR' type='VARCHAR' length='1' notNull='false'/>
+		<column name='TAS_IMPRES' type='VARCHAR' length='12' notNull='false'/>
+		<column name='TAS_MAQUIN' type='VARCHAR' length='50' notNull='false'/>
+		<column name='TAS_SUBXAR' type='VARCHAR' length='10' notNull='false'/>
+		<column name='TAS_MISSAT' type='VARCHAR' length='1024' notNull='false'/>
+		<column name='TAS_STATUS' type='VARCHAR' length='1' notNull='false'/>
+		<column name='TAS_DATA' type='DATE' notNull='true'/>
+		<column name='TAS_TRANSA' type='VARCHAR' length='50' notNull='true'/>
+		<column name='TAS_GRUP' type='VARCHAR' length='20' notNull='false'/>
+		<column name='TAS_ALIES' type='VARCHAR' length='50' notNull='false'/>
+		<column name='TAS_DOMCOR' type='VARCHAR' length='50' notNull='false'/>
+		<column name='TAS_ROLE' type='VARCHAR' length='50' notNull='false'/>
+		<column name='TAS_BD' type='VARCHAR' length='50' notNull='false'/>
+		<column name='TAS_CODDIS' type='VARCHAR' length='50' notNull='false'/>
+		<column name='TAS_SERVER' type='VARCHAR' length='1024' notNull='false'/>
+		<column name='TAS_PRIORI' type='BIGINT' notNull='false'/>
+		<column name='TAS_DOMUSU' type='VARCHAR' length='50' notNull='false'/>
+		<column name='TAS_DOMCON' type='VARCHAR' length='50' notNull='false'/>
+		<column name='TAS_HASH' type='VARCHAR' length='200' notNull='false'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.RolEntity -->
+
+	<table name='SC_ROLES'>
+		<column name='ROL_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='ROL_NOM' type='VARCHAR' length='150' notNull='true'/>
+		<column name='ROL_DESCRI' type='VARCHAR' length='150' notNull='true'/>
+		<column name='ROL_DEFECT' type='VARCHAR' length='1' notNull='true'/>
+		<column name='ROL_CONTRA' type='VARCHAR' length='1' notNull='false'/>
+		<column name='ROL_IDAPL' type='BIGINT' notNull='true'/>
+		<column name='ROL_IDDISPAT' type='BIGINT' notNull='false'/>
+		<column name='ROL_DOMAPP' type='BIGINT' notNull='false'/>
+		<column name='ROL_TIPDOM' type='VARCHAR' length='50' notNull='false'/>
+		<column name='ROL_GEST_WF' type='VARCHAR' length='1' notNull='false'/>
+	</table>
+	<foreignKey name='SC_ROLES_FK_ROL_IDAPL' table='SC_ROLES' foreignTable='SC_APLICA'> 
+		<column name='ROL_IDAPL'/>
+		<foreignColumn name='APL_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLES_FK_ROL_IDDISPAT' table='SC_ROLES' foreignTable='SC_DISPAT'> 
+		<column name='ROL_IDDISPAT'/>
+		<foreignColumn name='DIS_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_ROLES_FK_ROL_DOMAPP' table='SC_ROLES' foreignTable='SC_DOMAPP'> 
+		<column name='ROL_DOMAPP'/>
+		<foreignColumn name='DOM_ID'/>
+	</foreignKey>
+	<index name='ROL_UK_NOM_IDDISPAT_IDAPL' table='SC_ROLES' unique='true'>
+		<column name='ROL_NOM'/>
+		<column name='ROL_IDDISPAT'/>
+		<column name='ROL_IDAPL'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.AplicacioEntity -->
+
+	<table name='SC_APLICA'>
+		<column name='APL_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='APL_CODI' type='VARCHAR' length='20' notNull='true'/>
+		<column name='APL_NOM' type='VARCHAR' length='50' notNull='true'/>
+		<column name='APL_DIRFON' type='VARCHAR' length='50' notNull='false'/>
+		<column name='APL_DIRECT' type='VARCHAR' length='50' notNull='false'/>
+		<column name='APL_BD' type='VARCHAR' length='25' notNull='false'/>
+		<column name='APL_IDCONTACT' type='BIGINT' notNull='false'/>
+		<column name='APL_GESTIONABLEWF' type='VARCHAR' length='1' notNull='false'/>
+		<column name='APL_MAILNOTIF' type='VARCHAR' length='512' notNull='false'/>
+	</table>
+	<foreignKey name='SC_APLICA_FK_APL_IDCONTACT' table='SC_APLICA' foreignTable='SC_USUARI'> 
+		<column name='APL_IDCONTACT'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+	<index name='APL_UK_CODI' table='SC_APLICA' unique='true'>
+		<column name='APL_CODI'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.ContrasenyaEntity -->
+
+	<table name='SC_CONTRA'>
+		<column name='CTR_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='CTR_CONTRA' type='VARCHAR' length='50' notNull='false'/>
+		<column name='CTR_ACTIU' type='VARCHAR' length='1' notNull='false'/>
+		<column name='CTR_ORDRE' type='BIGINT' notNull='true'/>
+		<column name='CTR_DATA' type='DATE' notNull='false'/>
+		<column name='CTR_DATCAD' type='DATE' notNull='false'/>
+		<column name='CTR_DCN_ID' type='BIGINT' notNull='true'/>
+		<column name='CTR_IDUSU' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_CONTRA_FK_CTR_DCN_ID' table='SC_CONTRA' foreignTable='SC_DOMCON'> 
+		<column name='CTR_DCN_ID'/>
+		<foreignColumn name='DCN_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_CONTRA_FK_CTR_IDUSU' table='SC_CONTRA' foreignTable='SC_USUARI'> 
+		<column name='CTR_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.XarxaEntity -->
+
+	<table name='SC_XARXES'>
+		<column name='XAR_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='XAR_CODI' type='VARCHAR' length='10' notNull='true'/>
+		<column name='XAR_ADRIP' type='VARCHAR' length='25' notNull='true'/>
+		<column name='XAR_DESCRI' type='VARCHAR' length='50' notNull='false'/>
+		<column name='XAR_MASIP' type='VARCHAR' length='25' notNull='false'/>
+		<column name='XAR_NORM' type='VARCHAR' length='1' notNull='true'/>
+		<column name='XAR_PARDHC' type='VARCHAR' length='50' notNull='false'/>
+		<column name='XAR_DHCPSUP' type='BIT' notNull='true'/>
+	</table>
+
+	<!-- es.caib.seycon.ng.model.TipusDadaEntity -->
+
+	<table name='SC_TIPDAD'>
+		<column name='TDA_CODI' type='VARCHAR' length='25' notNull='true'/>
+		<column name='TDA_ORDRE' type='BIGINT' notNull='true'/>
+		<column name='TDA_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+	</table>
+	<index name='TDA_UK_ORDRE' table='SC_TIPDAD' unique='true'>
+		<column name='TDA_ORDRE'/>
+	</index>
+	<index name='TDA_UK_ID' table='SC_TIPDAD' unique='true'>
+		<column name='TDA_ID'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.UsuariEntity -->
+
+	<table name='SC_USUARI'>
+		<column name='USU_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='USU_CODI' type='VARCHAR' length='10' notNull='true'/>
+		<column name='USU_NOM' type='VARCHAR' length='50' notNull='true'/>
+		<column name='USU_PRILLI' type='VARCHAR' length='50' notNull='true'/>
+		<column name='USU_NOMCUR' type='VARCHAR' length='25' notNull='false'/>
+		<column name='USU_USUMOD' type='VARCHAR' length='10' notNull='false'/>
+		<column name='USU_DATMOD' type='DATE' notNull='false'/>
+		<column name='USU_DATCRE' type='DATE' notNull='true'/>
+		<column name='USU_USUCRE' type='VARCHAR' length='10' notNull='false'/>
+		<column name='USU_ACTIU' type='VARCHAR' length='1' notNull='true'/>
+		<column name='USU_SEGLLI' type='VARCHAR' length='50' notNull='false'/>
+		<column name='USU_COMENT' type='VARCHAR' length='1024' notNull='false'/>
+		<column name='USU_IDMACO' type='BIGINT' notNull='false'/>
+		<column name='USU_IDMAQ' type='BIGINT' notNull='false'/>
+		<column name='USU_IDDCO' type='BIGINT' notNull='false'/>
+		<column name='USU_IDMAPR' type='BIGINT' notNull='false'/>
+		<column name='USU_IDGRU' type='BIGINT' notNull='false'/>
+		<column name='USU_MULSES' type='VARCHAR' length='1' notNull='false'/>
+		<column name='USU_ALCOAN' type='VARCHAR' length='240' notNull='false'/>
+		<column name='USU_USE_ID' type='BIGINT' notNull='false'/>
+		<column name='USU_TUS_ID' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_USUARI_FK_USU_IDMACO' table='SC_USUARI' foreignTable='SC_MAQUIN'> 
+		<column name='USU_IDMACO'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_USUARI_FK_USU_IDMAQ' table='SC_USUARI' foreignTable='SC_MAQUIN'> 
+		<column name='USU_IDMAQ'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_USUARI_FK_USU_IDDCO' table='SC_USUARI' foreignTable='SC_DOMCOR'> 
+		<column name='USU_IDDCO'/>
+		<foreignColumn name='DCO_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_USUARI_FK_USU_IDMAPR' table='SC_USUARI' foreignTable='SC_MAQUIN'> 
+		<column name='USU_IDMAPR'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_USUARI_FK_USU_IDGRU' table='SC_USUARI' foreignTable='SC_GRUPS'> 
+		<column name='USU_IDGRU'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_USUARI_FK_USU_USE_ID' table='SC_USUARI' foreignTable='SC_USUSEU'> 
+		<column name='USU_USE_ID'/>
+		<foreignColumn name='USE_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_USUARI_FK_USU_TUS_ID' table='SC_USUARI' foreignTable='SC_TIPUSU'> 
+		<column name='USU_TUS_ID'/>
+		<foreignColumn name='TUS_ID'/>
+	</foreignKey>
+	<index name='USU_UK_CODI' table='SC_USUARI' unique='true'>
+		<column name='USU_CODI'/>
+	</index>
+	<index name='USU_UK_NOMCUR_IDDCO' table='SC_USUARI' unique='true'>
+		<column name='USU_NOMCUR'/>
+		<column name='USU_IDDCO'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.GrupImpressoraEntity -->
+
+	<table name='SC_GRUIMP'>
+		<column name='GIM_ORDRE' type='BIGINT' notNull='false'/>
+		<column name='GIM_IDGRU' type='BIGINT' notNull='true'/>
+		<column name='GIM_IDIMP' type='BIGINT' notNull='true'/>
+		<column name='GIM_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+	</table>
+	<foreignKey name='SC_GRUIMP_FK_GIM_IDGRU' table='SC_GRUIMP' foreignTable='SC_GRUPS'> 
+		<column name='GIM_IDGRU'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_GRUIMP_FK_GIM_IDIMP' table='SC_GRUIMP' foreignTable='SC_IMPRES'> 
+		<column name='GIM_IDIMP'/>
+		<foreignColumn name='IMP_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.CorreuExternEntity -->
+
+	<table name='SC_EXTLCO'>
+		<column name='ELC_ADRECA' type='VARCHAR' length='100' notNull='true'/>
+		<column name='ELC_IDLCO' type='BIGINT' notNull='true'/>
+		<column name='ELC_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+	</table>
+	<foreignKey name='SC_EXTLCO_FK_ELC_IDLCO' table='SC_EXTLCO' foreignTable='SC_LLICOR'> 
+		<column name='ELC_IDLCO'/>
+		<foreignColumn name='LCO_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.RegistreAccesEntity -->
+
+	<table name='SC_REGACC'>
+		<column name='RAC_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='RAC_IDSES' type='VARCHAR' length='200' notNull='false'/>
+		<column name='RAC_DATINI' type='DATE' notNull='false'/>
+		<column name='RAC_DATFI' type='DATE' notNull='false'/>
+		<column name='RAC_CODAGE' type='VARCHAR' length='50' notNull='false'/>
+		<column name='RAC_INFO' type='VARCHAR' length='1024' notNull='false'/>
+		<column name='RAC_IDMAQ' type='BIGINT' notNull='false'/>
+		<column name='RAC_IDMAOR' type='BIGINT' notNull='false'/>
+		<column name='RAC_IDSER' type='BIGINT' notNull='false'/>
+		<column name='RAC_IDUSU' type='BIGINT' notNull='false'/>
+		<column name='RAC_TIPUSACC' type='VARCHAR' length='1' notNull='false'/>
+	</table>
+	<foreignKey name='SC_REGACC_FK_RAC_IDMAQ' table='SC_REGACC' foreignTable='SC_MAQUIN'> 
+		<column name='RAC_IDMAQ'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_REGACC_FK_RAC_IDMAOR' table='SC_REGACC' foreignTable='SC_MAQUIN'> 
+		<column name='RAC_IDMAOR'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_REGACC_FK_RAC_IDSER' table='SC_REGACC' foreignTable='SC_SERVEI'> 
+		<column name='RAC_IDSER'/>
+		<foreignColumn name='SER_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_REGACC_FK_RAC_IDUSU' table='SC_REGACC' foreignTable='SC_USUARI'> 
+		<column name='RAC_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.ServeiEntity -->
+
+	<table name='SC_SERVEI'>
+		<column name='SER_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='SER_CODI' type='VARCHAR' length='10' notNull='true'/>
+		<column name='SER_DESCRI' type='VARCHAR' length='50' notNull='false'/>
+	</table>
+	<index name='SER_UK_CODI' table='SC_SERVEI' unique='true'>
+		<column name='SER_CODI'/>
+	</index>
+
+	<!-- es.caib.seycon.ng.model.AuditoriaEntity -->
+
+	<table name='SC_AUDITO'>
+		<column name='AUD_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='AUD_DATA' type='DATE' notNull='true'/>
+		<column name='AUD_USUAUD' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_ACCIO' type='VARCHAR' length='1' notNull='true'/>
+		<column name='AUD_INFO' type='VARCHAR' length='1024' notNull='false'/>
+		<column name='AUD_IDGRU' type='BIGINT' notNull='false'/>
+		<column name='AUD_DOMRLU' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_VALDOMRLU' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_CON' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_DIS' type='VARCHAR' length='150' notNull='false'/>
+		<column name='AUD_IMP' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_APL' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_DCO' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_LCO' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_XAR' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_ROL' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_MAQ' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_AUT' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_FITXER' type='BIGINT' notNull='false'/>
+		<column name='AUD_FED' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_LCO2' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_DCO2' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_ACCOUN' type='VARCHAR' length='128' notNull='false'/>
+		<column name='AUD_ACC_ID' type='BIGINT' notNull='false'/>
+		<column name='AUD_MESSAG' type='VARCHAR' length='1024' notNull='false'/>
+		<column name='AUD_TIPUSU' type='VARCHAR' length='255' notNull='false'/>
+		<column name='AUD_DOMUSU' type='VARCHAR' length='100' notNull='false'/>
+		<column name='AUD_DOMCON' type='VARCHAR' length='100' notNull='false'/>
+	</table>
+	<foreignKey name='SC_AUDITO_FK_AUD_IDGRU' table='SC_AUDITO' foreignTable='SC_GRUPS'> 
+		<column name='AUD_IDGRU'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_AUDITO_FK_AUD_ACC_ID' table='SC_AUDITO' foreignTable='SC_ACCOUN'> 
+		<column name='AUD_ACC_ID'/>
+		<foreignColumn name='ACC_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.RenovacioEntity -->
+
+	<table name='SC_FARREN'>
+		<column name='FAR_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='FAR_DATA' type='DATE' notNull='false'/>
+		<column name='FAR_REN' type='DATE' notNull='false'/>
+		<column name='FAR_ACTIU' type='VARCHAR' length='3' notNull='false'/>
+		<column name='FAR_IDUSU' type='BIGINT' notNull='true'/>
+	</table>
+	<foreignKey name='SC_FARREN_FK_FAR_IDUSU' table='SC_FARREN' foreignTable='SC_USUARI'> 
+		<column name='FAR_IDUSU'/>
+		<foreignColumn name='USU_ID'/>
+	</foreignKey>
+
+	<!-- es.caib.seycon.ng.model.GrupEntity -->
+
+	<table name='SC_GRUPS'>
+		<column name='GRU_ID' type='BIGINT' notNull='true' primaryKey='true' autoIncrement='true'/>
+		<column name='GRU_CODI' type='VARCHAR' length='20' notNull='true'/>
+		<column name='GRU_UNIOFI' type='VARCHAR' length='2' notNull='false'/>
+		<column name='GRU_DESCRI' type='VARCHAR' length='100' notNull='false'/>
+		<column name='GRU_IDMAQ' type='BIGINT' notNull='false'/>
+		<column name='GRU_QUOTA' type='BIGINT' notNull='false'/>
+		<column name='GRU_PARE' type='BIGINT' notNull='false'/>
+		<column name='GRU_TIPUS' type='BIGINT' notNull='false'/>
+		<column name='GRU_OBSOLET' type='VARCHAR' length='5' notNull='true'/>
+		<column name='GRU_ORGANITZATIU' type='VARCHAR' length='300' notNull='false'/>
+		<column name='GRU_SECPRE' type='VARCHAR' length='50' notNull='false'/>
+	</table>
+	<foreignKey name='SC_GRUPS_FK_GRU_IDMAQ' table='SC_GRUPS' foreignTable='SC_MAQUIN'> 
+		<column name='GRU_IDMAQ'/>
+		<foreignColumn name='MAQ_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_GRUPS_FK_GRU_PARE' table='SC_GRUPS' foreignTable='SC_GRUPS'> 
+		<column name='GRU_PARE'/>
+		<foreignColumn name='GRU_ID'/>
+	</foreignKey>
+	<foreignKey name='SC_GRUPS_FK_GRU_TIPUS' table='SC_GRUPS' foreignTable='SC_TIPUSUO'> 
+		<column name='GRU_TIPUS'/>
+		<foreignColumn name='TUO_ID'/>
+	</foreignKey>
+	<index name='GRU_UK_CODI' table='SC_GRUPS' unique='true'>
+		<column name='GRU_CODI'/>
+	</index>
+</database>

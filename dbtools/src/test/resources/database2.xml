@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+	<sequence name="s1"/>
+	<table name="t1">
+		<column name="vc" type="VARCHAR" length="55"/>
+		<column name="id" type="LONG" notNull="true" autoIncrement="true" primaryKey="true"/>
+		<column name="data" type="DATETIME" notNull="true"/>
+	</table>
+	<table name="t2">
+		<column name="id" type="LONG" primaryKey="true"/>
+	</table>
+	<foreignKey name="fff" table="t1" foreignTable="t2">
+		<column name="userid"/>
+		<foreignColumn name="id"/>
+	</foreignKey>
+</database>
