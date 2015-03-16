@@ -1683,9 +1683,6 @@ public class EntityGenerator<E> {
 		out.println(" * The <code>CriteriaSearch</code> is expected to be a general solution for a basic search with" );
 		out.println(" * parameters connected by logical <b>and</b>. This search does <b>not</b> provide grouping." );
 		out.println(" *" );
-		out.println(" * @author Stefan Reichert" );
-		out.println(" * @author Peter Friese" );
-		out.println(" * @author Chad Brandon" );
 		out.println(" * @see org.hibernate.Criteria" );
 		out.println(" * @see org.hibernate.criterion.Expression" );
 		out.println(" " + endComment );
@@ -2330,8 +2327,6 @@ public class EntityGenerator<E> {
 				+ " * <code>String</code> the default comparator is the <code>LIKE_COMPARATOR</code>. The" + "\n"
 				+ " * <code>EQUAL_COMPARATOR</code> is default for other parameters." + "\n"
 				+ " *" + "\n"
-				+ " * @author Stefan Reichert" + "\n"
-				+ " * @author Peter Friese" + "\n"
 				+ " " + endComment + "\n"
 				+ "public class CriteriaSearchParameter" + "\n"
 				+ "{" + "\n"

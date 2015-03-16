@@ -27,6 +27,7 @@ import com.soffid.mda.annotation.Entity;
 import com.soffid.mda.annotation.Enumeration;
 import com.soffid.mda.annotation.ForeignKey;
 import com.soffid.mda.annotation.Index;
+import com.soffid.mda.annotation.JsonObject;
 import com.soffid.mda.annotation.Operation;
 import com.soffid.mda.annotation.Role;
 import com.soffid.mda.annotation.Service;
@@ -173,6 +174,15 @@ public class ModelClass extends AbstractModelClass {
 	public boolean isValueObject ()
 	{
 		if (getAnnotation(ValueObject.class) != null)
+			return true;
+		else
+			return false;
+	}
+
+	@Override
+	public boolean isJsonObject ()
+	{
+		if (getAnnotation(JsonObject.class) != null)
 			return true;
 		else
 			return false;

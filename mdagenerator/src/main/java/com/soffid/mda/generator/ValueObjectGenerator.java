@@ -28,6 +28,11 @@ public class ValueObjectGenerator {
 				generateValueObject (vo, true);
 			else
 				System.out.println( "Object is not translated ["+ vo.getName(translated) + "]" );
+			
+			if (vo.isJsonObject())
+			{
+				generateJsonTransformer (vo);
+			}
 		}
 
 
@@ -572,6 +577,18 @@ public class ValueObjectGenerator {
 
 	}
 
+	void generateJsonObject (AbstractModelClass vo) throws FileNotFoundException
+	{
+		boolean translated = false;
+		String file = generator.getCoreDir() + "/" + vo.getPackageDir(translated) + "json/"+vo.getName(translated) + ".java";
+		System.out.println( "Generating " + file );
+		File f = new File(file);
+		f.getParentFile().mkdirs();
+		PrintStream out = new PrintStream (f);
+
+		out.close();
+	}
+	
 	void generateValueObject(AbstractModelClass vo, boolean translated) throws FileNotFoundException {
 		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(translated) + vo.getName(translated) + ".java";
 		System.out.println( "Generating " + file );

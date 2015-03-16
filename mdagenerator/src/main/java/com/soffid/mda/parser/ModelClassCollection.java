@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.soffid.mda.annotation.JsonObject;
 import com.soffid.mda.generator.Generator;
 
 public class ModelClassCollection extends AbstractModelClass {
@@ -382,6 +383,12 @@ public class ModelClassCollection extends AbstractModelClass {
 
 	@Override
 	public boolean isValueObject() {
+		return false;
+	}
+
+	@Override
+	public boolean isJsonObject ()
+	{
 		return false;
 	}
 

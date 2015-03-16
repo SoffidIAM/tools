@@ -349,4 +349,7 @@ public abstract class AbstractModelClass extends ModelElement {
 		return null;
 	}
 
+
+	public abstract boolean isJsonObject() ;
+
 }
