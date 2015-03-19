@@ -7,13 +7,13 @@
 	</parent>
 	<groupId>com.soffid.iam.console</groupId>
 	<artifactId>dbtools</artifactId>
-	<version>1.14-SNAPSHOT</version>
+	<version>1.14</version>
 	<name>Soffid DB Tools</name>
 	<description>Tools to extract, create or modify a DB Schema</description>
         <scm>   
                 <connection>scm:git:ssh://git@stash.dev.lab:7999/IAM/console.git</connection>
                 <developerConnection>scm:git:ssh://git@stash.dev.lab:7999/IAM/console.git</developerConnection>
-                <tag>HEAD</tag>
+                <tag>dbtools-1.14</tag>
         </scm>
 <build>
 <plugins>
