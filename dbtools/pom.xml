@@ -11,8 +11,8 @@
 	<name>Soffid DB Tools</name>
 	<description>Tools to extract, create or modify a DB Schema</description>
         <scm>   
-                <connection>scm:git:ssh://git@stash.dev.lab:7999/IAM/console.git</connection>
-                <developerConnection>scm:git:ssh://git@stash.dev.lab:7999/IAM/console.git</developerConnection>
+                <connection>scm:git:ssh://git@github.com/SoffidIAM/tools.git</connection>
+                <developerConnection>scm:git:ssh://git@github.com/SoffidIAM/tools.git</developerConnection>
                 <tag>dbtools-1.14</tag>
         </scm>
         <licenses>
