@@ -13,6 +13,8 @@ import com.soffid.mda.annotation.DaoFinder;
 import com.soffid.mda.annotation.DaoOperation;
 import com.soffid.mda.annotation.Description;
 import com.soffid.mda.annotation.Operation;
+import com.soffid.mda.generator.Generator;
+import com.soffid.mda.generator.Translate;
 import com.soffid.mda.generator.Util;
 
 public class ModelOperation extends ModelElement {
@@ -80,27 +82,30 @@ public class ModelOperation extends ModelElement {
 	}
 
 	public String getName() {
-		return getName(false);
+		return getName(Translate.DEFAULT);
 	}
 
-	public String getPrettySpec(boolean translated) {
-		return getSpec(false, true, translated);
+	public String getPrettySpec(int scope) {
+		return getSpec(false, true, scope);
 	}
 
-	public String getSpec(boolean translated) {
-		return getSpec(false, false, translated);
+	public String getSpec(int scope) {
+		return getSpec(false, false, scope);
 	}
 
-	private String getSpec(boolean full, boolean pretty, boolean translated) {
+	private String getSpec(boolean full, boolean pretty, int scope) {
 		StringBuffer b = new StringBuffer ();
-		b.append(getReturnType(translated))
-			.append (" ");
+		if (getReturnParameter().getDataType().isEntity())
+			b.append(getReturnType());
+		else
+			b.append(getReturnType(scope));
+		b.append (" ");
 		if (full)
 		{
 			b.append (getModelClass().getFullName())
 				.append (".");
 		}
-		b.append (getName(translated));
+		b.append (getName(scope));
 		b.append("(");
 		boolean first = true;
 		for (ModelParameter param: getParameters())
@@ -112,15 +117,19 @@ public class ModelOperation extends ModelElement {
 			if (pretty)
 				b.append ("\n\t\t");
 			
-			b.append (param.getDataType().getJavaType(translated))
-				.append (" ")
+			AbstractModelClass dt = param.getDataType();
+			if (dt.isEntity())
+				b.append (dt.getJavaType());
+			else
+				b.append (dt.getJavaType(scope));
+			b.append (" ")
 				.append (param.getName());
 		}
 		b.append (")");
 		return b.toString();
 	}
 
-	public String getArguments(boolean translated) {
+	public String getArguments(int scope) {
 		StringBuffer b = new StringBuffer ();
 		boolean first = true;
 		for (ModelParameter param: getParameters())
@@ -129,13 +138,13 @@ public class ModelOperation extends ModelElement {
 				first = false;
 			else
 				b.append (", ");
-			b.append (param.getDataType().getJavaType());
+			b.append (param.getDataType().getJavaType(scope));
 		}
 		return b.toString();
 	}
 	
-	public String getName(boolean translated) {
-		if (!translated)
+	public String getName(int scope) {
+		if (!Translate.mustTranslate(getModelClass(), scope))
 			return method.getName();
 		else
 		{
@@ -162,17 +171,17 @@ public class ModelOperation extends ModelElement {
 		return getReturnParameter().getDataType().getJavaType();
 	}
 
-	public String getReturnType (boolean translated)
+	public String getReturnType (int scope)
 	{
-		return getReturnParameter().getDataType().getJavaType(translated);
+		return getReturnParameter().getDataType().getJavaType(scope);
 	}
 	
-	public String getThrowsClause (boolean translated)
+	public String getThrowsClause (int scope)
 	{
 		StringBuffer clause = new StringBuffer();
 		if (getModelClass().isService() || (getModelClass().isEntity() && ! isQuery() && isStatic()))
-			clause.append ( ! translated ? "throws es.caib.seycon.ng.exception.InternalErrorException":
-				"throws com.soffid.iam.exception.InternalErrorException" );
+			clause.append ( 
+				"throws "+parser.getDefaultException());
 		for (Class th: method.getExceptionTypes())
 		{
 			if (clause.length() == 0)
@@ -180,7 +189,7 @@ public class ModelOperation extends ModelElement {
 			else
 				clause.append (", ");
 			AbstractModelClass m = (AbstractModelClass) parser.getElement(th);
-			clause.append (m.getFullName(translated));
+			clause.append (m.getFullName(scope));
 		}
 
 
@@ -210,40 +219,40 @@ public class ModelOperation extends ModelElement {
 		return ex;
 	}
 
-	public String getFullSpec(boolean  translated) {
-		return getSpec(true, false, translated);
+	public String getFullSpec(int  scope) {
+		return getSpec(true, false, scope);
 	}
 
-	public String getImplCall(boolean translated) {
+	public String getImplCall(int scope) {
 		StringBuffer spec = new StringBuffer();
 		spec.append( "handle" );
-		spec.append (Util.firstUpper(getName(translated))) .append ( "(" );
+		spec.append (Util.firstUpper(getName(scope))) .append ( "(" );
 		boolean first = true;
 		for (ModelParameter param: getParameters()) {
 			if (first)
 				first = false;
 			else
 				spec.append(", ");
-			spec.append ( param.getName(translated));
+			spec.append ( param.getName(scope));
 		}
 		spec.append(")");
 		return spec.toString();
 	}
 
-	public String getImplSpec(boolean translated) {
+	public String getImplSpec(int scope) {
 		StringBuffer spec = new StringBuffer();
-		spec.append (getReturnType());
+		spec.append (getReturnType(scope));
 		spec.append( " handle" );
-		spec.append (Util.firstUpper(getName(translated))) .append ( "(" );
+		spec.append (Util.firstUpper(getName(scope))) .append ( "(" );
 		boolean first = true;
 		for (ModelParameter param: getParameters()) {
 			if (first)
 				first = false;
 			else
 				spec.append(", ");
-			spec.append (param.getDataType().getJavaType())
+			spec.append (param.getDataType().getJavaType(scope))
 				.append (" ")
-			    .append ( param.getName(translated));
+			    .append ( param.getName(scope));
 		}
 		spec.append(")");
 		return spec.toString();

@@ -35,7 +35,7 @@ public abstract class ScTarget {
 	@ForeignKey (foreignColumn="CTA_IDTAR")
 	public java.util.Collection<es.caib.seycon.ng.model.ScContar> contingut;
 
-	@DaoFinder
+	@DaoOperation
 	public es.caib.seycon.ng.model.ScTarget creaTargetaExtranet(
 		java.lang.String codiUsuari) {
 	 return null;

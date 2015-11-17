@@ -145,16 +145,6 @@ public abstract class AuditoriaEntity {
 		java.lang.Long id) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.AuditoriaEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
-	@DaoFinder
-	public java.lang.String[] find(
-		java.lang.String sqlQuery) {
-	 return null;
-	}
 	@DaoFinder("select auditoria from es.caib.seycon.ng.model.AuditoriaEntity auditoria\n left join auditoria.accountAssoc accountAssoc \nwhere \n  (:usuari is null or auditoria.usuari like :usuari) and \n (:objecte is null or auditoria.objecte like :objecte) and \n (:autor is null or accountAssoc.name like :autor)  and\n (:accio is null or auditoria.accio=:accio)  \norder by auditoria.data asc")
 	public java.util.List<es.caib.seycon.ng.model.AuditoriaEntity> findAuditoriesByCriteri1(
 		java.lang.String autor, 

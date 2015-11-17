@@ -60,27 +60,22 @@ public abstract class XarxaEntity {
 		es.caib.seycon.ng.comu.XarxaSearchCriteria filtre) {
 	 return null;
 	}
-	@DaoFinder
+	@DaoFinder(" - CUSTOM -")
 	public java.lang.String getPrimeraIPLliure(
 		java.lang.String ipXarxa, 
 		java.lang.String mascara) {
 	 return null;
 	}
-	@DaoFinder
+	@DaoFinder(" - CUSTOM -")
 	public java.lang.Long getIPsBuides(
 		java.lang.String ipXarxa, 
 		java.lang.String mascara) {
 	 return null;
 	}
-	@DaoFinder
+	@DaoFinder(" - CUSTOM -")
 	public java.lang.Long getIPsOcupades(
 		java.lang.String ipXarxa, 
 		java.lang.String mascara) {
-	 return null;
-	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.XarxaEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
 	 return null;
 	}
 	@DaoFinder

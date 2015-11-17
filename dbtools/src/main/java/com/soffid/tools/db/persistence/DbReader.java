@@ -35,7 +35,7 @@ public class DbReader {
 			String catalog = tables.getString(1);
 			String tableName =tables.getString(3);
 			String tableType = tables.getString(4);
-			if (tableType.equals ("TABLE"))
+			if (tableType.contains ("TABLE"))
 			{
 				Table t = new Table();
 				t.name = tableName;

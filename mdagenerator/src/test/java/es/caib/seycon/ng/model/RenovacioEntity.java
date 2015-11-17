@@ -31,7 +31,7 @@ public abstract class RenovacioEntity {
 	@Column (name="FAR_IDUSU")
 	public es.caib.seycon.ng.model.UsuariEntity usuari;
 
-	@DaoFinder
+	@DaoOperation
 	public java.lang.String desarRenovacio(
 		java.lang.Long idUsuari, 
 		java.util.Date dataRenovacio) {
@@ -40,16 +40,6 @@ public abstract class RenovacioEntity {
 	@DaoFinder
 	public java.util.List<es.caib.seycon.ng.model.RenovacioEntity> findByUsuari(
 		es.caib.seycon.ng.model.UsuariEntity usuari) {
-	 return null;
-	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.RenovacioEntity> findByFiltre(
-		es.caib.seycon.ng.comu.RenovacioSearchCriteria criteriDeCerca) {
-	 return null;
-	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.RenovacioEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
 	 return null;
 	}
 }

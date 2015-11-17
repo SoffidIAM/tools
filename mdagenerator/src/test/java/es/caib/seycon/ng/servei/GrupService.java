@@ -9,7 +9,8 @@ import com.soffid.mda.annotation.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Service @Depends ({es.caib.seycon.ng.model.RolsGrupEntity.class,
+@Service (translatedName="GroupSrevice", translatedPackage="com.soffid.iam.service2") 
+@Depends ({es.caib.seycon.ng.model.RolsGrupEntity.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	es.caib.seycon.ng.model.RolEntity.class,
 	es.caib.seycon.ng.model.MaquinaEntity.class,
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 	es.caib.seycon.ng.model.TasqueEntity.class,
 	es.caib.seycon.ng.model.ConfiguracioEntity.class,
 	es.caib.seycon.ng.model.GrupEntity.class})
+
 public abstract class GrupService {
 
 	@Operation ( grantees={Roles.group_create.class})

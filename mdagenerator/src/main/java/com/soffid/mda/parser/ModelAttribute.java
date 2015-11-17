@@ -1,6 +1,7 @@
 package com.soffid.mda.parser;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import javax.swing.text.StyledEditorKit.UnderlineAction;
 
@@ -10,7 +11,9 @@ import com.soffid.mda.annotation.CriteriaColumn;
 import com.soffid.mda.annotation.Description;
 import com.soffid.mda.annotation.ForeignKey;
 import com.soffid.mda.annotation.Identifier;
+import com.soffid.mda.annotation.JsonAttribute;
 import com.soffid.mda.annotation.Nullable;
+import com.soffid.mda.generator.Translate;
 import com.soffid.mda.generator.Util;
 
 public class ModelAttribute extends AbstractModelAttribute {
@@ -42,8 +45,8 @@ public class ModelAttribute extends AbstractModelAttribute {
 	}
 
 	@Override
-	public String getName(boolean translated) {
-		if (translated)
+	public String getName(int scope) {
+		if (Translate.mustTranslate(getModelClass(), scope))
 		{
 			Attribute annotation = (Attribute) field.getAnnotation (Attribute.class);
 			if (annotation != null)
@@ -56,6 +59,12 @@ public class ModelAttribute extends AbstractModelAttribute {
 			{
 				if (fk.translated() != null && fk.translated().length() > 0)
 					return fk.translated();
+			}
+			Column cl = (Column) field.getAnnotation (Column.class);
+			if (cl != null)
+			{
+				if (cl.translated() != null && cl.translated().length() > 0)
+					return cl.translated();
 			}
 		}
 		return field.getName();
@@ -123,12 +132,12 @@ public class ModelAttribute extends AbstractModelAttribute {
 		if (annotation != null)
 		{
 			if (annotation.name() == null || annotation.name().length() == 0)
-				return null;
+				return getName();
 			else
 				return annotation.name();
 		}
 		else
-			return null;
+			return getName();
 	}
 
 	@Override
@@ -164,8 +173,8 @@ public class ModelAttribute extends AbstractModelAttribute {
 	}
 
 	@Override
-	public String getHibernateType(boolean translated) {
-		String t = getJavaType(translated);
+	public String getHibernateType(int scope) {
+		String t = getJavaType(scope);
 		if (getDataType().getName().equals ("Blob") || t.equals("byte[]"))
 			return 	"org.springframework.orm.hibernate3.support.BlobByteArrayType";
 		if (t.equals( "Long") )
@@ -198,7 +207,7 @@ public class ModelAttribute extends AbstractModelAttribute {
 	}
 
 	@Override
-	public String getDdlType(boolean translated) {
+	public String getDdlType(int scope) {
 		if (getDataType() == null)
 		{
 			return "";
@@ -219,7 +228,7 @@ public class ModelAttribute extends AbstractModelAttribute {
 		{
 			AbstractModelClass enumeration = getDataType();
 			AbstractModelAttribute sample = enumeration.getAttributes().get(0);
-			javaType = sample.getJavaType(translated);
+			javaType = sample.getJavaType(scope);
 			if (length <= 0)
 				length = sample.getIntegerLength();
 		}
@@ -318,11 +327,6 @@ public class ModelAttribute extends AbstractModelAttribute {
 	}
 
 	@Override
-	public String getJavaType(boolean translated, boolean translated2) {
-		return getDataType().getJavaType(translated, translated2);
-	}
-
-	@Override
 	public AbstractModelAttribute getReverseAttribute() {
 		Column c = field.getAnnotation(Column.class);
 		if (c != null && c.reverseAttribute().length() > 0)
@@ -366,5 +370,66 @@ public class ModelAttribute extends AbstractModelAttribute {
 			return c.composition();
 		else
 			return false;
+	}
+
+	@Override
+	public String getEntityAttribute() {
+		JsonAttribute jsonAttribute = field.getAnnotation(JsonAttribute.class);
+		if (jsonAttribute == null)
+			return null;
+		else
+			return jsonAttribute.hibernateAttribute();
+	}
+
+	@Override
+	public String getEntityJoin() {
+		JsonAttribute jsonAttribute = field.getAnnotation(JsonAttribute.class);
+		if (jsonAttribute == null)
+			return null;
+		else
+			return jsonAttribute.hibernateJoin();
+	}
+
+	@Override
+	public String getJsonName() {
+		JsonAttribute jsonAttribute = field.getAnnotation(JsonAttribute.class);
+		if (jsonAttribute == null || jsonAttribute.value() == null || jsonAttribute.value().length() == 0)
+			return field.getName();
+		else
+			return jsonAttribute.value();
+		
+	}
+
+	@Override
+	public String getJsonHibernateAttribute() {
+		JsonAttribute jsonAttribute = field.getAnnotation(JsonAttribute.class);
+		if (jsonAttribute == null || jsonAttribute.hibernateAttribute() == null || jsonAttribute.hibernateAttribute().length() == 0)
+			return null;
+		else
+			return jsonAttribute.hibernateAttribute();
+		
+	}
+
+	@Override
+	public boolean isStatic() {
+		if ( Modifier.isFinal(field.getModifiers() ) &&
+				 Modifier.isStatic(field.getModifiers())) 
+				return true;
+			else
+				return false;
+	}
+
+	@Override
+	public Object getStaticValue() {
+		if (isStatic())
+			try {
+				return field.get(null);
+			} catch (IllegalArgumentException e) {
+				return null;
+			} catch (IllegalAccessException e) {
+				return null;
+			}
+		else
+			return null;
 	}
 }

@@ -15,13 +15,11 @@ public class SqlGenerator {
 	final static String endl = "\n";
 	private Generator generator;
 	private Parser parser;
-	private boolean translated;
 
 	public void generate(Generator generator, Parser parser) throws FileNotFoundException, UnsupportedEncodingException {
 		
 		this.parser = parser;
 		this.generator = generator;
-		this.translated = generator.isTranslatedOnly();
 		
 		File f = new File(generator.getCoreResourcesDir() + "/" +
 				( generator.isPlugin() ? "plugin" : "core" ) +
@@ -45,12 +43,12 @@ public class SqlGenerator {
 				if (classElement.getSuperClass() == null) {
 
 					out.println ( endl
-						+ "\t<!-- " + classElement.getFullName(translated) + " -->" + endl
+						+ "\t<!-- " + classElement.getFullName(Translate.ENTITY_SCOPE) + " -->" + endl
 						);
 					String tag = classElement.getTableName();
 					if (tag == null || tag.isEmpty())
 					{
-						throw new RuntimeException ( "ERROR: Table " + classElement.getFullName(translated)
+						throw new RuntimeException ( "ERROR: Table " + classElement.getFullName(Translate.ENTITY_SCOPE)
 								+ " does not have a @andromda.table.name" );
 					}
 					else
@@ -115,12 +113,12 @@ public class SqlGenerator {
 			}
 			else
 			{
-				String ddlType = att.getDdlType(translated);
+				String ddlType = att.getDdlType(Translate.ENTITY_SCOPE);
 				if (ddlType.isEmpty())
 				{
-					System.out.println ( "Warning: Cannot generate DDL for " + entity.getFullName(translated)
-						+ "." + att.getName(translated) + "(" + javaType
-						+ "/" + att.getDataType().getFullName(translated) + ")" );
+					System.out.println ( "Warning: Cannot generate DDL for " + entity.getFullName(Translate.ENTITY_SCOPE)
+						+ "." + att.getName(Translate.ENTITY_SCOPE) + "(" + javaType
+						+ "/" + att.getDataType().getFullName(Translate.ENTITY_SCOPE) + ")" );
 				}
 				else {
 					out.print ( "\t\t<column name='" + att.getColumn() + "' "

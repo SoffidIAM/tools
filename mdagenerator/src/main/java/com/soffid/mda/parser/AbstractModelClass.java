@@ -5,8 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.soffid.mda.annotation.JsonObject;
 import com.soffid.mda.generator.DocGenerator;
 import com.soffid.mda.generator.Generator;
+import com.soffid.mda.generator.Translate;
 import com.soffid.mda.generator.Util;
 
 public abstract class AbstractModelClass extends ModelElement {
@@ -17,9 +19,9 @@ public abstract class AbstractModelClass extends ModelElement {
 	}
 
 
-	public abstract String getJavaType(boolean translated, boolean translatedOnly);
+	public abstract String getJavaType(int scope);
 
-	public abstract String getFile(boolean translated);
+	public abstract String getFile(int scope);
 
 	public abstract long lastModified();
 
@@ -29,31 +31,33 @@ public abstract class AbstractModelClass extends ModelElement {
 
 	public abstract List<AbstractModelAttribute> getAllAttributes();
 
-	public abstract String getBaseFullName(boolean translated);
+	public abstract String getBaseFullName(int scope);
 
-	public abstract String getBaseName(boolean translated);
+	public abstract String getBaseName(int scope);
 
-	public abstract String getLocalServiceName(boolean translated);
+	public abstract String getLocalServiceName(int scope);
 
 	public abstract String getRawType();
 
 	public abstract String getRoleName();
 
-	public abstract String getBeanFullName(boolean translated);
+	public abstract String getBeanFullName(int scope);
 
-	public abstract String getEjbName(boolean translated);
+	public abstract String getEjbName(int scope);
 
-	public abstract String getSpringBeanName(Generator generator, boolean translated);
+	public abstract String getSpringBeanName(Generator generator, int scope);
 
 	public abstract boolean isTranslated();
+	
+	public abstract boolean isTranslatedImpl ();
 
-	public abstract String getEjbHomeFullName(boolean translated);
+	public abstract String getEjbHomeFullName(int scope);
 
-	public abstract String getEjbPackage(boolean translated);
+	public abstract String getEjbPackage(int scope);
 
-	public abstract String getEjbInterfaceFullName(boolean translated);
+	public abstract String getEjbInterfaceFullName(int scope);
 
-	public abstract String getBeanName(boolean translated);
+	public abstract String getBeanName(int scope);
 
 	public abstract List<AbstractModelClass> getActors();
 
@@ -75,7 +79,7 @@ public abstract class AbstractModelClass extends ModelElement {
 
 	public abstract String getTableName();
 
-	public abstract String getDaoImplFullName(boolean translated);
+	public abstract String getDaoImplFullName(int scope);
 
 	public abstract boolean isVoid();
 
@@ -85,15 +89,15 @@ public abstract class AbstractModelClass extends ModelElement {
 
 	public abstract String getVarName();
 
-	public abstract String getDaoBaseName(boolean translated);
+	public abstract String getDaoBaseName(int scope);
 
-	public abstract String getDaoImplName(boolean translated);
+	public abstract String getDaoImplName(int scope);
 
 	public abstract boolean hasNonStaticMethods();
 
-	public abstract String getDaoFullName(boolean translated);
+	public abstract String getDaoFullName(int scope);
 
-	public abstract String getDaoName(boolean translated);
+	public abstract String getDaoName(int scope);
 
 	public abstract AbstractModelAttribute getIdentifier();
 
@@ -101,13 +105,15 @@ public abstract class AbstractModelClass extends ModelElement {
 
 	public abstract void setGenerated(boolean b);
 
-	public abstract String getPackage(boolean translated);
+	public abstract String getPackage(int scope);
 
-	public abstract String getPackagePrefix(boolean translated);
+	public abstract String getPackagePrefix(int scope);
 
-	public abstract String getName(boolean translated);
+	public abstract String getName(int scope);
 
-	public abstract String getJavaType(boolean translated);
+	public String getJsonMapperName(int scope) {
+		return getName(scope)+"JsonMapper";
+	}
 
 	public abstract boolean isCriteria();
 
@@ -117,13 +123,13 @@ public abstract class AbstractModelClass extends ModelElement {
 
 	public abstract String getSerialVersion();
 
-	public abstract String getImplName(boolean translated);
+	public abstract String getImplName(int scope);
 
 	public abstract String getImplName();
 
-	public abstract String getImplFullName(boolean translated);
+	public abstract String getImplFullName(int scope);
 
-	public abstract String getFullName(boolean translated);
+	public abstract String getFullName(int scope);
 
 	public abstract String getImplFullName();
 
@@ -141,7 +147,7 @@ public abstract class AbstractModelClass extends ModelElement {
 
 	public abstract String getFile();
 
-	public abstract String getPackageDir(boolean translated);
+	public abstract String getPackageDir(int scope);
 
 	public abstract List<AbstractModelClass> getDepends();
 
@@ -183,38 +189,38 @@ public abstract class AbstractModelClass extends ModelElement {
 
 	public abstract LinkedList<AbstractModelAttribute> getForeignKeys();
 
-	public String generatePlantUml(AbstractModelClass fromClass, boolean translated, boolean attributes, boolean methods) {
-		return generatePlantUml(fromClass, translated, attributes, methods, "", false);
+	public String generatePlantUml(AbstractModelClass fromClass, int scope, boolean attributes, boolean methods) {
+		return generatePlantUml(fromClass, scope, attributes, methods, "", false);
 	}
 
-	public String generatePlantUml(AbstractModelClass fromPath, boolean translated, boolean attributes, boolean methods,
+	public String generatePlantUml(AbstractModelClass fromPath, int scope, boolean attributes, boolean methods,
 			String extraAttributes, boolean columns) {
 				String relative = "";
 				if (isService() || isEntity() || isRole() || isValueObject())
-					relative = " [["+generateRef (fromPath, this, false)+"]]";
+					relative = " [["+generateRef (fromPath, this, Translate.DEFAULT)+"]]";
 				
 				StringBuffer b = new StringBuffer();
 				if (isRole())
 				{
-					b.append("actor "+getName(translated )+relative);
+					b.append("actor "+getName(scope )+relative);
 				}
 				else if (isEntity ())
 				{
 					b.append ("class "+
-							(columns ? getTableName() : getName(translated))+" <<(E,#ff4040) Entity>>"+relative);
+							(columns ? getTableName() : getName(scope))+" <<(E,#ff4040) Entity>>"+relative);
 				} 
 				else if (isService())
 				{
 					b.append ("class "+
-							getName(translated)+" <<(S,#ffff00) Service>>"+relative);
+							getName(scope)+" <<(S,#ffff00) Service>>"+relative);
 				}
 				else if (isEnumeration())
 				{
-					b.append ("class "+getName(translated)+" <<(E,#ffff00) Enumeration>>"+relative);
+					b.append ("class "+getName(scope)+" <<(E,#ffff00) Enumeration>>"+relative);
 				}
 				else if (isValueObject())
 				{
-					b.append ("class "+getName(translated)+" <<(V,#4040ff) ValueObject>>"+relative);
+					b.append ("class "+getName(scope)+" <<(V,#4040ff) ValueObject>>"+relative);
 				}
 				b.append(extraAttributes);
 				if (isGenerated() && (attributes || methods))
@@ -230,7 +236,7 @@ public abstract class AbstractModelClass extends ModelElement {
 									b.append ("  ")
 									.append (attribute.getColumn())
 									.append(" ")
-									.append (attribute.getDdlType(translated));
+									.append (attribute.getDdlType(scope));
 								if (!attribute.isRequired())
 									b.append (" \"0..1\"");
 								b.append ("\n");
@@ -239,9 +245,9 @@ public abstract class AbstractModelClass extends ModelElement {
 							else
 							{
 								b.append ("  ")
-									.append (attribute.getName(translated))
+									.append (attribute.getName(scope))
 									.append(":")
-									.append (attribute.getDataType().getJavaType(true));
+									.append (attribute.getDataType().getJavaType(Translate.DEFAULT));
 								if (!attribute.isRequired())
 									b.append (" \"0..1\"");
 								b.append ("\n");
@@ -251,14 +257,14 @@ public abstract class AbstractModelClass extends ModelElement {
 						for (ModelOperation operation: getOperations())
 						{
 							b.append ("  ")
-							.append (operation.getName(translated))
+							.append (operation.getName(scope))
 							.append("(");
 							boolean first = true;
 							for (ModelParameter p: operation.getParameters())
 							{
 								if (!first) b.append(",");
 								first = false;
-								b.append (p.getName(translated));
+								b.append (p.getName(scope));
 								if (!p.isRequired())
 									b.append (" \"0..1\"");
 								
@@ -273,8 +279,8 @@ public abstract class AbstractModelClass extends ModelElement {
 			}
 
 	private String generateRef(AbstractModelClass fromPath,
-			AbstractModelClass abstractModelClass, boolean translated) {
-		return generateRef (getDocFile(fromPath, translated), getDocFile(this, translated));
+			AbstractModelClass abstractModelClass, int scope) {
+		return generateRef (getDocFile(fromPath, scope), getDocFile(this, scope));
 	}
 
 
@@ -297,8 +303,9 @@ public abstract class AbstractModelClass extends ModelElement {
 
 
 	private String getDocFile(
-			AbstractModelClass abstractModelClass, boolean translated) {
-		return "."+File.separator+Util.packageToDir(abstractModelClass.getPackage(translated))+abstractModelClass.getName(translated)+".html";
+			AbstractModelClass abstractModelClass, int scope) {
+		return "."+File.separator+Util.packageToDir(abstractModelClass.getPackage(scope))+
+				abstractModelClass.getName(scope)+".html";
 	}
 
 
@@ -306,7 +313,9 @@ public abstract class AbstractModelClass extends ModelElement {
 		if (foreignClass == null || foreignAttribute == null)
 			return null;
 		String column = foreignAttribute.getForeignKey();
-	
+		
+		if (column == null)
+			return null;
 		
 		for (AbstractModelAttribute att2: getAttributes())
 		{
@@ -323,6 +332,8 @@ public abstract class AbstractModelClass extends ModelElement {
 			return null;
 		String column = foreignAttribute.getColumn();
 	
+		if (column == null)
+			return null;
 		
 		for (AbstractModelAttribute att2: getAttributes())
 		{
@@ -352,4 +363,5 @@ public abstract class AbstractModelClass extends ModelElement {
 
 	public abstract boolean isJsonObject() ;
 
+	public abstract JsonObject getJsonObject () ;
 }

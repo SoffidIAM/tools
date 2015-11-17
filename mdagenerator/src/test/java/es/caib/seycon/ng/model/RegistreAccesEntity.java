@@ -91,11 +91,6 @@ public abstract class RegistreAccesEntity {
 		java.lang.String codiUsuari) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.RegistreAccesEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 	@DaoFinder("select registreAcces\nfrom \nes.caib.seycon.ng.model.RegistreAccesEntity registreAcces\nleft join registreAcces.usuari usuari\nwhere\n(:nomClient is null or registreAcces.clientHostName like :nomClient) and\n(:nomServidor is null or registreAcces.hostName like :nomServidor) and\n(:codiUsuari is null or usuari.codi like :codiUsuari) and\n(:dataIni = :nullDate or registreAcces.dataInici >= :dataIni ) and\n(:dataFi = :nullDate or registreAcces.dataFi <= :dataFi )  order by registreAcces.dataInici")
 	public java.util.List<es.caib.seycon.ng.model.RegistreAccesEntity> findRegistreByFiltre2Datas(
 		java.util.Date nullDate, 

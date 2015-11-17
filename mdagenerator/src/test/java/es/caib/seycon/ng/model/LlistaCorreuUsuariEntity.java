@@ -43,9 +43,4 @@ public abstract class LlistaCorreuUsuariEntity {
 		java.lang.String codiDomini) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.LlistaCorreuUsuariEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 }

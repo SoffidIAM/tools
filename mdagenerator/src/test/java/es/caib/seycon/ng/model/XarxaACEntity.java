@@ -68,11 +68,6 @@ public abstract class XarxaACEntity {
 		java.lang.String codiGrup) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.XarxaACEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 	@DaoFinder("select xarxaAC\nfrom es.caib.seycon.ng.model.XarxaACEntity xarxaAC\nleft join xarxaAC.role as elrol\nleft join elrol.aplicacio as aplica\nleft join elrol.baseDeDades as agent\nwhere elrol.nom = :nomRol \nand aplica.codi = :codiAplica\nand agent.codi = :codiDispat\norder by xarxaAC.xarxa.codi")
 	public java.util.List<es.caib.seycon.ng.model.XarxaACEntity> findByNomRolAndCodiAplicacioRolAndCodiDispatcher(
 		java.lang.String nomRol, 

@@ -40,9 +40,4 @@ public abstract class ValorDominiAplicacioEntity {
 		java.lang.String nomRol) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.ValorDominiAplicacioEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 }

@@ -12,6 +12,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +36,7 @@ import com.soffid.mda.annotation.Service;
 import com.soffid.mda.annotation.TranslatedClass;
 import com.soffid.mda.annotation.ValueObject;
 import com.soffid.mda.generator.Generator;
+import com.soffid.mda.generator.Translate;
 import com.soffid.mda.generator.Util;
 
 public class ModelClass extends AbstractModelClass {
@@ -116,6 +119,7 @@ public class ModelClass extends AbstractModelClass {
 						if (pt instanceof Class)
 						{
 							childClass =  (ModelClass) parser.getElement( pt );
+							javaType = ((Class) rawType).getCanonicalName()+"<"+childClass.getJavaType()+">";
 						}
 					}
 				}
@@ -275,6 +279,14 @@ public class ModelClass extends AbstractModelClass {
 				{
 					operations.add((ModelOperation) parser.getElement(m));
 				}
+				Collections.sort(operations, new Comparator<ModelOperation>() {
+
+					public int compare(ModelOperation o1,
+							ModelOperation o2) {
+						return o1.getName().compareTo(o2.getName());
+					}
+					
+				});
 			}
 		}
 		return operations;
@@ -294,6 +306,7 @@ public class ModelClass extends AbstractModelClass {
 				{
 					attributes.add((AbstractModelAttribute) parser.getElement(f));
 				}
+				sortAttributes();
 			}
 		}
 		return attributes;
@@ -322,11 +335,11 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getPackageDir( boolean translated) {
+	public String getPackageDir( int scope) {
 		if (underlyingClass == null)
 			return null;
 		else
-			return  getPackagePrefix(translated).replace('.', java.io.File.separatorChar);
+			return  getPackagePrefix(scope).replace('.', java.io.File.separatorChar);
 	}
 
 	@Override
@@ -403,13 +416,13 @@ public class ModelClass extends AbstractModelClass {
 	}
 	
 	@Override
-	public String getFullName(boolean translated) {
-		return getPackagePrefix(translated)+getName(translated);
+	public String getFullName(int scope) {
+		return getPackagePrefix(scope)+getName(scope);
 	}
 
 	@Override
-	public String getImplFullName(boolean translated) {
-		return getPackagePrefix(translated)+getImplName(translated);
+	public String getImplFullName(int scope) {
+		return getPackagePrefix(scope)+getImplName(scope);
 	}
 	
 	@Override
@@ -419,9 +432,9 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getImplName (boolean translated)
+	public String getImplName (int scope)
 	{
-		return getName(translated) + "Impl";
+		return getName(scope) + "Impl";
 	}
 
 	@Override
@@ -448,7 +461,16 @@ public class ModelClass extends AbstractModelClass {
 
 	@Override
 	public String getJavaType() {
-		return javaType;
+		Entity entity = (Entity) getAnnotation(Entity.class);
+		if (parser.isTranslateEntities() && isEntity()  &&  !entity.translatedName().isEmpty())
+		{
+			if (entity.translatedPackage().isEmpty())
+				return getPackage()+"."+entity.translatedName();
+			else
+				return entity.translatedPackage()+"."+entity.translatedName();
+		}
+		else
+			return javaType;
 	}
 
 	@Override
@@ -460,13 +482,17 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getJavaType(boolean translated) {
+	public String getJavaType(int scope) {
 		if (isCollection() && _collectionClass != null && getChildClass() != null)
 		{
-			return _collectionClass.getCanonicalName()+"<"+getChildClass().getJavaType(translated)+">";
+			return _collectionClass.getCanonicalName()+"<"+getChildClass().getJavaType(scope)+">";
 		}
-		else if (!translated || underlyingClass == null)
-			return getJavaType ();
+		else if (isArray() && childClass != null)
+		{
+			return childClass.getJavaType(scope)+"[]";
+		}
+		else if (! Translate.mustTranslate(this, scope) || underlyingClass == null)
+			return javaType;
 		else 
 		{
 			Service service = (Service) underlyingClass.getAnnotation(Service.class);
@@ -478,7 +504,7 @@ public class ModelClass extends AbstractModelClass {
 				return service.translatedPackage()+"."+service.translatedName();
 			else if (vo != null && ! vo.translatedName().isEmpty())
 				return vo.translatedPackage()+"."+vo.translatedName();
-			else if (parser.isTranslateOnly() && entity != null && ! entity.translatedName().isEmpty())
+			else if (parser.isTranslateEntities() && entity != null && ! entity.translatedName().isEmpty())
 				return entity.translatedPackage()+"."+entity.translatedName();
 			else if (parser.isTranslateOnly() && en != null && ! en.translatedName().isEmpty())
 				return en.translatedPackage()+"."+en.translatedName();
@@ -490,8 +516,8 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getName(boolean translated) {
-		if (!translated || underlyingClass == null)
+	public String getName(int scope) {
+		if (!Translate.mustTranslate(this, scope) || underlyingClass == null)
 			return getName ();
 		else
 		{
@@ -517,8 +543,8 @@ public class ModelClass extends AbstractModelClass {
 	
 	
 	@Override
-	public String getPackagePrefix(boolean translated) {
-		if (!translated || underlyingClass == null)
+	public String getPackagePrefix(int scope) {
+		if (!Translate.mustTranslate(this, scope) || underlyingClass == null)
 			return getPackagePrefix();
 		else
 		{
@@ -543,8 +569,8 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getPackage(boolean translated) {
-		if (!translated || underlyingClass == null)
+	public String getPackage(int scope) {
+		if (!Translate.mustTranslate(this, scope) || underlyingClass == null)
 			return getPackage();
 		else
 		{
@@ -576,6 +602,12 @@ public class ModelClass extends AbstractModelClass {
 
 	@Override
 	public void fixup() {
+		
+//		if (childClass != null && childClass.isEntity() && parser.isTranslateEntities() || parser.isTranslateOnly())
+//		{
+//			javaType = ((ParameterizedType) objectClass).getCanonicalName()+"<"+childClass.getJavaType()+">";
+//		}
+
 		AbstractModelClass mc = getSuperClass();
 		if (mc != null && ! mc.getSpecializations().contains(this))
 			mc.getSpecializations().add(this);
@@ -608,13 +640,66 @@ public class ModelClass extends AbstractModelClass {
 				if (att.getDataType().isEntity() && ! att.getDataType().getForeignKeys().contains(att))
 					att.getDataType().getForeignKeys().add(att);
 			}
+			sortAllAttributes();
+			sortAttributes();
 		}
 
 		for (AbstractModelClass depend: getDepends())
 		{
 			if (! depend.getProvides().contains(this))
+			{
 				depend.getProvides().add(this);
+				sortProvides();
+			}
+				
 		}
+
+		sortDepends();
+		sortProvides();
+	}
+
+
+	private void sortDepends() {
+		Collections.sort(getDepends(), new Comparator<AbstractModelClass>() {
+			public int compare(AbstractModelClass o1,
+					AbstractModelClass o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+			
+		});
+	}
+
+	private void sortProvides() {
+		Collections.sort(getProvides(), new Comparator<AbstractModelClass>() {
+			public int compare(AbstractModelClass o1,
+					AbstractModelClass o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+			
+		});
+	}
+
+	private void sortAttributes() {
+//		Collections.sort(attributes, new Comparator<AbstractModelAttribute>() {
+//
+//			public int compare(AbstractModelAttribute o1,
+//					AbstractModelAttribute o2) {
+//				return o1.getName().compareTo(o2.getName());
+//			}
+//			
+//		});
+	}
+
+
+	private void sortAllAttributes() {
+//		Collections.sort(getAllAttributes(), new Comparator<AbstractModelAttribute>() {
+//
+//			public int compare(AbstractModelAttribute o1,
+//					AbstractModelAttribute o2) {
+//				return o1.getName().compareTo(o2.getName());
+//			}
+//			
+//		});
 	}
 
 	@Override
@@ -632,13 +717,13 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getDaoName(boolean translated) {
-		return getName (translated)+"Dao";
+	public String getDaoName(int scope) {
+		return getName (scope)+"Dao";
 	}
 
 	@Override
-	public String getDaoFullName(boolean translated) {
-		return getPackagePrefix(translated)+getDaoName(translated);
+	public String getDaoFullName(int scope) {
+		return getPackagePrefix(scope)+getDaoName(scope);
 	}
 
 	@Override
@@ -652,13 +737,13 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getDaoImplName(boolean translated) {
-		return getName(translated)+"DaoImpl";
+	public String getDaoImplName(int scope) {
+		return getName(scope)+"DaoImpl";
 	}
 
 	@Override
-	public String getDaoBaseName(boolean translated) {
-		return getName(translated)+"DaoBase";
+	public String getDaoBaseName(int scope) {
+		return getName(scope)+"DaoBase";
 	}
 
 	@Override
@@ -682,8 +767,8 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getDaoImplFullName(boolean translated) {
-		return getPackagePrefix(translated)+getDaoImplName(translated);
+	public String getDaoImplFullName(int scope) {
+		return getPackagePrefix(scope)+getDaoImplName(scope);
 	}
 
 	@Override
@@ -831,23 +916,23 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getBeanName(boolean translated) {
-		return getName(translated)+"Bean";
+	public String getBeanName(int scope) {
+		return getName(scope)+"Bean";
 	}
 
 	@Override
-	public String getEjbInterfaceFullName(boolean translated) {
-		return getEjbPackage(translated)+"."+getName(translated);
+	public String getEjbInterfaceFullName(int scope) {
+		return getEjbPackage(scope)+"."+getName(scope);
 	}
 
 	@Override
-	public String getEjbPackage(boolean translated) {
-		return getPackage(translated) + ".ejb";
+	public String getEjbPackage(int scope) {
+		return getPackage(scope) + ".ejb";
 	}
 
 	@Override
-	public String getEjbHomeFullName(boolean translated) {
-		return getEjbPackage(translated)+"."+getName(translated)+"Home";
+	public String getEjbHomeFullName(int scope) {
+		return getEjbPackage(scope)+"."+getName(scope)+"Home";
 	}
 
 	@Override
@@ -860,47 +945,42 @@ public class ModelClass extends AbstractModelClass {
 		Enumeration en = (Enumeration) underlyingClass.getAnnotation(Enumeration.class);
 		Entity entity = (Entity) underlyingClass.getAnnotation(Entity.class);
 		TranslatedClass tc = (TranslatedClass) underlyingClass.getAnnotation(TranslatedClass.class);
-		if (getFullName(false).equals(getFullName(true)))
+		if (getFullName(Translate.DONT_TRANSLATE).equals(getFullName(Translate.TRANSLATE)))
 			return false;
-		if ( service != null && ! service.translatedName().isEmpty()  )
-			return true;
-		else if (vo != null && ! vo.translatedName().isEmpty())
-			return true;
-		else if (en != null && ! en.translatedName().isEmpty())
-			return true;
-		else if (entity != null && ! entity.translatedName().isEmpty())
-			return true;
-		else if (tc != null && ! tc.name().isEmpty())
-			return true;
 		else
-			return false; 
+			return true; 
 	}
 
 	@Override
-	public String getSpringBeanName(Generator generator, boolean translated) {
+	public String getSpringBeanName(Generator generator, int scope) {
 		String name = "";
 		if (generator.isPlugin() && isGenerated())
 		{
 			name = generator.getPluginName() + "-";
+		} 
+		else if (isService() &&
+				scope == (generator.isTranslatedOnly() ? Translate.SERVICE_SCOPE: Translate.ALTSERVICE_SCOPE))
+		{
+			name = "v2-";
 		}
 		if (isEntity())
-			name = name + Util.firstLower(getDaoName(translated));
+			name = name + Util.firstLower(getDaoName(scope));
 		else
-			name = name + Util.firstLower(getName(translated));
+			name = name + Util.firstLower(getName(scope));
 		return name;
 	}
 
 	@Override
-	public String getEjbName(boolean translated) {
-		if (translated)
-			return getName(false)+"-translated";
+	public String getEjbName(int scope) {
+		if (Translate.mustTranslate(this, scope))
+			return getName(scope)+"-v2";
 		else
-			return getName(false);
+			return getName(scope);
 	}
 
 	@Override
-	public String getBeanFullName(boolean translated) {
-		return getEjbPackage(translated)+"."+getBeanName(translated);
+	public String getBeanFullName(int scope) {
+		return getEjbPackage(scope)+"."+getBeanName(scope);
 	}
 
 	@Override
@@ -936,21 +1016,21 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getLocalServiceName(boolean translated) {
-		return Util.firstLower(getName(translated));
+	public String getLocalServiceName(int scope) {
+		return Util.firstLower(getName(scope));
 	}
 
 	@Override
-	public String getBaseName(boolean translated) {
+	public String getBaseName(int scope) {
 		if (isEntity())
-			return getDaoName(translated) + "Base";
+			return getDaoName(scope) + "Base";
 		else
-			return getName(translated) + "Base";
+			return getName(scope) + "Base";
 	}
 
 	@Override
-	public String getBaseFullName(boolean translated) {
-		return getPackagePrefix(translated)+getBaseName(translated);
+	public String getBaseFullName(int scope) {
+		return getPackagePrefix(scope)+getBaseName(scope);
 	}
 
 	@Override
@@ -964,6 +1044,9 @@ public class ModelClass extends AbstractModelClass {
 			if ( m != null)
 				allAttributes.addAll (m.getAllAttributes());
 			allAttributes.addAll(getAttributes());
+
+			sortAllAttributes();
+
 		}
 		return allAttributes;
 	}
@@ -1006,22 +1089,11 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getFile(boolean translated) {
+	public String getFile(int scope) {
 		if (underlyingClass == null)
 			return null;
 		else
-			return  getFullName(translated).replace('.', java.io.File.separatorChar)+".java";
-	}
-
-	@Override
-	public String getJavaType(boolean translated, boolean translatedOnly) {
-		if (translatedOnly || isValueObject() || isService() ||
-				(isCollection() && getChildClass() != null && (getChildClass().isValueObject() || getChildClass().isEntity())))
-		{
-			return getJavaType (translated);
-		}
-		else
-			return getJavaType (false);
+			return  getFullName(scope).replace('.', java.io.File.separatorChar)+".java";
 	}
 
 	public String getDescription() {
@@ -1030,6 +1102,28 @@ public class ModelClass extends AbstractModelClass {
 			return desc.value();
 		else
 			return "";
+	}
+
+
+	@Override
+	public JsonObject getJsonObject() {
+		if (underlyingClass == null)
+			return null;
+		else
+			return (JsonObject) underlyingClass.getAnnotation(JsonObject.class);
+	}
+
+
+	@Override
+	public boolean isTranslatedImpl() {
+		if (underlyingClass == null)
+			return false;
+		
+		Service service = (Service) underlyingClass.getAnnotation(Service.class);
+		if (service != null)
+			return service.translatedImpl();
+		else
+			return false;
 	}
 
 }

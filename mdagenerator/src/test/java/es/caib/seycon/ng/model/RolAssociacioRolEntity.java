@@ -52,11 +52,6 @@ public abstract class RolAssociacioRolEntity {
 		java.lang.String codiBBDD) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.RolAssociacioRolEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 	@DaoFinder("select rolAssociacioRol\nfrom es.caib.seycon.ng.model.RolAssociacioRolEntity rolAssociacioRol\nwhere \nrolAssociacioRol.rolContingut = :rolContingut\nand rolAssociacioRol.rolContenidor = :rolContenidor\n")
 	public java.util.List<es.caib.seycon.ng.model.RolAssociacioRolEntity> findRolAssociacioRol(
 		es.caib.seycon.ng.model.RolEntity rolContingut, 

@@ -46,9 +46,4 @@ public abstract class DominiCorreuEntity {
 		java.lang.String obsolet) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.DominiCorreuEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 }

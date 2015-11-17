@@ -18,17 +18,12 @@ public class ReverseModelAttribute extends AbstractModelAttribute {
 	}
 
 	@Override
-	public String getJavaType(boolean translated, boolean translatedOnly) {
-		return dataType.getJavaType(translated, translatedOnly);
-	}
-
-	@Override
 	public String getConstantValue() {
 		return null;
 	}
 
 	@Override
-	public String getDdlType(boolean translated) {
+	public String getDdlType(int scope) {
 		return null;
 	}
 
@@ -43,7 +38,7 @@ public class ReverseModelAttribute extends AbstractModelAttribute {
 	}
 
 	@Override
-	public String getHibernateType(boolean translated) {
+	public String getHibernateType(int scope) {
 		return null;
 	}
 
@@ -93,7 +88,7 @@ public class ReverseModelAttribute extends AbstractModelAttribute {
 	}
 
 	@Override
-	public String getName(boolean translated) {
+	public String getName(int scope) {
 		return name;
 	}
 
@@ -120,6 +115,36 @@ public class ReverseModelAttribute extends AbstractModelAttribute {
 	@Override
 	public boolean isCascadeNullify() {
 		return false;
+	}
+
+	@Override
+	public String getEntityAttribute() {
+		return null;
+	}
+
+	@Override
+	public String getEntityJoin() {
+		return null;
+	}
+
+	@Override
+	public String getJsonName() {
+		return null;
+	}
+
+	@Override
+	public String getJsonHibernateAttribute() {
+		return null;
+	}
+
+	@Override
+	public boolean isStatic() {
+		return false;
+	}
+
+	@Override
+	public Object getStaticValue() {
+		return null;
 	}
 
 }

@@ -32,8 +32,9 @@ public class Test extends TestCase {
 		parser.parse (new File("target/test-classes"));
 		Generator gen = new Generator ();
 		gen.setTranslatedOnly(false);
+		gen.setTranslateEntities(true);
 		gen.configure (new File("target"));
-		gen.setGenerateUml(true);
+		gen.setGenerateUml(false);
 		gen.generate(parser);
 	}
 

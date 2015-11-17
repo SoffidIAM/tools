@@ -65,7 +65,7 @@ public class DocGenerator {
 				p.println("<ul class='navigation'>");
 				currentPkg = cn.pkg;
 			}
-			generateClassReference(p, cn.mc, cn.translated);
+			generateClassReference(p, cn.mc, cn.scope);
 			generateEntity (cn);
 			generateEntityDao (cn);
 		}
@@ -103,7 +103,7 @@ public class DocGenerator {
 				p.println("<ul class='navigation'>");
 				currentPkg = cn.pkg;
 			}
-			generateClassReference(p, cn.mc, cn.translated);
+			generateClassReference(p, cn.mc, cn.scope);
 			generateService (cn);
 		}
 		if (currentPkg == null)
@@ -140,7 +140,7 @@ public class DocGenerator {
 				p.println("<ul class='navigation'>");
 				currentPkg = cn.pkg;
 			}
-			generateClassReference(p, cn.mc, cn.translated);
+			generateClassReference(p, cn.mc, cn.scope);
 			generateActor (cn);
 		}
 		if (currentPkg == null)
@@ -174,7 +174,7 @@ public class DocGenerator {
 				p.println("<ul class='navigation'>");
 				currentPkg = cn.pkg;
 			}
-			generateClassReference(p, cn.mc, cn.translated);
+			generateClassReference(p, cn.mc, cn.scope);
 			if (cn.mc.isValueObject())
 				generateValueObject (cn);
 			if (cn.mc.isEnumeration())
@@ -192,51 +192,51 @@ public class DocGenerator {
 		p.print("<p class='genfooter'>"+ DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date())+"</p>");
 	}
 
-	private void generateClassReference(PrintStream p, AbstractModelClass mc, boolean translated) {
-		String pp = mc.getPackage(translated);
+	private void generateClassReference(PrintStream p, AbstractModelClass mc, int scope) {
+		String pp = mc.getPackage(scope);
 		pp = pp.replaceAll("\\.", "/");
 		if (mc.isRole())
-			p.println("<li><a href='"+pp+"/"+mc.getName(translated)+".html'>"+mc.getRoleName()+"</a>");
+			p.println("<li><a href='"+pp+"/"+mc.getName(scope)+".html'>"+mc.getRoleName()+"</a>");
 		else
-			p.println("<li><a href='"+pp+"/"+mc.getName(translated)+".html'>"+mc.getName(translated)+"</a>");
+			p.println("<li><a href='"+pp+"/"+mc.getName(scope)+".html'>"+mc.getName(scope)+"</a>");
 		if (mc.isEntity())
-			p.println(" <a href='"+pp+"/"+mc.getDaoName(translated)+".html'>[DAO]</a>");
+			p.println(" <a href='"+pp+"/"+mc.getDaoName(scope)+".html'>[DAO]</a>");
 		p.println ("</li>");
 	}
 
-	private void generateClassReference(PrintStream p, AbstractModelClass source, AbstractModelClass mc, boolean translated) {
+	private void generateClassReference(PrintStream p, AbstractModelClass source, AbstractModelClass mc, int scope) {
 		if (mc.isGenerated())
 		{
-			p.println("<a href='"+generateRef(source, mc, translated)+"'>"+mc.getName(translated)+"</a>");
+			p.println("<a href='"+generateRef(source, mc, scope)+"'>"+mc.getName(scope)+"</a>");
 			if (mc.isEntity())
 			{
-				p.println(" <a href='"+generateRef (getDocFile(source, translated), getDaoDocFile(mc, translated))+"'>[DAO]</a>");
+				p.println(" <a href='"+generateRef (getDocFile(source, scope), getDaoDocFile(mc, scope))+"'>[DAO]</a>");
 			}
 		}
 		else
-			p.println(mc.getName(translated));
+			p.println(mc.getName(scope));
 	}
 
-	private void generateDaoReference(PrintStream p, AbstractModelClass source, AbstractModelClass mc, boolean translated) {
+	private void generateDaoReference(PrintStream p, AbstractModelClass source, AbstractModelClass mc, int scope) {
 		if (mc.isGenerated())
 		{
 			if (mc.isEntity())
-				p.println("<a href='"+generateRef (getDocFile(source, translated), getDaoDocFile(mc, translated))+"'>"+mc.getName(translated)+"</a>");
+				p.println("<a href='"+generateRef (getDocFile(source, scope), getDaoDocFile(mc, scope))+"'>"+mc.getName(scope)+"</a>");
 			else
-				p.println("<a href='"+generateRef(source, mc, translated)+"'>"+mc.getName(translated)+"</a>");
+				p.println("<a href='"+generateRef(source, mc, scope)+"'>"+mc.getName(scope)+"</a>");
 		}
 		else
-			p.println(mc.getName(translated));
+			p.println(mc.getName(scope));
 	}
 
-	private void generateDaoReference(PrintStream p, AbstractModelClass mc, boolean translated) {
-		String pp = mc.getPackage(translated);
+	private void generateDaoReference(PrintStream p, AbstractModelClass mc, int scope) {
+		String pp = mc.getPackage(scope);
 		pp = pp.replaceAll("\\.", "/");
-		p.println("<li><a href='"+pp+"/"+mc.getName(translated)+".html'>"+mc.getName(translated)+"</a>");
+		p.println("<li><a href='"+pp+"/"+mc.getName(scope)+".html'>"+mc.getName(scope)+"</a>");
 		if (mc.isEntity())
-			p.println("<li><a href='"+pp+"/"+mc.getName(translated)+".html'>"+mc.getName(translated)+"</a>");
+			p.println("<li><a href='"+pp+"/"+mc.getName(scope)+".html'>"+mc.getName(scope)+"</a>");
 		else
-			p.println("<li><a href='"+pp+"/"+mc.getDaoName(translated)+".html'>"+mc.getDaoName(translated)+"</a>");
+			p.println("<li><a href='"+pp+"/"+mc.getDaoName(scope)+".html'>"+mc.getDaoName(scope)+"</a>");
 		p.println ("</li>");
 	}
 
@@ -244,9 +244,9 @@ public class DocGenerator {
 		List<ClassName> cn = new LinkedList<ClassName>();
 		for (AbstractModelClass mc: entities)
 		{
-			cn.add ( new ClassName (mc, false) );
+			cn.add ( new ClassName (mc, Translate.DEFAULT) );
 			if (addTranslated && mc.isTranslated())
-				cn.add ( new ClassName (mc, true) );
+				cn.add ( new ClassName (mc, Translate.DEFAULT) );
 		}
 		Collections.sort(cn, new Comparator<ClassName> () {
 
@@ -311,8 +311,8 @@ public class DocGenerator {
 	private void generateEntity(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {
 		
 		AbstractModelClass mc = cn.mc;
-		boolean translated = cn.translated;
-		File f = new File (getDocFile(mc, translated));
+		int scope = cn.scope;
+		File f = new File (getDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
 		System.out.println ("Generating "+f.getPath());
@@ -320,11 +320,11 @@ public class DocGenerator {
 		PrintStream p = new PrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
-		p.println("<h1>Entity "+mc.getFullName(translated));
-		p.println(" <a target='_new' href='"+mc.getName(translated)+"-erc.svg'>[Tables]</a>");
-		p.println(" <a href='"+mc.getDaoName(translated)+".html'>[DAO]</a>");
+		p.println("<h1>Entity "+mc.getFullName(scope));
+		p.println(" <a target='_new' href='"+mc.getName(scope)+"-erc.svg'>[Tables]</a>");
+		p.println(" <a href='"+mc.getDaoName(scope)+".html'>[DAO]</a>");
 		p.println("</h1>");
-		generateImage (p, mc.getName(translated)+"-er.svg");
+		generateImage (p, mc.getName(scope)+"-er.svg");
 
 		p.println ("<ul class='properties'>");
 		p.println ("<li><div class='property'>Description</div><div class='property-value'>"+Util.formatHtml(mc.getDescription())+"</div></div></div>");
@@ -341,7 +341,7 @@ public class DocGenerator {
 		
 		for (AbstractModelAttribute att: mc.getAttributes())
 		{
-			generateAttribute(mc, translated, p, att, true);
+			generateAttribute(mc, scope, p, att, true);
 		}
 		p.println ("</ul>");
 
@@ -374,7 +374,7 @@ public class DocGenerator {
 		for (ModelOperation op: mc.getOperations())
 		{
 			if (! op.isQuery() && ! op.isStatic())
-				generateMethod(null, translated, p, op);
+				generateMethod(null, scope, p, op);
 		}
 		p.println ("</ul>");
 
@@ -386,8 +386,8 @@ public class DocGenerator {
 	private void generateValueObject(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {
 		
 		AbstractModelClass mc = cn.mc;
-		boolean translated = cn.translated;
-		File f = new File (getDocFile(mc, translated));
+		int scope = cn.scope;
+		File f = new File (getDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
 		System.out.println ("Generating "+f.getPath());
@@ -395,7 +395,7 @@ public class DocGenerator {
 		PrintStream p = new PrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
-		p.println("<h1>ValueObject "+mc.getFullName(translated)+"</h1>");
+		p.println("<h1>ValueObject "+mc.getFullName(scope)+"</h1>");
 		
 		p.println ("<ul class='properties'>");
 		p.println ("<li><div class='property'>Description</div><div class='property-value'>"+Util.formatHtml(mc.getDescription())+"</div></div></div>");
@@ -406,7 +406,7 @@ public class DocGenerator {
 		
 		for (AbstractModelAttribute att: mc.getAttributes())
 		{
-			generateAttribute(mc, translated, p, att);
+			generateAttribute(mc, scope, p, att);
 		}
 		p.println ("</ul>");
 
@@ -416,7 +416,7 @@ public class DocGenerator {
 		for (ModelOperation op: mc.getOperations())
 		{
 			if (! op.isQuery() && ! op.isStatic())
-				generateMethod(null, translated, p, op);
+				generateMethod(null, scope, p, op);
 		}
 		p.println ("</ul>");
 
@@ -428,7 +428,7 @@ public class DocGenerator {
 			if (mc2.isEntity())
 			{
 				p.println ("<li>");
-				generateClassReference(p, mc, mc2, translated);
+				generateClassReference(p, mc, mc2, scope);
 				p.println ("</li>");
 			}
 		}
@@ -442,8 +442,8 @@ public class DocGenerator {
 	private void generateEnumeration(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {
 		
 		AbstractModelClass mc = cn.mc;
-		boolean translated = cn.translated;
-		File f = new File (getDocFile(mc, translated));
+		int scope = cn.scope;
+		File f = new File (getDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
 		System.out.println ("Generating "+f.getPath());
@@ -451,7 +451,7 @@ public class DocGenerator {
 		PrintStream p = new PrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
-		p.println("<h1>Enumeration "+mc.getFullName(translated)+"</h1>");
+		p.println("<h1>Enumeration "+mc.getFullName(scope)+"</h1>");
 		
 		p.println ("<ul class='properties'>");
 		p.println ("<li><div class='property'>Description</div><div class='property-value'>"+Util.formatHtml(mc.getDescription())+"</div></div></div>");
@@ -462,7 +462,7 @@ public class DocGenerator {
 		
 		for (AbstractModelAttribute att: mc.getAttributes())
 		{
-			generateConstantAttribute(mc, translated, p, att);
+			generateConstantAttribute(mc, scope, p, att);
 		}
 		p.println ("</ul>");
 
@@ -489,8 +489,8 @@ public class DocGenerator {
 
 	private void generateEntityDao(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {		
 		AbstractModelClass mc = cn.mc;
-		boolean translated = cn.translated;
-		File f = new File (getDaoDocFile(mc, translated));
+		int scope = cn.scope;
+		File f = new File (getDaoDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
 		System.out.println ("Generating "+f.getPath());
@@ -498,11 +498,11 @@ public class DocGenerator {
 		PrintStream p = new PrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
-		p.println("<h1>Entity DAO "+mc.getDaoFullName(translated)+" <a href='"+mc.getName(translated)+".html'>[Entity]</a></h1>");
+		p.println("<h1>Entity DAO "+mc.getDaoFullName(scope)+" <a href='"+mc.getName(scope)+".html'>[Entity]</a></h1>");
 		
-		String image = generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(translated))+mc.getName(translated)+".html";
+		String image = generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(scope))+mc.getName(scope)+".html";
 
-		generateImage (p, mc.getName(translated)+"-dao.svg");
+		generateImage (p, mc.getName(scope)+"-dao.svg");
 
 		p.println ("<ul class='properties'>");
 		p.println ("<li><div class='property'>Description</div><div class='property-value'>"+Util.formatHtml(mc.getDescription())+"</div></div></div>");
@@ -514,7 +514,7 @@ public class DocGenerator {
 		for (ModelOperation op: mc.getOperations())
 		{
 			if (op.isQuery() || op.isStatic())
-				generateMethod(null, translated, p, op);
+				generateMethod(null, scope, p, op);
 		}
 		p.println ("</ul>");
 
@@ -526,7 +526,7 @@ public class DocGenerator {
 			if (mc2.isEntity())
 			{
 				p.println("<li>");
-				generateDaoReference(p, mc, mc2, translated);
+				generateDaoReference(p, mc, mc2, scope);
 				p.println("</li>");
 			}
 		}
@@ -540,7 +540,7 @@ public class DocGenerator {
 			if (mc2.isValueObject())
 			{
 				p.println ("<li>");
-				generateClassReference(p, mc, mc2, translated);
+				generateClassReference(p, mc, mc2, scope);
 				p.println ("</li>");
 			}
 		}
@@ -553,7 +553,7 @@ public class DocGenerator {
 			if (mc2.isService())
 			{
 				p.println ("<li>");
-				generateClassReference(p, mc, mc2, translated);
+				generateClassReference(p, mc, mc2, scope);
 				p.println ("</li>");
 			}
 		}
@@ -567,8 +567,8 @@ public class DocGenerator {
 
 	private void generateService(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {		
 		AbstractModelClass mc = cn.mc;
-		boolean translated = cn.translated;
-		File f = new File (getDocFile(mc, translated));
+		int scope = cn.scope;
+		File f = new File (getDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
 		System.out.println ("Generating "+f.getPath());
@@ -576,27 +576,27 @@ public class DocGenerator {
 		PrintStream p = new PrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
-		p.println("<h1>Service "+mc.getFullName(translated)+"<a target='_new' href='"+mc.getName(translated)+"-uc.svg'>[UseCase]</a></h1>");
+		p.println("<h1>Service "+mc.getFullName(scope)+"<a target='_new' href='"+mc.getName(scope)+"-uc.svg'>[UseCase]</a></h1>");
 		
-		String image = generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(translated))+mc.getName(translated)+".html";
+		String image = generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(scope))+mc.getName(scope)+".html";
 
-		generateImage (p, mc.getName(translated)+".svg");
+		generateImage (p, mc.getName(scope)+".svg");
 
 		p.println ("<ul class='properties'>");
-		p.println ("<li><div class='property'>Spring bean name </div><div class='property-value'>"+Util.formatHtml(mc.getBaseName(translated))+"</div></div></div>");
+		p.println ("<li><div class='property'>Spring bean name </div><div class='property-value'>"+Util.formatHtml(mc.getBaseName(scope))+"</div></div></div>");
 		p.println ("<li><div class='property'>Description</div><div class='property-value'>"+Util.formatHtml(mc.getDescription())+"</div></div></div>");
 		if (mc.isServerOnly())
 			p.println ("<li><div class='property'>EJB bean name </div><div class='property-value'> - Sync server only -</div></div></div>");
 		else if (mc.isInternal())
 			p.println ("<li><div class='property'>EJB bean name </div><div class='property-value'> - Not allowed -</div></div></div>");
 		else
-			p.println ("<li><div class='property'>EJB bean name </div><div class='property-value'>soffid/ejb/" + mc.getFullName(translated) +"</div></div></div>");
+			p.println ("<li><div class='property'>EJB bean name </div><div class='property-value'>soffid/ejb/" + mc.getFullName(scope) +"</div></div></div>");
 		if (!mc.getActors().isEmpty())
 		{
 			p.println ("<li><div class='property'>Actors</div><div class='property-value'>");
 			for (AbstractModelClass actor: mc.getActors())
 			{
-				generateClassReference(p, mc, actor, translated);
+				generateClassReference(p, mc, actor, scope);
 			}
 			p.println ("</div></div></div>");
 		}
@@ -607,7 +607,7 @@ public class DocGenerator {
 		
 		for (ModelOperation op: mc.getOperations())
 		{
-			generateMethod(null, translated, p, op);
+			generateMethod(null, scope, p, op);
 		}
 		p.println ("</ul>");
 
@@ -619,7 +619,7 @@ public class DocGenerator {
 			if (mc2.isEntity())
 			{
 				p.println("<li>");
-				generateDaoReference(p, mc, mc2, translated);
+				generateDaoReference(p, mc, mc2, scope);
 				p.println("</li>");
 			}
 		}
@@ -634,7 +634,7 @@ public class DocGenerator {
 			if (mc2.isService())
 			{
 				p.println ("<li>");
-				generateClassReference(p, mc, mc2, translated);
+				generateClassReference(p, mc, mc2, scope);
 				p.println ("</li>");
 			}
 		}
@@ -648,8 +648,8 @@ public class DocGenerator {
 
 	private void generateActor(ClassName cn) throws FileNotFoundException , UnsupportedEncodingException {		
 		AbstractModelClass mc = cn.mc;
-		boolean translated = cn.translated;
-		File f = new File (getDocFile(mc, translated));
+		int scope = cn.scope;
+		File f = new File (getDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
 		System.out.println ("Generating "+f.getPath());
@@ -659,7 +659,7 @@ public class DocGenerator {
 		generateHeader(f, p);
 		p.println("<h1>Role "+mc.getRoleName()+"</h1>");
 		
-		String image = generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(translated))+mc.getName(translated)+".html";
+		String image = generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(scope))+mc.getName(scope)+".html";
 
 		p.println("<h2 class='entitySection'>Services</h2>");
 		p.println("<ul class='methods'>");
@@ -669,7 +669,7 @@ public class DocGenerator {
 			if (service.getActors().contains(mc))
 			{
 				p.println("<li><div class='operation'><div class='operation-header'><div class='operation-name'>");
-				generateClassReference(p, mc, service, translated);
+				generateClassReference(p, mc, service, scope);
 				p.print("</div> <div class='operation-description'>");
 				p.print("All service operations");
 				p.print ("</div></li>");
@@ -678,7 +678,7 @@ public class DocGenerator {
 				{
 					if (op.getActors().contains (mc))
 					{
-						generateMethod(mc, translated, p, op);
+						generateMethod(mc, scope, p, op);
 					}
 				}
 			}
@@ -691,17 +691,17 @@ public class DocGenerator {
 	}
 
 
-	private void generateAttribute(AbstractModelClass mc, boolean translated,
+	private void generateAttribute(AbstractModelClass mc, int scope,
 			PrintStream p, AbstractModelAttribute att) {
-		generateAttribute(mc, translated, p, att, false);
+		generateAttribute(mc, scope, p, att, false);
 	}
-	private void generateAttribute(AbstractModelClass mc, boolean translated,
+	private void generateAttribute(AbstractModelClass mc, int scope,
 			PrintStream p, AbstractModelAttribute att, boolean columnName) {
 		p.println("<li><span class='attribute-name'>");
-		p.print(att.getName(translated));
+		p.print(att.getName(scope));
 		p.print("</span> <span class='attribute-type'>");
 		AbstractModelClass dataType = att.getDataType();
-		generateDataType(mc, translated, p, dataType);
+		generateDataType(mc, scope, p, dataType);
 		p.print("</span> ");
 		p.print("<span> ");
 		if (columnName && att.getColumn() != null)
@@ -719,13 +719,13 @@ public class DocGenerator {
 		p.println ("</li>");
 	}
 
-	private void generateConstantAttribute(AbstractModelClass mc, boolean translated,
+	private void generateConstantAttribute(AbstractModelClass mc, int scope,
 			PrintStream p, AbstractModelAttribute att) {
 		p.println("<li><span class='attribute-name'>");
-		p.print(att.getName(translated));
+		p.print(att.getName(scope));
 		p.print("</span> <span class='attribute-type'>");
 		AbstractModelClass dataType = att.getDataType();
-		generateDataType(mc, translated, p, dataType);
+		generateDataType(mc, scope, p, dataType);
 		p.print("</span> ");
 		p.print ("<span class='attribute-required'>"+ Util.formatHtml(att.getConstantValue())+"</span>");
 		p.print("<span class='attribute-description'>");
@@ -735,7 +735,7 @@ public class DocGenerator {
 	}
 
 
-	private void generateDataType(AbstractModelClass mc, boolean translated,
+	private void generateDataType(AbstractModelClass mc, int scope,
 			PrintStream p, AbstractModelClass dataType) {
 		if (dataType.isCollection())
 		{
@@ -743,37 +743,37 @@ public class DocGenerator {
 			if (ch != null )
 			{
 				p.println (dataType.getRawType()+"&lt;");
-				generateDataType(mc, translated, p, ch);
+				generateDataType(mc, scope, p, ch);
 				p.println ("&gt;");
 			}
 			else
 			{
-				p.println (dataType.getJavaType(translated));
+				p.println (dataType.getJavaType(scope));
 			}
 		}
 		else  {
 			if (dataType.isValueObject() || dataType.isEntity() || dataType.isEnumeration() || dataType.isService())
 			{
-				p.println ("<a href='"+generateRef (mc, dataType, translated)+"'>"
+				p.println ("<a href='"+generateRef (mc, dataType, scope)+"'>"
 						+ dataType.getFullName()+"</a>");
 			} else {
-				p.println (dataType.getJavaType(translated));
+				p.println (dataType.getJavaType(scope));
 			}
 		}
 	}
 
-	private void generateMethod(AbstractModelClass referrer, boolean translated,
+	private void generateMethod(AbstractModelClass referrer, int scope,
 			PrintStream p, ModelOperation op) {
 		AbstractModelClass mc = op.getModelClass();
 		p.println("<li><div class='operation'><div class='operation-header'><div class='operation-name'>");
 		if (referrer != null)
 		{
-			generateClassReference(p, referrer, mc, translated);
+			generateClassReference(p, referrer, mc, scope);
 			p.print(".");
 		}
 		else
 			referrer = mc;
-		p.print(op.getName(translated));
+		p.print(op.getName(scope));
 		p.print("</div> <div class='operation-description'>");
 		p.print(Util.formatHtml(op.getComments()));
 		if (!op.getActors().isEmpty())
@@ -781,7 +781,7 @@ public class DocGenerator {
 			p.print("</div> <div class='operation-actors'>Actors: ");
 			for (AbstractModelClass actor: op.getActors())
 			{
-				generateClassReference(p, referrer, actor, translated);
+				generateClassReference(p, referrer, actor, scope);
 			}
 		}
 		p.print("</div><div class='hql'>");
@@ -789,28 +789,28 @@ public class DocGenerator {
 		p.print ("</div></div><div class='params'>");
 		for (ModelParameter param: op.getParameters())
 		{
-			p.print("<div class='param'><div class='param-name'>"+param.getName(translated)+"</div><div class='param-type'>");
-			generateDataType(referrer, translated, p, param.getDataType());
+			p.print("<div class='param'><div class='param-name'>"+param.getName(scope)+"</div><div class='param-type'>");
+			generateDataType(referrer, scope, p, param.getDataType());
 			p.print("</div><div class='param-description'>");
 			p.print(Util.formatHtml(param.getComments()));
 			p.print("</div>");
 		}
 		p.print("</div><div class='return'><div class='return-name'>Returns</div><div class='return-type'>");
-		generateDataType(referrer, translated, p, op.getReturnParameter().getDataType());
+		generateDataType(referrer, scope, p, op.getReturnParameter().getDataType());
 		p.print ("</div></li>");
 	}
 
 	
-	private String getDocFile(AbstractModelClass mc, boolean translated) {
-		return generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(translated))+mc.getName(translated)+".html";
+	private String getDocFile(AbstractModelClass mc, int scope) {
+		return generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(scope))+mc.getName(scope)+".html";
 	}
 
-	private String getDaoDocFile(AbstractModelClass mc, boolean translated) {
-		return generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(translated))+mc.getDaoName(translated)+".html";
+	private String getDaoDocFile(AbstractModelClass mc, int scope) {
+		return generator.getUmlDir()+File.separator+Util.packageToDir(mc.getPackage(scope))+mc.getDaoName(scope)+".html";
 	}
 
-	public String generateRef(AbstractModelClass mc, AbstractModelClass ch, boolean translated) {
-		return generateRef (getDocFile(mc, translated), getDocFile(ch, translated));
+	public String generateRef(AbstractModelClass mc, AbstractModelClass ch, int scope) {
+		return generateRef (getDocFile(mc, scope), getDocFile(ch, scope));
 	}
 
 	private String generateRef(String docFile, String docFile2) {
@@ -836,13 +836,13 @@ class ClassName {
 	String pkg;
 	String name;
 	AbstractModelClass mc;
-	boolean translated;
+	int scope;
 	
-	public ClassName (AbstractModelClass mc, boolean translated)
+	public ClassName (AbstractModelClass mc, int scope)
 	{
 		this.mc = mc;
-		this.translated = translated;
-		pkg = mc.getPackage(translated);
-		name = mc.getName(translated);
+		this.scope = scope;
+		pkg = mc.getPackage(scope);
+		name = mc.getName(scope);
 	}
 }

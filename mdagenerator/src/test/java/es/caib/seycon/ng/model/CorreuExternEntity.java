@@ -35,9 +35,4 @@ public abstract class CorreuExternEntity {
 		java.lang.String codiDomini) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.CorreuExternEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 }

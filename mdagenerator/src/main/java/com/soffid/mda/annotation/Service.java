@@ -17,4 +17,5 @@ public @interface Service {
 	String translatedPackage() default "";
 	Class[] grantees() default {};
 	boolean stateful() default false;
+	boolean translatedImpl() default false;
 }

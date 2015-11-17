@@ -86,11 +86,6 @@ public abstract class AplicacioEntity {
 		java.lang.String gestionableWF) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.AplicacioEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 	@DaoFinder("select distinct aplicacio\nfrom es.caib.seycon.ng.model.UsuariEntity as usuari\njoin usuari.accounts as accounts\njoin accounts.account as account\njoin account.roles as roles\njoin roles.rol as rol\njoin rol.aplicacio as aplicacio with aplicacio.gestionableWF='S'\nwhere usuari.codi = :codiUsuari ")
 	public java.util.List<es.caib.seycon.ng.model.AplicacioEntity> findManageableByUser(
 		java.lang.String codiUsuari) {

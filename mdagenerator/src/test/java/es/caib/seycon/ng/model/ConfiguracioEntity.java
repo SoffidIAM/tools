@@ -37,9 +37,4 @@ public abstract class ConfiguracioEntity {
 		java.lang.String codiXarxa) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.ConfiguracioEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 }

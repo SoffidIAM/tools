@@ -7,7 +7,7 @@
 package es.caib.seycon.ng.model;
 import com.soffid.mda.annotation.*;
 
-@Entity (table="SC_USUARI" )
+@Entity (table="SC_USUARI", translatedName="UserEntity", translatedPackage="com.soffid.iam.model" )
 @Depends ({es.caib.seycon.ng.model.ScTarget.class,
 	es.caib.seycon.ng.model.RolsGrupEntity.class,
 	es.caib.seycon.ng.model.UsuariSEUEntity.class,
@@ -161,6 +161,7 @@ public abstract class UsuariEntity {
 	@ForeignKey (foreignColumn="CTR_IDUSU")
 	public java.util.Collection<es.caib.seycon.ng.model.ContrasenyaEntity> contrasenyes;
 
+	@Operation(translated="findByUserName")
 	@DaoFinder("from es.caib.seycon.ng.model.UsuariEntity  where codi = :codi")
 	public es.caib.seycon.ng.model.UsuariEntity findByCodi(
 		java.lang.String codi) {
@@ -195,7 +196,7 @@ public abstract class UsuariEntity {
 		java.lang.String codiUsuari) {
 	 return null;
 	}
-	@DaoFinder
+	@DaoOperation
 	public java.lang.Boolean updateUser(
 		java.lang.String codiUsuari) {
 	 return null;
@@ -205,28 +206,18 @@ public abstract class UsuariEntity {
 		java.lang.String nomCurt) {
 	 return null;
 	}
-	@DaoFinder
-	public java.lang.Integer executeQuery(
-		java.lang.String hqlQuery) {
-	 return null;
-	}
-	@DaoFinder
+	@DaoOperation
 	public java.lang.String refreshCanvis(
 		java.lang.String codiUsuari) {
 	 return null;
 	}
-	@DaoFinder
+	@DaoFinder("- CUSTOM -")
 	public java.lang.String[] getTasques(
 		java.lang.String codiUsuari) {
 	 return null;
 	}
 	@DaoFinder
 	public java.lang.String getSeguentCodi() {
-	 return null;
-	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.UsuariEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
 	 return null;
 	}
 	@DaoFinder
@@ -263,12 +254,12 @@ public abstract class UsuariEntity {
 		@Nullable java.lang.String activa) {
 	 return null;
 	}
-	@DaoFinder
+	@DaoFinder("- CUSTOM -")
 	public java.util.List<es.caib.seycon.ng.model.UsuariEntity> findUsuarisGrupISubgrupsByCodiGrup(
 		java.lang.String codiGrup) {
 	 return null;
 	}
-	@DaoFinder
+	@DaoFinder ("- CUSTOM -")
 	public java.util.List<es.caib.seycon.ng.model.UsuariEntity> findUsuarisByRolUsuariAtorgat(
 		java.lang.String nomRolAtorgat, 
 		java.lang.String baseDeDadesRolAtorgat, 
@@ -287,7 +278,7 @@ public abstract class UsuariEntity {
 	public java.lang.String getSeguentCodiMaquina() {
 	 return null;
 	}
-	@DaoFinder
+	@DaoFinder("- custom -")
 	public es.caib.seycon.ng.comu.EstatContrasenya getPasswordsStatus(
 		es.caib.seycon.ng.model.UsuariEntity usuariEntity, 
 		es.caib.seycon.ng.model.DominiContrasenyaEntity dominiContrasenyes) {

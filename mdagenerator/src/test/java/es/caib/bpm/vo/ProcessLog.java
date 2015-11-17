@@ -1,5 +1,8 @@
 package es.caib.bpm.vo;
 
-public class ProcessLog {
+import com.soffid.mda.annotation.ValueObject;
 
+@ValueObject(translatedName="ProcessLogEn", translatedPackage="com.soffid.iam.bpm.api")
+public class ProcessLog {
+	long id;
 }

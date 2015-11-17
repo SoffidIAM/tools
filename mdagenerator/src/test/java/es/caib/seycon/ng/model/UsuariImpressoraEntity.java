@@ -45,9 +45,4 @@ public abstract class UsuariImpressoraEntity {
 		java.lang.String codiUsuari) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.UsuariImpressoraEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 }

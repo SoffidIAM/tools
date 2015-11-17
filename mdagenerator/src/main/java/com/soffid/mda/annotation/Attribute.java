@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface Attribute {
 	String defaultValue () default ""; 
 	String translated() default "";
+	String entityAttribute() default "";
 }

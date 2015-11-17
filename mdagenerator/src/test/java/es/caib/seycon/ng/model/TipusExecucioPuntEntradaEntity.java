@@ -30,9 +30,4 @@ public abstract class TipusExecucioPuntEntradaEntity {
 		java.lang.String codi) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.TipusExecucioPuntEntradaEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter[]> parameters) {
-	 return null;
-	}
 }

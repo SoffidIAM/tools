@@ -7,13 +7,18 @@
 package es.caib.seycon.ng.comu;
 import com.soffid.mda.annotation.*;
 
+import es.caib.seycon.ng.model.UsuariEntity;
+import es.caib.seycon.ng.servei.UsuariService;
+
 @ValueObject ( translatedName="User",
 	 translatedPackage="com.soffid.iam.api")
+@JsonObject(serializerDelegate=true, hibernateClass=UsuariEntity.class)
 public abstract class Usuari {
-
+	@JsonAttribute(hibernateAttribute="codi")
 	@Attribute(translated = "userName" )
 	public java.lang.String codi;
 
+	@JsonAttribute(hibernateAttribute="primerLlinatge")
 	@Attribute(translated = "firstName" )
 	public java.lang.String nom;
 

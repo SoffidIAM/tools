@@ -39,11 +39,6 @@ public abstract class UsuariGrupEntity {
 		java.lang.String codiUsuari) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.UsuariGrupEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 	@DaoFinder("select usuGru from es.caib.seycon.ng.model.UsuariGrupEntity usuGru where usuGru.grup.codi=:codiGrup")
 	public java.util.List<es.caib.seycon.ng.model.UsuariGrupEntity> findByCodiGrup(
 		java.lang.String codiGrup) {

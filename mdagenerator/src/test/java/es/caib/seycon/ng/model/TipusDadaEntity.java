@@ -44,9 +44,4 @@ public abstract class TipusDadaEntity {
 		java.lang.String codi) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.TipusDadaEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 }

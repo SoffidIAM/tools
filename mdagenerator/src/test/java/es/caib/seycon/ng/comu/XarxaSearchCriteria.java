@@ -8,6 +8,7 @@ package es.caib.seycon.ng.comu;
 import com.soffid.mda.annotation.*;
 
 @ValueObject 
+@Criteria
 public abstract class XarxaSearchCriteria {
 
 	public java.lang.String codi;

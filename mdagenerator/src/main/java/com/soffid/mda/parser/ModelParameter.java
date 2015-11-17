@@ -9,6 +9,7 @@ import java.util.List;
 import com.soffid.mda.annotation.Description;
 import com.soffid.mda.annotation.Nullable;
 import com.soffid.mda.annotation.Param;
+import com.soffid.mda.generator.Translate;
 import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.CachingParanamer;
 
@@ -86,8 +87,8 @@ public class ModelParameter extends ModelElement {
 	public String getName() {
 		return name;
 	}
-	public String getName(boolean translated) {
-		if (translated && this.translated != null && this.translated.length() > 0)
+	public String getName(int scope) {
+		if (Translate.mustTranslate(modelClass, scope) && this.translated != null && this.translated.length() > 0)
 			return this.translated;
 		else
 			return name;

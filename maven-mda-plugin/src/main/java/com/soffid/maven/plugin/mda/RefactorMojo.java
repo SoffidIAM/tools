@@ -19,47 +19,28 @@ package com.soffid.maven.plugin.mda;
  * under the License.
  */
 
+import jascut.Engine;
+import jascut.xml.RenameTypeXml;
+import jascut.xml.Rule;
+import jascut.xml.RuleList;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.LinkedList;
+import java.util.Properties;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.maven.archiver.MavenArchiveConfiguration;
-import org.apache.maven.archiver.MavenArchiver;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
-import org.apache.maven.artifact.resolver.filter.TypeArtifactFilter;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.jar.JarArchiver;
-import org.codehaus.plexus.archiver.zip.ZipArchiver;
-
-import com.soffid.mda.generator.Generator;
-import com.soffid.mda.parser.Parser;
-
-import jascut.Engine;
-import jascut.xml.RuleList;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.print.attribute.standard.MediaSize.Engineering;
+import org.xml.sax.SAXException;
 
 /**
  * Refactor objects
@@ -74,17 +55,25 @@ public class RefactorMojo extends AbstractMojo {
 	/**
 	 * Directory target files will be generated
 	 * 
-	 * @parameter default-value="${project.basedir/target/translated}" 
+	 * @parameter default-value="${project.basedir/target/translated}" expression="${targetDir}"
 	 */
 	private String targetDir;
 
 	/**
 	 * jascut xml file
 	 * 
-	 * @parameter default-value="${project.basedir}/src/jascut.xml" expression="${jascutFile}"
+	 * @parameter expression="${jascutFile}" 
 	 */
 	private String jascutFile ;
 
+	/**
+	 * jascut xml file
+	 * 
+	 * @parameter expression="${jascutFiles}"
+	 */
+	private String jascutFiles ;
+
+	
 	/**
 	 * The Maven project.
 	 * 
@@ -181,11 +170,92 @@ public class RefactorMojo extends AbstractMojo {
 			Engine e = new Engine(props);
 
 			
-			RuleList rl = RuleList.read(jascutFile);
+			RuleList rl;
+			if (jascutFile != null && jascutFile.trim().length() > 0 )
+				rl = RuleList.read(jascutFile);
+			else
+			{
+				rl = new RuleList();
+				rl.setRules(new LinkedList<Rule>());
+			}
+			
+			if (jascutFiles != null && jascutFiles.trim().length () > 0)
+			{
+				for (String jf: jascutFiles.split(File.pathSeparator))
+				{
+					RuleList rl2 = RuleList.read(jf);
+					rl.getRules().addAll(rl2.getRules());
+				}
+			}
+
 			e.perform(rl);
+			
+			doClassRenames (rl);
 		} catch (Throwable e) {
 			throw new MojoExecutionException("Cannot generate source code: "+e.toString(), e);
 		}
+	}
+
+	private void doClassRenames(RuleList rl) throws SAXException, IOException, ParserConfigurationException {
+		for (Rule rule: rl.getRules())
+		{
+			if (rule instanceof RenameTypeXml)
+			{
+				RenameTypeXml renameRule = (RenameTypeXml) rule;
+				String typeOrig = renameRule.getTypeOrig();
+				String typeNew = renameRule.getTypeNew();
+				
+				File sourceFile = classToFile (typeOrig);
+				if (sourceFile.canRead())
+				{
+					System.out.println ("Renaming "+typeOrig+" to "+typeNew);
+					StringBuffer t = new StringBuffer();
+					Reader r = new FileReader(sourceFile);
+					char buffer[] = new char[2048];
+					do
+					{
+						int len  = r.read(buffer);
+						if (len <= 0) break;
+						t.append(buffer, 0, len);
+					} while ( true );
+					r.close ();
+					String text = t.toString();
+					String sourcePackage = getPackageName (typeOrig);
+					String targetPackage = getPackageName (typeNew);
+					String sourceName = getClassName(typeOrig);
+					String targetName = getClassName(typeNew);
+					String sourcePackagePattern = sourcePackage.replaceAll("\\.", "\\\\.");
+					String targetePackagePattern = targetPackage.replaceAll("\\.", "\\\\.");
+					text = text.replaceAll("package\\s+"+sourcePackagePattern+"\\s*;",
+							"package "+targetePackagePattern+";\n\n"+
+									"import "+sourcePackagePattern+".*;");
+					text = text.replaceAll("\\b"+sourceName+"\\b", targetName);
+	
+					File targetFile = classToFile (typeNew);
+					targetFile.getParentFile().mkdirs();
+					FileWriter fw = new FileWriter(targetFile);
+					fw.write(text);
+					fw.close ();
+					
+					sourceFile.delete();
+				}
+			}
+		}
+	}
+
+	private String getPackageName(String type) {
+		int i = type.lastIndexOf('.');
+		return type.substring(0, i);
+	}
+
+	private String getClassName(String type) {
+		int i = type.lastIndexOf('.');
+		return type.substring(i+1);
+	}
+
+
+	private File classToFile(String typeOrig) {
+		return  new File(targetDir+ File.separator + typeOrig.replace('.', File.separatorChar) + ".java");
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.soffid.mda.annotation.JsonObject;
 import com.soffid.mda.generator.Generator;
+import com.soffid.mda.generator.Translate;
 
 public class ModelClassCollection extends AbstractModelClass {
 	
@@ -19,12 +20,12 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getJavaType(boolean translated, boolean translatedOnly) {
-		return "java.util.Collection<"+modelClass.getJavaType(translated, translatedOnly)+">";
+	public String getJavaType(int scope) {
+		return "java.util.Collection<"+modelClass.getJavaType(scope)+">";
 	}
 
 	@Override
-	public String getFile(boolean translated) {
+	public String getFile(int scope) {
 		return modelClass.getFile();
 	}
 
@@ -49,17 +50,17 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getBaseFullName(boolean translated) {
+	public String getBaseFullName(int scope) {
 		return "";
 	}
 
 	@Override
-	public String getBaseName(boolean translated) {
+	public String getBaseName(int scope) {
 		return "";
 	}
 
 	@Override
-	public String getLocalServiceName(boolean translated) {
+	public String getLocalServiceName(int scope) {
 		return "";
 	}
 
@@ -74,17 +75,17 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getBeanFullName(boolean translated) {
+	public String getBeanFullName(int scope) {
 		return "";
 	}
 
 	@Override
-	public String getEjbName(boolean translated) {
+	public String getEjbName(int scope) {
 		return "";
 	}
 
 	@Override
-	public String getSpringBeanName(Generator generator, boolean translated) {
+	public String getSpringBeanName(Generator generator, int scope) {
 		return "";
 	}
 
@@ -94,22 +95,22 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getEjbHomeFullName(boolean translated) {
+	public String getEjbHomeFullName(int scope) {
 		return "";
 	}
 
 	@Override
-	public String getEjbPackage(boolean translated) {
+	public String getEjbPackage(int scope) {
 		return "";
 	}
 
 	@Override
-	public String getEjbInterfaceFullName(boolean translated) {
+	public String getEjbInterfaceFullName(int scope) {
 		return "";
 	}
 
 	@Override
-	public String getBeanName(boolean translated) {
+	public String getBeanName(int scope) {
 		return "";
 	}
 
@@ -164,7 +165,7 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getDaoImplFullName(boolean translated) {
+	public String getDaoImplFullName(int scope) {
 		return "";
 	}
 
@@ -189,12 +190,12 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getDaoBaseName(boolean translated) {
+	public String getDaoBaseName(int scope) {
 		return "";
 	}
 
 	@Override
-	public String getDaoImplName(boolean translated) {
+	public String getDaoImplName(int scope) {
 		return "";
 	}
 
@@ -204,12 +205,12 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getDaoFullName(boolean translated) {
+	public String getDaoFullName(int scope) {
 		return "";
 	}
 
 	@Override
-	public String getDaoName(boolean translated) {
+	public String getDaoName(int scope) {
 		return "";
 	}
 
@@ -227,23 +228,18 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getPackage(boolean translated) {
+	public String getPackage(int scope) {
 		return "java.util";
 	}
 
 	@Override
-	public String getPackagePrefix(boolean translated) {
+	public String getPackagePrefix(int scope) {
 		return "java.util.";
 	}
 
 	@Override
-	public String getName(boolean translated) {
-		return getJavaType(translated);
-	}
-
-	@Override
-	public String getJavaType(boolean translated) {
-		return getJavaType(translated, false);
+	public String getName(int scope) {
+		return getJavaType(scope);
 	}
 
 	@Override
@@ -253,7 +249,7 @@ public class ModelClassCollection extends AbstractModelClass {
 
 	@Override
 	public String getJavaType() {
-		return getJavaType(false);
+		return "java.util.Collection<"+modelClass.getJavaType()+">";
 	}
 
 	@Override
@@ -267,7 +263,7 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getImplName(boolean translated) {
+	public String getImplName(int scope) {
 		return "";
 	}
 
@@ -277,12 +273,12 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getImplFullName(boolean translated) {
+	public String getImplFullName(int scope) {
 		return "";
 	}
 
 	@Override
-	public String getFullName(boolean translated) {
+	public String getFullName(int scope) {
 		return "";
 	}
 
@@ -298,7 +294,7 @@ public class ModelClassCollection extends AbstractModelClass {
 
 	@Override
 	public String getPackagePrefix() {
-		return getPackagePrefix(false);
+		return getPackagePrefix(Translate.DEFAULT);
 	}
 
 	@Override
@@ -313,12 +309,12 @@ public class ModelClassCollection extends AbstractModelClass {
 
 	@Override
 	public String getName() {
-		return getName(false);
+		return getName(Translate.DEFAULT);
 	}
 
 	@Override
 	public String getPackage() {
-		return getPackage(false);
+		return getPackage(Translate.DEFAULT);
 	}
 
 	@Override
@@ -327,7 +323,7 @@ public class ModelClassCollection extends AbstractModelClass {
 	}
 
 	@Override
-	public String getPackageDir(boolean translated) {
+	public String getPackageDir(int scope) {
 		return "";
 	}
 
@@ -435,6 +431,16 @@ public class ModelClassCollection extends AbstractModelClass {
 	@Override
 	public LinkedList<AbstractModelAttribute> getForeignKeys() {
 		return null;
+	}
+
+	@Override
+	public JsonObject getJsonObject() {
+		return null;
+	}
+
+	@Override
+	public boolean isTranslatedImpl() {
+		return false;
 	}
 
 }

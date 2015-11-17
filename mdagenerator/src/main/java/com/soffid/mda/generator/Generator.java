@@ -20,10 +20,54 @@ public class Generator {
 	String syncDir;
 	String syncResourcesDir;
 	String xmlModuleDir;
+	public boolean isHqlFullTest() {
+		return hqlFullTest;
+	}
+
+	public void setHqlFullTest(boolean hqlFullTest) {
+		this.hqlFullTest = hqlFullTest;
+	}
+
 	String jascutDir;
 	String docDir;
 	boolean generateUml = false;
-	
+	boolean translateEntities = false;
+	boolean generateDeprecated = false;
+	boolean hqlFullTest = true;
+	boolean generateEjb = true;
+	public boolean isGenerateEjb() {
+		return generateEjb;
+	}
+
+	public void setGenerateEjb(boolean generateEjb) {
+		this.generateEjb = generateEjb;
+	}
+
+	public boolean isGenerateSync() {
+		return generateSync;
+	}
+
+	public void setGenerateSync(boolean generateSync) {
+		this.generateSync = generateSync;
+	}
+
+	boolean generateSync = true;
+	public boolean isGenerateDeprecated() {
+		return generateDeprecated;
+	}
+
+	public void setGenerateDeprecated(boolean generateDeprecated) {
+		this.generateDeprecated = generateDeprecated;
+	}
+
+	public boolean isTranslateEntities() {
+		return translateEntities;
+	}
+
+	public void setTranslateEntities(boolean translateEntities) {
+		this.translateEntities = translateEntities;
+	}
+
 	public boolean isGenerateUml() {
 		return generateUml;
 	}
@@ -113,7 +157,13 @@ public class Generator {
 	}
 
 	String pluginName;
+	private String basePackage;
+	private String defaultException = "es.caib.seycon.ng.exception.InternalErrorException";
 	
+	public String getDefaultException() {
+		return defaultException;
+	}
+
 	public boolean isPlugin ()
 	{
 		return pluginName != null;
@@ -153,7 +203,9 @@ public class Generator {
 
 	public void generate (Parser parser) throws IOException
 	{
+		parser.setDefaultException(getDefaultException());
 		parser.setTranslateOnly (this.isTranslatedOnly());
+		parser.setTranslateEntities(translateEntities);
 		new EntityGenerator().generate (this, parser);
 		new ServiceGenerator().generate(this, parser);
 		new ValueObjectGenerator().generate (this, parser);
@@ -197,5 +249,76 @@ public class Generator {
 			return "com.soffid.iam";
 		else
 			return "es.caib.seycon.ng";
+	}
+
+	public String getModelPackage(int scope) {
+		if (basePackage != null)
+		{
+			return basePackage+".model";
+		}
+		else if (isPlugin())
+		{
+			return "com.soffid.iam.addons."+getPluginName()+".model";
+		}
+		else
+		{
+			return getSharedModelPackage(scope);
+		}
+	}
+
+	public String getSharedModelPackage(int scope) {
+		if (basePackage != null)
+		{
+			return basePackage+".model";
+		}
+		else if (scope == Translate.SERVICE_SCOPE &&
+				isTranslatedOnly() ||
+			scope == Translate.ALTSERVICE_SCOPE &&
+				! isTranslatedOnly() ||
+			scope == Translate.ENTITY_SCOPE &&
+				isTranslateEntities() ||
+			scope == Translate.TRANSLATE)
+		{
+			return "com.soffid.iam.model";
+		}
+		else
+		{
+			return "es.caib.seycon.ng.model";
+		}
+	}
+
+	public String getModelDir() {
+		if (basePackage != null)
+		{
+			return Util.packageToDir(basePackage)+"model";
+		}
+		else if (isPlugin())
+		{
+			return  "com/soffid/iam/addons/"+getPluginName()+"/model";
+		}
+		else
+		{
+			if (isTranslateEntities() || isTranslatedOnly())
+			{
+				return  "com/soffid/iam/model";
+			}
+			else
+			{
+				return  "es/caib/seycon/ng/model";
+			}
+		}
+	}
+
+	public void setBasePackage(String basePackage) {
+		this.basePackage = basePackage;
+	}
+
+	public String getBasePackage() {
+		return basePackage;
+	}
+
+	public void setDefaultException(String defaultException) {
+		this.defaultException  = defaultException;
+		
 	}
 }

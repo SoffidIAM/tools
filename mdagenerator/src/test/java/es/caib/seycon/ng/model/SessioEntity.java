@@ -102,11 +102,6 @@ public abstract class SessioEntity {
 	 return null;
 	}
 	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.SessioEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
-	@DaoFinder
 	public es.caib.seycon.ng.model.SessioEntity findById(
 		java.lang.Long id) {
 	 return null;

@@ -19,40 +19,25 @@ package com.soffid.maven.plugin.mda;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.maven.archiver.MavenArchiveConfiguration;
-import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
-import org.apache.maven.artifact.resolver.filter.TypeArtifactFilter;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 
 import com.soffid.mda.generator.Generator;
 import com.soffid.mda.parser.Parser;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Base source code from MDZIP file.
@@ -71,11 +56,48 @@ public class Mda2Mojo extends AbstractMojo {
 	 */
 	private boolean generateDoc = false;
 	/**
+	 * Generate sync server remote service locator
+	 * 
+	 * @parameter
+	 */
+	private boolean generateSync = true;
+	/**
+	 * Generate EJB stub
+	 * 
+	 * @parameter
+	 */
+	private boolean generateEjb = true;
+	/**
 	 * Use translated versions
 	 * 
 	 * @parameter
 	 */
 	private boolean translate = true;
+	/**
+	 * Check HQL Parameters
+	 * 
+	 * @parameter
+	 */
+	private boolean hqlFullTest = true;
+	/**
+	 * Use translated versions for Entities
+	 * 
+	 * @parameter
+	 */
+	private boolean translateEntities = true;
+	/**
+	 * Generate deprecated (translated) methods
+	 * 
+	 * @parameter
+	 */
+	private boolean generateDeprecated = false;
+	/**
+	 * Generate default internal exception error
+	 * 
+	 * @parameter
+	 */
+	private String defaultException = "es.caib.seycon.ng.exception.InternalErrorException";
+
 	/**
 	 * Directory where sync server java files are to be generated
 	 * 
@@ -141,6 +163,13 @@ public class Mda2Mojo extends AbstractMojo {
 	 * @parameter
 	 */
 	private String commonsDir;
+
+	/**
+	 * Base package name for classes
+	 * 
+	 * @parameter
+	 */
+	private String basePackage;
 
 	/**
 	 * Directory where documentation files will be generated
@@ -220,6 +249,9 @@ public class Mda2Mojo extends AbstractMojo {
 		try 
 		{
 			Parser p = new Parser ();
+			p.setTranslateOnly (translate);
+			p.setDefaultException(defaultException);
+			p.setTranslateEntities(translateEntities);
 			File classesDir = new File(project.getBuild().getOutputDirectory());
 			getLog().info("Scanning "+ classesDir.getPath());
 			List<URL> urls = new LinkedList<URL>();
@@ -234,6 +266,8 @@ public class Mda2Mojo extends AbstractMojo {
 			
 			Thread.currentThread().setContextClassLoader(cl);
 			Generator g = new Generator ();
+			g.setTranslatedOnly(translate);
+			g.setTranslateEntities(translateEntities);
 			try 
 			{
 				p.parse(classesDir);
@@ -261,8 +295,15 @@ public class Mda2Mojo extends AbstractMojo {
 					g.setXmlModule(xmiDir);
 				if (docDir != null)
 					g.setUmlDir(docDir);
+				g.setDefaultException(defaultException);
 				g.setGenerateUml(generateDoc);
 				g.setTranslatedOnly(translate);
+				g.setTranslateEntities(translateEntities);
+				g.setGenerateDeprecated(generateDeprecated);
+				g.setHqlFullTest(hqlFullTest);
+				g.setGenerateEjb(generateEjb);
+				g.setGenerateSync(generateSync);
+				g.setBasePackage (basePackage);
 				g.generate(p);
 			} finally {
 				Thread.currentThread().setContextClassLoader(cl.getParent());

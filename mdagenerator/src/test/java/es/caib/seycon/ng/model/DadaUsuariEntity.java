@@ -44,11 +44,6 @@ public abstract class DadaUsuariEntity {
 		java.lang.String codiTipusDada) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.DadaUsuariEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 	@DaoFinder("select dada\nfrom es.caib.seycon.ng.model.DadaUsuariEntity as dada\nwhere dada.valorDada = :value and\ndada.tipusDada.codi=:type")
 	public java.util.List<es.caib.seycon.ng.model.DadaUsuariEntity> findByTypeAndValue(
 		java.lang.String type, 

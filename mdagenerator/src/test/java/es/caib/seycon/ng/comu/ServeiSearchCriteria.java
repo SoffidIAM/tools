@@ -7,7 +7,7 @@
 package es.caib.seycon.ng.comu;
 import com.soffid.mda.annotation.*;
 
-@ValueObject 
+@ValueObject @Criteria
 public abstract class ServeiSearchCriteria {
 
 	public java.lang.String codi;

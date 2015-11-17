@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.List;
 
+import com.soffid.mda.annotation.JsonObject;
 import com.soffid.mda.parser.*;
 
 public class ValueObjectGenerator {
@@ -14,57 +15,53 @@ public class ValueObjectGenerator {
 	private Generator generator;
 	private Parser parser;
 
-	private boolean translated;
+	private int scope;
 
 	public void generate(Generator generator, Parser parser) throws FileNotFoundException {
 		this.generator = generator;
 		this.parser = parser;
-		this.translated = generator.isTranslatedOnly();
+		this.scope = Translate.SERVICE_SCOPE; 
 		
 		for (AbstractModelClass vo: parser.getValueObjects()) {
-			if (!generator.isTranslatedOnly())
-				generateValueObject (vo, false);
-			if (vo.isTranslated() || generator.isTranslatedOnly())
-				generateValueObject (vo, true);
+			generateValueObject (vo, Translate.SERVICE_SCOPE);
+			if (vo.isTranslated())
+				generateValueObject (vo, Translate.ALTSERVICE_SCOPE);
 			else
-				System.out.println( "Object is not translated ["+ vo.getName(translated) + "]" );
-			
-			if (vo.isJsonObject())
-			{
-				generateJsonTransformer (vo);
-			}
+				System.out.println( "Object is not translated ["+ vo.getName(scope) + "]" );
+			generateValueObjectQueryDescriptor(vo, Translate.SERVICE_SCOPE);
+			generateValueObjectQueryDescriptor(vo, Translate.ALTSERVICE_SCOPE);
 		}
 
 
 		for (AbstractModelClass vo: parser.getCriterias() ){
-			generateValueObject (vo, translated);
-			if ( ! translated && vo.isTranslated())
-				generateValueObject (vo, true);
+			generateValueObject (vo, Translate.SERVICE_SCOPE);
+			if (vo.isTranslated())
+				generateValueObject (vo, Translate.ALTSERVICE_SCOPE);
 		}
 
 		for (AbstractModelClass exception: parser.getExceptions ())
 		{
-			generateException (exception, translated);
-			if ( ! translated && exception.isTranslated())
-				generateException (exception, true);
+			generateException (exception, Translate.SERVICE_SCOPE);
+			if ( exception.isTranslated())
+				generateException (exception, Translate.ALTSERVICE_SCOPE);
 		}
 
 		for (AbstractModelClass enumeration: parser.getEnumerations ()) {
-			if (!enumeration.getAttributes().isEmpty()) {
-				generateEnumeration (enumeration, generator.isTranslatedOnly());
-				generateHibernateEnumeration (enumeration, generator.isTranslatedOnly());
-				if ( ! generator.isTranslatedOnly() && enumeration.isTranslated())
+			if (!enumeration.getAttributes().isEmpty() ) {
+				generateEnumeration (enumeration, Translate.SERVICE_SCOPE);
+				generateHibernateEnumeration (enumeration, Translate.SERVICE_SCOPE);
+				if ( enumeration.isTranslated())
 				{
-					generateEnumeration (enumeration, true);
-					generateHibernateEnumeration (enumeration, true);
+					generateEnumeration (enumeration, Translate.ALTSERVICE_SCOPE);
+					generateHibernateEnumeration (enumeration, Translate.ENTITY_SCOPE);
 				}
 			}
 		}
 
 	}
 
-	void generateEnumeration(AbstractModelClass vo, boolean translated) throws FileNotFoundException {
-		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(translated) + vo.getName(translated) + ".java";
+	void generateEnumeration(AbstractModelClass vo, int entityScope) throws FileNotFoundException {
+		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(entityScope) + vo.getName(entityScope) + ".java";
 		System.out.println( "Generating " + file );
 		File f = new File(file);
 		f.getParentFile().mkdirs();
@@ -78,16 +75,16 @@ public class ValueObjectGenerator {
 				+"// Attention: Generated code! Do not modify by hand!" + endl
 				+ "//" );
 		if (vo.getPackage() != null)
-			out.println( "package " + vo.getPackage(translated) + ";" );
+			out.println( "package " + vo.getPackage(entityScope) + ";" );
 
 		out.println( "/**" + endl
-				+ " * Enumeration " + vo.getName(translated) + endl
+				+ " * Enumeration " + vo.getName(entityScope) + endl
 				+ Util.formatComments(vo.getComments())
 				+ " */" );
-		out.println( "public class " + vo.getName(translated));
+		out.println( "public class " + vo.getName(entityScope));
 		if (vo.getSuperClass() != null) {
 			out.print( " extends " );
-			out.println( vo.getSuperClass().getFullName(translated));
+			out.println( vo.getSuperClass().getFullName(entityScope));
 		}
 		out.println("\t\timplements java.io.Serializable" );
 		out.println( " {" );
@@ -102,18 +99,18 @@ public class ValueObjectGenerator {
 		if (!vo.getAttributes().isEmpty())
 		{
 			String dataType;
-			dataType = vo.getAttributes().get(0).getJavaType(translated, this.translated);
+			dataType = vo.getAttributes().get(0).getJavaType(entityScope);
 			int values = 0;
 			for (AbstractModelAttribute att: vo.getAttributes())
 			{
-				if (! att.getName(translated).isEmpty()) {
+				if (! att.getName(entityScope).isEmpty()) {
 					values ++;
-					dataType = att.getJavaType(translated, this.translated);
+					dataType = att.getJavaType(entityScope);
 					out.println( "\t/**" + endl
 							+ Util.formatComments(att.getComments())
 							+ "\t */" );
-					out.println( "\tpublic static final " + vo.getName(translated) + " " + Util.toUpper(att.getName(translated)) + "= new "
-							+ vo.getName(translated) + "( new "+dataType+  "("
+					out.println( "\tpublic static final " + vo.getName(entityScope) + " " + Util.toUpper(att.getName(entityScope)) + "= new "
+							+ vo.getName(entityScope) + "( new "+dataType+  "("
 							+ att.getConstantValue() + "));" + endl );
 
 				}
@@ -125,11 +122,11 @@ public class ValueObjectGenerator {
 				+ "\t */" + endl
 				+ "\tprivate " + dataType + " value;" + endl
 				+ endl
-				+ "\tprivate " + vo.getName(translated) + "(" + dataType + " value)" + endl
+				+ "\tprivate " + vo.getName(entityScope) + "(" + dataType + " value)" + endl
 				+ "\t{" + endl
 				+ "\t\tthis.value=value;" + endl
 				+ "\t}" + endl + endl
-				+ "\tprotected " + vo.getName(translated) + "()" + endl
+				+ "\tprotected " + vo.getName(entityScope) + "()" + endl
 				+ "\t{" + endl
 				+ "\t}" + endl + endl
 				+ "\t/**" + endl
@@ -140,9 +137,9 @@ public class ValueObjectGenerator {
 				+ "\t\treturn java.lang.String.valueOf(value);" + endl
 				+ "\t}" + endl
 				+ "\t/**" + endl
-				+ "\t * Creates an instance of " + vo.getName(translated) + " from <code>value</code>." + endl
+				+ "\t * Creates an instance of " + vo.getName(entityScope) + " from <code>value</code>." + endl
 				+ "\t *" + endl
-				+ "\t * @param value the value to create the " + vo.getName(translated) + " from." + endl
+				+ "\t * @param value the value to create the " + vo.getName(entityScope) + " from." + endl
 				+ "\t */" );
 			String getterType ;
 			if (dataType.equals ( "java.lang.String"  )|| dataType.equals ( "String" )) {
@@ -154,9 +151,9 @@ public class ValueObjectGenerator {
 			} else {
 				getterType = "Object";
 			}
-			out.println( "\tpublic static " + vo.getName(translated) + " from" + getterType + "(" + dataType+ " value)" );
+			out.println( "\tpublic static " + vo.getName(entityScope) + " from" + getterType + "(" + dataType+ " value)" );
 			out.println( "\t{" + endl
-				+ "\t\tfinal "+ vo.getName(translated) + " typeValue = (" + vo.getName(translated) + ") values.get(value);" + endl
+				+ "\t\tfinal "+ vo.getName(entityScope) + " typeValue = (" + vo.getName(entityScope) + ") values.get(value);" + endl
 				+ "\t\tif (typeValue == null)" + endl
 				+ "\t\t\tthrow new IllegalArgumentException(\"invalue value '\" + value + \"', possible vaues are: \" + literals); " + endl
 				+ "\t\treturn typeValue;" + endl
@@ -177,7 +174,7 @@ public class ValueObjectGenerator {
 				+ "\t */" + endl
 				+ "\tpublic int compareTo(Object that)" + endl
 				+ "\t{" + endl
-				+ "\t\treturn (this == that) ? 0 : this.getValue().compareTo(((" + vo.getName(translated) + ")that).getValue());" + endl
+				+ "\t\treturn (this == that) ? 0 : this.getValue().compareTo(((" + vo.getName(entityScope) + ")that).getValue());" + endl
 				+ "\t}" + endl
 				+ "" + endl
 				+ "\t/**" + endl
@@ -209,8 +206,8 @@ public class ValueObjectGenerator {
 				+ "\tpublic boolean equals(Object object)" + endl
 				+ "\t{" + endl
 				+ "\t\treturn (this == object)" + endl
-				+ "\t\t\t|| (object instanceof " + vo.getName(translated) + endl
-				+ "\t\t\t    && ((" + vo.getName(translated) + ")object).getValue().equals(this.getValue()));" + endl
+				+ "\t\t\t|| (object instanceof " + vo.getName(entityScope) + endl
+				+ "\t\t\t    && ((" + vo.getName(entityScope) + ")object).getValue().equals(this.getValue()));" + endl
 				+ "\t}" + endl
 				+ "" + endl
 				+ "\t/**" + endl
@@ -236,7 +233,7 @@ public class ValueObjectGenerator {
 				+ "\t */" + endl
 				+ "\tprivate java.lang.Object readResolve() throws java.io.ObjectStreamException" + endl
 				+ "\t{" + endl
-				+ "\t\treturn " + vo.getName(translated)+ ".from" + getterType + "(this.value);" + endl
+				+ "\t\treturn " + vo.getName(entityScope)+ ".from" + getterType + "(this.value);" + endl
 				+ "\t}" + endl
 				+ "" + endl
 				+ "\tprivate static final java.util.Map values = new java.util.HashMap(" + values + ", 1);" + endl
@@ -251,11 +248,11 @@ public class ValueObjectGenerator {
 
 			for (AbstractModelAttribute att: vo.getAttributes())
 			{
-				if (! att.getName(translated).isEmpty()) {
-					out.println( "\t\tvalues.put(" + Util.toUpper(att.getName(translated)) + ".value, "
-							+ Util.toUpper(att.getName(translated)) + ");" + endl
-							+ "\t\tliterals.add(" + Util.toUpper(att.getName(translated)) + ".value);" + endl
-							+ "\t\tnames.add(\"" + Util.toUpper(att.getName(translated)) + "\");" );
+				if (! att.getName(entityScope).isEmpty()) {
+					out.println( "\t\tvalues.put(" + Util.toUpper(att.getName(entityScope)) + ".value, "
+							+ Util.toUpper(att.getName(entityScope)) + ");" + endl
+							+ "\t\tliterals.add(" + Util.toUpper(att.getName(entityScope)) + ".value);" + endl
+							+ "\t\tnames.add(\"" + Util.toUpper(att.getName(entityScope)) + "\");" );
 				}
 			}
 			out.println( "\t\tliterals = java.util.Collections.unmodifiableList(literals);" + endl
@@ -268,14 +265,14 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateHibernateEnumeration(AbstractModelClass vo, boolean translated) throws FileNotFoundException {
-		String file = generator.getCoreDir() + "/" + vo.getPackageDir(translated) + vo.getName(translated) + "Enum.java";
+	void generateHibernateEnumeration(AbstractModelClass vo, int entityScope) throws FileNotFoundException {
+		String file = generator.getCoreDir() + "/" + vo.getPackageDir(entityScope) + vo.getName(entityScope) + "Enum.java";
 		System.out.println( "Generating " + file );
 		File f = new File(file);
 		f.getParentFile().mkdirs();
 		PrintStream out = new PrintStream (f);
 
-		String dataType = vo.getAttributes().get(0).getJavaType(translated, this.translated);
+		String dataType = vo.getAttributes().get(0).getJavaType(entityScope);
 		String getterType;
 		if (dataType.equals( "java.lang.String" ) || dataType.equals ( "String" )) {
 			getterType = "String";
@@ -292,7 +289,7 @@ public class ValueObjectGenerator {
 				+ "//" + endl
 				+"// Attention: Generated code! Do not modify by hand!" + endl
 				+ "//" + endl
-				+ "package " + vo.getPackage(translated) + ";" + endl
+				+ "package " + vo.getPackage(entityScope) + ";" + endl
 				+ "" + endl
 				+ "import org.hibernate.HibernateException;" + endl
 				+ "" + endl
@@ -304,8 +301,8 @@ public class ValueObjectGenerator {
 				+ "/**" + endl
 				+ " * " + endl
 				+ " */" + endl
-				+ "public final class " + vo.getName(translated)+ "Enum" + endl
-				+ "\textends " + vo.getName(translated) + endl
+				+ "public final class " + vo.getName(entityScope)+ "Enum" + endl
+				+ "\textends " + vo.getName(entityScope) + endl
 				+ "\timplements java.io.Serializable," + endl
 				+ "\t\t\t   java.lang.Comparable," + endl
 				+ "\t\t\t   org.hibernate.usertype.EnhancedUserType" + endl
@@ -319,7 +316,7 @@ public class ValueObjectGenerator {
 				+ "\t * The instance will be converted to the correct enum instance" + endl
 				+ "\t * in {@link #nullSafeGet(java.sql.ResultSet, java.lang.String[], java.lang.Object)}." + endl
 				+ "\t */" + endl
-				+ "\tpublic " + vo.getName(translated)+ "Enum()" + endl
+				+ "\tpublic " + vo.getName(entityScope)+ "Enum()" + endl
 				+ "\t{" + endl
 				+ "\t\tsuper();" + endl
 				+ "\t}" + endl
@@ -363,7 +360,7 @@ public class ValueObjectGenerator {
 				+ "\t */" + endl
 				+ "\tpublic Class returnedClass()" + endl
 				+ "\t{" + endl
-				+ "\t\treturn " + vo.getName(translated)+ ".class;" + endl
+				+ "\t\treturn " + vo.getName(entityScope)+ ".class;" + endl
 				+ "\t}" + endl
 				+ "" + endl
 				+ "\t/**" + endl
@@ -427,7 +424,7 @@ public class ValueObjectGenerator {
 				+ "\t */" + endl
 				+ "\tpublic String objectToSQLString(Object object)" + endl
 				+ "\t{" + endl
-				+ "\t\treturn java.lang.String.valueOf(((" + vo.getName(translated) + ")object).getValue());" + endl
+				+ "\t\treturn java.lang.String.valueOf(((" + vo.getName(entityScope) + ")object).getValue());" + endl
 				+ "\t}" + endl
 				+ "" + endl
 				+ "\t/**" + endl
@@ -435,7 +432,7 @@ public class ValueObjectGenerator {
 				+ "\t */" + endl
 				+ "\tpublic String toXMLString(Object object)" + endl
 				+ "\t{" + endl
-				+ "\t\treturn java.lang.String.valueOf(((" + vo.getName(translated) + ")object).getValue());" + endl
+				+ "\t\treturn java.lang.String.valueOf(((" + vo.getName(entityScope) + ")object).getValue());" + endl
 				+ "\t}" + endl
 				+ "" + endl
 				+ "\t/**" + endl
@@ -443,7 +440,7 @@ public class ValueObjectGenerator {
 				+ "\t */" + endl
 				+ "\tpublic Object fromXMLString(String string)" + endl
 				+ "\t{" + endl
-				+ "\t\treturn "+vo.getName(translated)+".from" + getterType
+				+ "\t\treturn "+vo.getName(entityScope)+".from" + getterType
 				+ "(" + dataType + ".valueOf(string));" + endl
 				+ "\t}" + endl
 				+ "}" );
@@ -452,8 +449,8 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateException(AbstractModelClass vo, boolean translated) throws FileNotFoundException {
-		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(translated) + vo.getName(translated) + ".java";
+	void generateException(AbstractModelClass vo, int scope) throws FileNotFoundException {
+		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(scope) + vo.getName(scope) + ".java";
 		System.out.println( "Generating " + file );
 		File f = new File(file);
 		f.getParentFile().mkdirs();
@@ -465,16 +462,16 @@ public class ValueObjectGenerator {
 				+ "//" + endl
 				);
 		if (vo.getPackage()!= null)
-			out.println( "package " + vo.getPackage(translated) + ";" );
+			out.println( "package " + vo.getPackage(scope) + ";" );
 
 		out.println ( "import org.apache.commons.beanutils.PropertyUtils;" + endl
 				+ "/**" + endl
-				+ " * Exception " + vo.getName(translated) + endl
+				+ " * Exception " + vo.getName(scope) + endl
 				+ Util.formatComments(vo.getComments())
 				+ " */" );
-		out.println( "public class " + vo.getName(translated));
+		out.println( "public class " + vo.getName(scope));
 		if (vo.getSuperClass() != null) {
-			out.println( " extends " + vo.getSuperClass().getFullName(translated) );
+			out.println( " extends " + vo.getSuperClass().getFullName(scope) );
 		} else {
 			out.println( " extends java.lang.Exception" );
 		}
@@ -491,36 +488,36 @@ public class ValueObjectGenerator {
 		out.println(  "\t/**" + endl
 				+ "\t * The default constructor." + endl
 				+ "\t */" + endl
-				+ "\tpublic " + vo.getName(translated) + "()" + endl
+				+ "\tpublic " + vo.getName(scope) + "()" + endl
 				+ "\t{}" + endl
 				+ "" + endl
 				+ "\t/**" + endl
-				+ "\t * Constructs a new instance of " + vo.getName(translated) + "" + endl
+				+ "\t * Constructs a new instance of " + vo.getName(scope) + "" + endl
 				+ "\t *" + endl
 				+ "\t * @param throwable the parent Throwable" + endl
 				+ "\t */" + endl
-				+ "\tpublic " + vo.getName(translated) + "(Throwable throwable)" + endl
+				+ "\tpublic " + vo.getName(scope) + "(Throwable throwable)" + endl
 				+ "\t{" + endl
 				+ "\t\tsuper(findRootCause(throwable));" + endl
 				+ "\t}" + endl
 				+ "" + endl
 				+ "\t/**" + endl
-				+ "\t * Constructs a new instance of " + vo.getName(translated) + "" + endl
+				+ "\t * Constructs a new instance of " + vo.getName(scope) + "" + endl
 				+ "\t *" + endl
 				+ "\t * @param message the throwable message." + endl
 				+ "\t */" + endl
-				+ "\tpublic " + vo.getName(translated) + "(String message)" + endl
+				+ "\tpublic " + vo.getName(scope) + "(String message)" + endl
 				+ "\t{" + endl
 				+ "\t\tsuper(message);" + endl
 				+ "\t}" + endl
 				+ "" + endl
 				+ "\t/**" + endl
-				+ "\t * Constructs a new instance of " + vo.getName(translated) + "" + endl
+				+ "\t * Constructs a new instance of " + vo.getName(scope) + "" + endl
 				+ "\t *" + endl
 				+ "\t * @param message the throwable message." + endl
 				+ "\t * @param throwable the parent of this Throwable." + endl
 				+ "\t */" + endl
-				+ "\tpublic " + vo.getName(translated) + "(String message, Throwable throwable)" + endl
+				+ "\tpublic " + vo.getName(scope) + "(String message, Throwable throwable)" + endl
 				+ "\t{" + endl
 				+ "\t\tsuper(message, findRootCause(throwable));" + endl
 				+ "\t}" + endl
@@ -577,20 +574,11 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateJsonObject (AbstractModelClass vo) throws FileNotFoundException
-	{
-		boolean translated = false;
-		String file = generator.getCoreDir() + "/" + vo.getPackageDir(translated) + "json/"+vo.getName(translated) + ".java";
-		System.out.println( "Generating " + file );
-		File f = new File(file);
-		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream (f);
-
-		out.close();
-	}
-	
-	void generateValueObject(AbstractModelClass vo, boolean translated) throws FileNotFoundException {
-		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(translated) + vo.getName(translated) + ".java";
+	void generateValueObject(AbstractModelClass vo, int scope) throws FileNotFoundException {
+		if (vo.isAbstract())
+			return;
+		
+		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(scope) + vo.getName(scope) + ".java";
 		System.out.println( "Generating " + file );
 		File f = new File(file);
 		f.getParentFile().mkdirs();
@@ -601,17 +589,30 @@ public class ValueObjectGenerator {
 				+ "//" + endl
 				+ "//" + endl
 				);
-		if (vo.getPackage(translated) != null)
-			out.println( "package " + vo.getPackage(translated) + ";" );
+		if (vo.getPackage(scope) != null)
+			out.println( "package " + vo.getPackage(scope) + ";" );
 
 		out.println( "/**" + endl
-				+ " * ValueObject " + vo.getName(translated) + endl
+				+ " * ValueObject " + vo.getName(scope) + endl
 				+ Util.formatComments(vo.getComments())
 				+ " **/" );
-		out.println( "public class " + vo.getName(translated));
+		if (vo.isJsonObject())
+		{
+			JsonObject json = vo.getJsonObject();
+			if (json.serializerDelegate())
+			{
+				out.print("@com.fasterxml.jackson.databind.annotation.JsondDeserializer(using=");
+				out.print(vo.getPackagePrefix(scope)+"json.");
+				out.println(vo.getName()+"Serializer.class)");
+				out.print("@com.fasterxml.jackson.databind.annotation.JsonSerializer(using=");
+				out.print(vo.getPackagePrefix(scope)+"json.");
+				out.println(vo.getName()+"Serializer.class)");
+			}
+		}
+		out.println( "public class " + vo.getName(scope));
 		if (vo.getSuperClass() != null) {
 			out.print( " extends " );
-			out.println( vo.getSuperClass().getFullName(translated));
+			out.println( vo.getSuperClass().getFullName(scope));
 		}
 		out.println( endl + "\t\timplements java.io.Serializable" );
 		out.println( " {" );
@@ -628,23 +629,44 @@ public class ValueObjectGenerator {
 		//
 		for (AbstractModelAttribute att: vo.getAttributes())
 		{
-			if (! att.getName(translated).isEmpty()) {
-				String dataType = att.getDataType().getJavaType(translated, this.translated);
-				
-				out.println( "\t/**" + endl
-						+ "\t * Attribute " + att.getName(translated) + endl
-						+ Util.formatComments(att.getComments()) + endl
-						+ "\t */" );
-				out.print( "\tprivate " + dataType
-						+ " " + att.getName(translated)) ;
-				if (att.getDefaultValue() != null && (!translated || ! att.getDataType().isTranslated()))
-					out.print( " = " + att.getDefaultValue());
-				out.println( ";" + endl );
+			if (! att.getName(scope).isEmpty()) {
+				if (att.isStatic())
+				{
+					String dataType = att.getDataType().getJavaType(scope);
+					
+					out.println( "\t/**" + endl
+							+ "\t * Constant " + att.getName(scope) + endl
+							+ Util.formatComments(att.getComments()) + endl
+							+ "\t */" );
+					out.print( "\tpublic static final " + dataType
+							+ " " + att.getName(scope)) ;
+					Object v = att.getStaticValue();
+					if (v != null )
+						if (v instanceof String)
+							out.print( " = \"" + v.toString()+"\"");
+						else
+							out.print( " = " + v);
+					out.println( ";" + endl );
+				}
+				else
+				{
+					String dataType = att.getDataType().getJavaType(scope);
+					
+					out.println( "\t/**" + endl
+							+ "\t * Attribute " + att.getName(scope) + endl
+							+ Util.formatComments(att.getComments()) + endl
+							+ "\t */" );
+					out.print( "\tprivate " + dataType
+							+ " " + att.getName(scope)) ;
+					if (att.getDefaultValue() != null)
+						out.print( " = " + att.getDefaultValue());
+					out.println( ";" + endl );
+				}
 			}
 		}
 
 		// empty constructor method
-		out.println( "\tpublic " + vo.getName(translated) + "()" + endl
+		out.println( "\tpublic " + vo.getName(scope) + "()" + endl
 			+ "\t{" + endl
 	        + "\t}" + endl );
 
@@ -652,11 +674,11 @@ public class ValueObjectGenerator {
 		List<AbstractModelAttribute> allAttributes = vo.getAllAttributes();
 		boolean allRequired = true;
 		boolean anyRequired = false;
-		out.print( "\tpublic " + vo.getName(translated) + "(" );
+		out.print( "\tpublic " + vo.getName(scope) + "(" );
 		boolean first = true;
 		for (AbstractModelAttribute att: allAttributes)
 		{
-			if (! att.getName(translated).isEmpty()) {
+			if (! att.getName(scope).isEmpty() && !att.isStatic()) {
 				if (att.isRequired())
 					anyRequired = true;
 				else
@@ -666,7 +688,7 @@ public class ValueObjectGenerator {
 					first = false;
 				else
 					out.print( ", " ) ;
-				out.print( att.getDataType().getJavaType(translated, this.translated) + " " + att.getName(translated) );
+				out.print( att.getDataType().getJavaType(scope) + " " + att.getName(scope) );
 			}
 		}
 		out.print( ")" + endl
@@ -676,7 +698,7 @@ public class ValueObjectGenerator {
 		boolean firstSuperAttribute = true;
 		for (AbstractModelAttribute att: allAttributes)
 		{
-			if (! att.getName(translated).isEmpty()) {
+			if (! att.getName(scope).isEmpty() && !att.isStatic()) {
 				if (superAttributes) {
 					if (att.getModelClass() == vo)
 					{
@@ -687,12 +709,12 @@ public class ValueObjectGenerator {
 					{
 						if (!firstSuperAttribute)
 							out.print( ", ");
-						out.print( att.getName(translated) );
+						out.print( att.getName(scope) );
 						firstSuperAttribute = false;
 					}
 				}
 				if ( !superAttributes)
-					out.println( "\t\tthis." + att.getName(translated) + " = " + att.getName(translated) + ";" );
+					out.println( "\t\tthis." + att.getName(scope) + " = " + att.getName(scope) + ";" );
 			}
 		}
 		if (superAttributes)
@@ -704,16 +726,16 @@ public class ValueObjectGenerator {
 		{
 			superAttributes = true;
 			firstSuperAttribute = true;
-			out.print( "\tpublic " + vo.getName(translated) + "(" );
+			out.print( "\tpublic " + vo.getName(scope) + "(" );
 			first = true;
 			for (AbstractModelAttribute att: allAttributes)
 			{
-				if (! att.getName(translated).isEmpty() && att.isRequired()) {
+				if (! att.getName(scope).isEmpty() && att.isRequired() && ! att.isStatic()) {
 					if (first)
 						first = false;
 					else
 						out.print( ", " );
-					out.print( att.getDataType().getJavaType(translated, this.translated) + " " + att.getName(translated) );
+					out.print( att.getDataType().getJavaType(scope) + " " + att.getName(scope) );
 				}
 			}
 			out.print( ")" + endl
@@ -721,7 +743,7 @@ public class ValueObjectGenerator {
 					+ "\t\tsuper(" ) ;
 			for (AbstractModelAttribute att: allAttributes)
 			{
-				if (! att.getName(translated).isEmpty() && att.isRequired()) {
+				if (! att.getName(scope).isEmpty() && att.isRequired() && ! att.isStatic()) {
 					if (superAttributes) {
 						if (att.getModelClass() == vo)
 						{
@@ -732,12 +754,12 @@ public class ValueObjectGenerator {
 						{
 							if (!firstSuperAttribute)
 								out.print( ", ");
-							out.print( att.getName(translated));
+							out.print( att.getName(scope));
 							firstSuperAttribute = false;
 						}
 					}
 					if ( !superAttributes)
-						out.println( "\t\tthis." + att.getName(translated) + " = " + att.getName(translated) + ";" );
+						out.println( "\t\tthis." + att.getName(scope) + " = " + att.getName(scope) + ";" );
 				}
 			}
 			if (superAttributes)
@@ -746,21 +768,21 @@ public class ValueObjectGenerator {
 		}
 
 		// Other  bean constructor
-		out.print( "\tpublic " + vo.getName(translated) + "(" + vo.getName(translated) + " otherBean)" + endl
+		out.print( "\tpublic " + vo.getName(scope) + "(" + vo.getName(scope) + " otherBean)" + endl
 				+ "\t{" + endl
 				+ "\t\tthis(");
 		first = true;
 		for (AbstractModelAttribute att: allAttributes)
 		{
-			if (! att.getName(translated).isEmpty()) {
+			if (! att.getName(scope).isEmpty() && ! att.isStatic()) {
 				if (first)
 					first = false;
 				else
 					out.print( ", " ) ;
 				if (att.getModelClass() == vo)
-					out.print( "otherBean." + att.getName(translated) );
+					out.print( "otherBean." + att.getName(scope) );
 				else
-					out.print( "otherBean." + att.getterName(translated) + "()" );
+					out.print( "otherBean." + att.getterName(scope) + "()" );
 			}
 		}
 		out.println( ");" + endl
@@ -770,22 +792,22 @@ public class ValueObjectGenerator {
 		//
 		for (AbstractModelAttribute att: vo.getAttributes())
 		{
-			if (! att.getName(translated).isEmpty()) {
+			if (! att.getName(scope).isEmpty() && ! att.isStatic()) {
 				out.println( "\t/**" + endl
-						+ "\t * Gets value for attribute " + att.getName(translated) + endl
+						+ "\t * Gets value for attribute " + att.getName(scope) + endl
 						+ "\t */" );
-				out.println( "\tpublic " + att.getDataType().getJavaType(translated, this.translated)
-						+ " " + att.getterName(translated) + "() {" + endl
-						+ "\t\treturn this." + att.getName(translated) + ";" + endl
+				out.println( "\tpublic " + att.getDataType().getJavaType(scope)
+						+ " " + att.getterName(scope) + "() {" + endl
+						+ "\t\treturn this." + att.getName(scope) + ";" + endl
 						+ "\t}" + endl + endl
 						+ "\t/**" + endl
-						+ "\t * Sets value for attribute " + att.getName(translated) + endl
+						+ "\t * Sets value for attribute " + att.getName(scope) + endl
 						+ "\t */" + endl
-						+ "\tpublic void " + att.setterName(translated) + "("
-						+ att.getDataType().getJavaType(translated, this.translated) + " "
-						+ att.getName(translated) + ") {" + endl
-						+ "\t\tthis." + att.getName(translated)
-						+ " = " + att.getName(translated) + ";" + endl
+						+ "\tpublic void " + att.setterName(scope) + "("
+						+ att.getDataType().getJavaType(scope) + " "
+						+ att.getName(scope) + ") {" + endl
+						+ "\t\tthis." + att.getName(scope)
+						+ " = " + att.getName(scope) + ";" + endl
 						+ "\t}" + endl );
 			}
 		}
@@ -876,14 +898,14 @@ public class ValueObjectGenerator {
 		first = true;
 		for (AbstractModelAttribute att: vo.getAttributes())
 		{
-			if (! att.getName(translated).isEmpty()) {
+			if (! att.getName(scope).isEmpty()  && ! att.isStatic()) {
 			    out.print ( "\t\tb.append (\"" );
 				if (first)
 					out.print ( "[" );
 				else
 					out.print ( ", " ) ;
-			    out.println( att.getName(translated) + ": \");" );
-				out.println( "\t\tb.append (this." + att.getName(translated) + ");" );
+			    out.println( att.getName(scope) + ": \");" );
+				out.println( "\t\tb.append (this." + att.getName(scope) + ");" );
 				first = false;
 			}
 		}
@@ -897,64 +919,175 @@ public class ValueObjectGenerator {
 	    // Translation transfomers
 	    if (vo.isTranslated())
 	    {
-
+	    	int altScope = scope == Translate.SERVICE_SCOPE ? Translate.ALTSERVICE_SCOPE : Translate.SERVICE_SCOPE;
 	    	out.println( "\t/**" + endl
-				+ "\t * Creates a " + vo.getName(translated) + " value object based on a " + vo.getName(!translated) + " object." + endl
+				+ "\t * Creates a " + vo.getName(scope) + " value object based on a " + 
+	    			vo.getName(altScope) +
+	    			" object." + endl
 				+ "\t */" );
-			out.println( "\tpublic static " + vo.getName(translated) + " to" + vo.getName(translated) + "(" + vo.getPackagePrefix(!translated) + vo.getName(!translated) + " vo)" );
+			out.println( "\tpublic static " + vo.getName(scope) + " to" + 
+				vo.getName(scope) + "(" + vo.getPackagePrefix(altScope) + vo.getName(altScope) + " vo)" );
 			out.println ( "\t{" + endl
 				+ "\t\tif (vo == null)" + endl
 				+ "\t\t\treturn null;" + endl
-				+ "\t\t" + vo.getName(translated) + " target = new " + vo.getName(translated) + "();" );
+				+ "\t\t" + vo.getName(scope) + " target = new " + vo.getName(scope) + "();" + endl
+				+ "\t\tto"+vo.getName(scope)+" (vo, target);" + endl
+				+ "\t\treturn target;"+endl
+				+ "\t}"+endl);
+
+			// List transformer
+	    	out.println( "\t/**" + endl
+				+ "\t * Creates a " + vo.getName(scope) + " list on a " + vo.getName(altScope) + " collection." + endl
+				+ "\t */" );
+
+			out.println( "\tpublic static java.util.List<" + vo.getName(scope) + "> to" + 	
+					vo.getName(scope) + "List (java.util.Collection<" + vo.getFullName(altScope) + "> source)" );
+
+			out.println ( "\t{" + endl
+				+ "\t\tif (source == null) return null;" + endl + endl
+				+ "\t\tjava.util.List<" + vo.getName(scope) + "> target = new java.util.LinkedList<" + 
+					vo.getName(scope) + "> ();" + endl
+				+ "\t\tfor (" + vo.getFullName(altScope) + " obj: source) " + endl
+				+ "\t\t\t{" + endl
+				+ "\t\t\t\ttarget.add ( to"+ vo.getName(scope) + "(obj));" + endl
+				+ "\t\t\t}" + endl
+				+ "\t\treturn target;" + endl
+				+ "\t}" + endl );
+
+			// Array transformer
+	    	out.println( "\t/**" + endl
+				+ "\t * Creates a " + vo.getName(scope) + " array on a " + vo.getName(altScope) + " array." + endl
+				+ "\t */" );
+
+			out.println( "\tpublic static  "+ vo.getName(scope) + "[] to" + 	
+					vo.getName(scope) + "Array (" + vo.getFullName(altScope) + "[] source)" );
+
+			out.println ( "\t{" + endl
+				+ "\t\tif (source == null) return null;" + endl + endl
+				+ "\t\t" + vo.getName(scope) + "[] target = new "+vo.getName(scope) + "[source.length];" + endl
+				+ "\t\tfor (int i = 0; i < source.length;i ++) " + endl
+				+ "\t\t\t{" + endl
+				+ "\t\t\t\ttarget[i] = to"+ vo.getName(scope) + "(source[i]);" + endl
+				+ "\t\t\t}" + endl
+				+ "\t\treturn target;" + endl
+				+ "\t}" + endl );
+
+			// Copies all attributes
+	    	out.println( "\t/**" + endl
+				+ "\t * Updates a " + vo.getName(scope) + " value object based on a " + 
+	    			vo.getName(altScope) +
+	    			" object." + endl
+				+ "\t */" );
+			out.println( "\tpublic static void to" + 
+				vo.getName(scope) + "(" + vo.getPackagePrefix(altScope) + vo.getName(altScope) + " source, "
+					+ vo.getPackagePrefix(scope) + vo.getName(scope)+ " target)" );
+			out.println ( "\t{" + endl
+				+ "\t\tif (source == null)" + endl
+				+ "\t\t\treturn;" + endl);
 			first = true;
+			if (vo.getSuperClass() != null)
+			{
+				AbstractModelClass sc = vo.getSuperClass();
+				out.println( "\t\t"+sc.getFullName(scope)+".to" + sc.getName(scope) + "(source, target);" );
+			}
 			for (AbstractModelAttribute att: vo.getAttributes())
 			{
-				if (! att.getName(translated).isEmpty()) {
+				if (! att.getName(scope).isEmpty()  && ! att.isStatic()) {
 					if (att.getDataType().isCollection() && att.getDataType().getChildClass() != null && 
 						att.getDataType().getChildClass().isTranslated() && att.getDataType().getChildClass().isValueObject())
 					{
 						AbstractModelClass child = att.getDataType().getChildClass();
-						out.println( "\t\ttarget." + att.getName(translated) + " = "
-							+ child.getFullName(translated) + ".to"
-							+ child.getName(translated) + "List (vo."
-							+ att.getterName(!translated) + "());" );
+						out.println( "\t\ttarget." + att.getName(scope) + " = "
+							+ child.getFullName(scope) + ".to"
+							+ child.getName(scope) + "List (source."
+							+ att.getterName(altScope) + "());" );
 					} 
 					else if (att.getDataType().isTranslated() && att.getDataType().isValueObject())
 					{
-						out.println( "\t\ttarget." + att.getName(translated) + " = "
-													+ att.getDataType().getFullName(translated) + ".to"
-													+ att.getDataType().getName(translated) + "(vo."
-													+ att.getterName(!translated) + "());" );
+						out.println( "\t\ttarget." + att.getName(scope) + " = "
+													+ att.getDataType().getFullName(scope) + ".to"
+													+ att.getDataType().getName(scope) + "(source."
+													+ att.getterName(altScope) + "());" );
+					}
+					else if (att.getDataType().isEnumeration() && att.getDataType().isTranslated())
+					{
+						out.println( "\t\ttarget." + att.getName(scope) + " = "
+								+ att.getDataType().getJavaType(scope)+".fromString(source." + att.getterName(altScope) + "().getValue());" );
 					}
 					else
-						out.println( "\t\ttarget." + att.getName(translated) + " = vo." + att.getterName(!translated) + "();" );
+						out.println( "\t\ttarget." + att.getName(scope) + " = source." + att.getterName(altScope) + "();" );
 				}
 			}
 
-			out.println( "\t\treturn target;" + endl
-				+ "\t}" + endl );
-
-			// List transformer
-	    	out.println( "\t/**" + endl
-				+ "\t * Creates a " + vo.getName(translated) + " list on a " + vo.getName(!translated) + " collection." + endl
-				+ "\t */" );
-
-			out.println( "\tpublic static java.util.List<" + vo.getName(translated) + "> to" + vo.getName(translated) + "List (java.util.Collection<" + vo.getFullName(!translated) + "> source)" );
-
-			out.println ( "\t{" + endl
-				+ "\t\tif (source == null) return null;" + endl + endl
-				+ "\t\tjava.util.List<" + vo.getName(translated) + "> target = new java.util.LinkedList<" + vo.getName(translated) + "> ();" + endl
-				+ "\t\tfor (" + vo.getFullName(!translated) + " obj: source) " + endl
-				+ "\t\t\t{" + endl
-				+ "\t\t\t\ttarget.add ( to"+ vo.getName(translated) + "(obj));" + endl
-				+ "\t\t\t}" + endl
-				+ "\t\treturn target;" + endl
-				+ "\t}" + endl );
+			out.println( "\t}" + endl );
 
 	    }
 		out.println ( "}" );
 
 		out.close();
+
+	}
+	
+	void generateValueObjectQueryDescriptor(AbstractModelClass vo, int scope) throws FileNotFoundException {
+		if (vo.isJsonObject())
+		{
+			JsonObject jsonObject = vo.getJsonObject();
+
+			String modelPackage = generator.getModelPackage(scope);
+			String file = generator.getCoreResourcesDir()+ "/" + vo.getPackageDir(scope)+ vo.getName(scope) + ".query.json";
+			System.out.println( "Generating " + file );
+			File f = new File(file);
+			f.getParentFile().mkdirs();
+			PrintStream out = new PrintStream (f);
+	
+			out.println( "/*" + endl
+					+ "// (C) 2015 Soffid" + endl
+					+ "//" + endl
+					+ "*/" + endl
+					);
+			out.println( "{" );
+			if (jsonObject.hibernateClass() != null)
+			{
+				AbstractModelClass entity = (AbstractModelClass) parser.getElement(jsonObject.hibernateClass());
+				if (! entity.isEntity())
+					throw new RuntimeException("Error parsing object "+
+							vo.getFullName()+": Class "+
+							jsonObject.hibernateClass().getName()+" is not an entity");
+				out.println("  hibernateClass: \"" + 
+							entity.getFullName(Translate.ENTITY_SCOPE)+"\",");
+			}
+
+			out.println ("  attributes: [");
+			//
+			// Attributes
+			//
+			boolean first = true;
+			for (AbstractModelAttribute att: vo.getAttributes())
+			{
+				if (! att.isStatic())
+				{
+					if (first)
+						first = false;
+					else
+						out.println (",");
+					out.print("    {name:\"");
+					out.print(att.getName(scope));
+					out.print("\"");
+					if (att.getJsonHibernateAttribute() != null)
+					{
+						out.print (",  hibernateName:\"");
+						out.print (att.getJsonHibernateAttribute());
+						out.print ("\"");
+					}
+					out.print ("}");
+				}
+			}
+			out.println ();
+			out.println ("  ]");
+			out.println ("};");
+	
+			out.close();
+		}
 
 	}
 	

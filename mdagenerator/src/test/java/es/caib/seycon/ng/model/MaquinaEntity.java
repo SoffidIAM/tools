@@ -127,12 +127,7 @@ public abstract class MaquinaEntity {
 		java.lang.String codiUsuari) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.MaquinaEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
-	@DaoFinder
+	@DaoFinder("- CUSTOM -")
 	public java.lang.String[] getTasques(
 		java.lang.String nomMaquina) {
 	 return null;

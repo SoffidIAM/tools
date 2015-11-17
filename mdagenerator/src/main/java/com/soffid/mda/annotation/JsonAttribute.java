@@ -4,14 +4,12 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JsonAttribute {
 	String value() default "";
-	Class serviceClass();
 	String hibernateAttribute() default "";
 	String hibernateJoin() default "";
-	String deleteMethod() default "delete";
-	boolean customSerialize() default false;
 }

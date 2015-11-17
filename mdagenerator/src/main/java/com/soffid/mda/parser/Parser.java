@@ -165,6 +165,16 @@ public class Parser {
 	private LinkedList<ModelClass> enumerations;
 	private LinkedList<ModelClass> exceptions;
 	private boolean translateOnly;
+	private boolean translateEntities;
+	private String defaultException;
+	public boolean isTranslateEntities() {
+		return translateEntities;
+	}
+
+	public void setTranslateEntities(boolean translateEntities) {
+		this.translateEntities = translateEntities;
+	}
+
 	public boolean isTranslateOnly() {
 		return translateOnly;
 	}
@@ -223,7 +233,15 @@ public class Parser {
 	}
 
 	public void setTranslateOnly(boolean translatedOnly) {
-		this.translateOnly = translateOnly;
+		this.translateOnly = translatedOnly;
 		
+	}
+
+	public String getDefaultException() {
+		return defaultException;
+	}
+
+	public void setDefaultException(String defaultException) {
+		this.defaultException = defaultException;
 	}
 }

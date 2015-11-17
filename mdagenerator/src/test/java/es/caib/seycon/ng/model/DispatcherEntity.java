@@ -161,11 +161,6 @@ public abstract class DispatcherEntity {
 		java.lang.String codi) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.DispatcherEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 	@DaoFinder("from es.caib.seycon.ng.model.DispatcherEntity agent\nwhere agent.url is not null order by agent.codi")
 	public java.util.List<es.caib.seycon.ng.model.DispatcherEntity> findActius() {
 	 return null;

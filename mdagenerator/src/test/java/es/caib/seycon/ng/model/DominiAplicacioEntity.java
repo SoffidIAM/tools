@@ -59,9 +59,4 @@ public abstract class DominiAplicacioEntity {
 		java.lang.String codisAplicacions) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.DominiAplicacioEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 }

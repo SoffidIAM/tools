@@ -96,9 +96,9 @@ public abstract class GrupEntity {
 	@ForeignKey (foreignColumn="AAC_GRU_ID")
 	public java.util.Collection<es.caib.seycon.ng.model.AccountAccessEntity> accountAccess;
 
-	@DaoFinder("from es.caib.seycon.ng.model.GrupEntity grup where grup.pare.codi = :codi")
+	@DaoFinder("from es.caib.seycon.ng.model.GrupEntity grup where grup.pare.name = :name")
 	public java.util.List<es.caib.seycon.ng.model.GrupEntity> findSubGrupsByCodi(
-		java.lang.String codi) {
+		java.lang.String name) {
 	 return null;
 	}
 	@DaoFinder("from es.caib.seycon.ng.model.GrupEntity where tipusUnitatOrganizativa = :tipus")

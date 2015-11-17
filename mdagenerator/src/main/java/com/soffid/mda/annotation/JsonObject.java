@@ -8,12 +8,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JsonObject {
-	String servicePath() default "";
-	Class serviceClass();
-	String createMethod() default "create";
-	String updateMethod() default "update";
-	String deleteMethod() default "delete";
-	String serializeDelegate() default "";
-	String serviceDelegate() default "";
-	
+	boolean serializerDelegate() default false;
+	Class<?> hibernateClass() ;
 }

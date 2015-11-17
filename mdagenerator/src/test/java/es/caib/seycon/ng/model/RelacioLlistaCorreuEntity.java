@@ -44,9 +44,4 @@ public abstract class RelacioLlistaCorreuEntity {
 		java.lang.String codiDomini) {
 	 return null;
 	}
-	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.RelacioLlistaCorreuEntity> find(
-		@Nullable java.util.Collection<es.caib.seycon.ng.model.Parameter> parameters) {
-	 return null;
-	}
 }

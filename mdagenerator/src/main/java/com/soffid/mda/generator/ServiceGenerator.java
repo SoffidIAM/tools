@@ -27,7 +27,6 @@ public class ServiceGenerator {
 
 	private Generator generator;
 	private Parser parser;
-	private boolean translated;
 	private String pkg;
 	private String rootPkg;
 
@@ -36,7 +35,6 @@ public class ServiceGenerator {
 	public void generate(Generator generator, Parser parser) throws IOException {
 		this.generator = generator;
 		this.parser = parser;
-		this.translated = generator.isTranslatedOnly();
 		if (generator.isTranslatedOnly())
 		{
 			rootPkg = "com.soffid.iam";
@@ -55,39 +53,51 @@ public class ServiceGenerator {
 			pkg = rootPkg;
 		}
 		for (AbstractModelClass service: parser.getServices()) {
-			boolean translated2 = this.translated;
-			do
+			generateInterface (service, Translate.SERVICE_SCOPE);
+			generateBase(service, Translate.SERVICE_SCOPE);
+			if (service.isTranslated())
 			{
-				if (translated2 == translated)
+				generateInterface (service, Translate.ALTSERVICE_SCOPE);
+				generateBase(service, Translate.ALTSERVICE_SCOPE);
+				generateBaseProxy(service, Translate.ALTSERVICE_SCOPE);
+			}
+			if (generator.isGenerateUml())
+			{
+				generateUml(service, Translate.SERVICE_SCOPE);
+				generateUmlUseCase(service, Translate.SERVICE_SCOPE);
+			}
+			if (generator.isGenerateEjb() && ! service.isInternal() && !service.isServerOnly())
+			{
+				generateEjbHome(service, Translate.SERVICE_SCOPE);
+				generateEjbInterface (service, Translate.SERVICE_SCOPE);
+				generateEjbBean(service, Translate.SERVICE_SCOPE);
+				if (service.isTranslated())
 				{
-					generateInterface (service, translated);
-					generateBase(service, translated);
-					if (generator.isGenerateUml())
-					{
-						generateUml(service, translated);
-						generateUmlUseCase(service, translated);
-					}
+					generateEjbHome(service, Translate.ALTSERVICE_SCOPE);
+					generateEjbInterface (service, Translate.ALTSERVICE_SCOPE);
+					generateEjbBean(service, Translate.ALTSERVICE_SCOPE);
 				}
-				if (! service.isInternal() && !service.isServerOnly())
-				{
-					generateEjbHome(service, translated2);
-					generateEjbInterface (service, translated2);
-					generateEjbBean(service, translated2);
-				}
-				if (translated2 || ! service.isTranslated())
-					break;
-				translated2 = true;
-			} while (true);
+			}
 		}
 
-		generateEjbJarXml();
-		generateJbossXml();
+		if (generator.isGenerateEjb())
+		{
+			generateEjbJarXml();
+			generateJbossXml();
+		}
 		generateServiceLocator();
-		generateEjbLocator(false);
-		generateEjbLocator(true);
-		generateRemoteServiceLocator();
-		generateRemoteServicePublisher();
-
+		generateAltServiceLocator();
+		if (generator.isGenerateEjb())
+		{
+			generateEjbLocator(Translate.SERVICE_SCOPE);
+			generateEjbLocator(Translate.ALTSERVICE_SCOPE);
+		}
+		if (generator.isGenerateSync())
+		{
+			generateRemoteServiceLocator(false);
+			generateRemoteServiceLocator(true);
+			generateRemoteServicePublisher();
+		}
 	}
 	
 	
@@ -145,9 +155,15 @@ public class ServiceGenerator {
 			String path = service.getServerPath();
 			String role = service.getServerRole();
 			if (! service.isInternal() && ! path.isEmpty()) {
-				out.println ( "\t\tbean = locator.getService(\"" + service.getSpringBeanName(generator, false) + "\");" + endl
+				out.println ( "\t\tbean = locator.getService(\"" + service.getSpringBeanName(generator, Translate.SERVICE_SCOPE) + "\");" + endl
 					+ "\t\tif (bean != null)" + endl
-					+ "\t\t\tpublisher.publish(bean, \"" + path + "\", \"" + role + "\");" + endl );
+					+ "\t\t\tpublisher.publish(bean, \"" + path + (generator.isTranslatedOnly() ? "-en": "") + "\", \"" + role + "\");" + endl );
+				if (service.isTranslated())
+				{
+					out.println ( "\t\tbean = locator.getService(\"" + service.getSpringBeanName(generator, Translate.ALTSERVICE_SCOPE) + "\");" + endl
+							+ "\t\tif (bean != null)" + endl
+							+ "\t\t\tpublisher.publish(bean, \"" + path + (generator.isTranslatedOnly() ? "": "-en") + "\", \"" + role + "\");" + endl );
+				}
 			}
 		}
 		out.println ( "\t}" + endl
@@ -155,13 +171,18 @@ public class ServiceGenerator {
 		out.close ();
 	}
 
-	void generateRemoteServiceLocator () throws FileNotFoundException, UnsupportedEncodingException
+	void generateRemoteServiceLocator (boolean translated) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		String file;
 		file = generator.getCommonsDir();
-
-		String packageName = pkg + ".remote";
-		file = file + "/"+Util.packageToDir (pkg)+"remote";
+		
+		String packageName = (translated ? "com.soffid.iam": "es.caib.seycon.ng");
+		if (generator.isPlugin())
+		{
+			packageName = packageName + ".addons."+generator.getPluginName();
+		}
+		packageName =  packageName + ".remote";
+		file = file + "/"+Util.packageToDir (packageName);
 		File f = new File (file + "/RemoteServiceLocator.java");
 		f.getParentFile().mkdirs();
 		PrintStream out = new PrintStream(f, "UTF-8");
@@ -169,7 +190,8 @@ public class ServiceGenerator {
 		System.out.println ("Generating "+f.getPath());
 
 		String commonPkg = translated ? "com.soffid.iam" : "es.caib.seycon.ng";
-
+		commonPkg = "es.caib.seycon.ng";
+		
 		out.println ( "//" + endl
 			+ "// (C) 2013 Soffid" + endl
 			+ "//" + endl
@@ -183,7 +205,7 @@ public class ServiceGenerator {
 				+ "" + endl
 				+ "" + endl
 				+ "import "+commonPkg+".config.Config;" + endl
-				+ "import "+commonPkg+".exception.InternalErrorException;" + endl
+				+ "import "+generator.getDefaultException()+";" + endl
 				+ "import "+commonPkg+".remote.RemoteInvokerFactory;" + endl
 				+ "import "+commonPkg+".remote.URLManager;" + endl
 				+ "" + endl
@@ -225,7 +247,7 @@ public class ServiceGenerator {
 				+ "\t" + endl
 				+ "\tprivate static int roundRobin = 0;" + endl
 				+ "\t" + endl
-				+ "\tpublic Object getRemoteService (String serviceName) throws IOException, InternalErrorException {" + endl
+				+ "\tpublic Object getRemoteService (String serviceName) throws IOException, "+generator.getDefaultException()+" {" + endl
 				+ "\t\tObject robj;" + endl
 				+ "\t\tRemoteInvokerFactory factory = new RemoteInvokerFactory();" + endl
 				+ "\t\t" + endl
@@ -261,13 +283,14 @@ public class ServiceGenerator {
 		for (AbstractModelClass service: parser.getServices()) {
 			String path = service.getServerPath();
 			if (! service.isInternal() && ! path.isEmpty()) {
+				int scope = translated ? Translate.TRANSLATE : Translate.DONT_TRANSLATE;
 				out.println ( "	/**" + endl
-				+ "	 * Gets the remote service " + service.getName(translated) + "." + endl
+				+ "	 * Gets the remote service " + service.getName(scope) + "." + endl
 				+ "	 *" + endl
 				+ "	 * @return Remote object" + endl
 				+ "	 **/" + endl
-				+ "\tpublic " + service.getFullName(translated) + " get" + service.getName(translated) + "( ) throws IOException, InternalErrorException {" + endl
-				+ "\t\treturn ( " + service.getFullName(translated) + " ) getRemoteService (\"" + path + "\");" + endl
+				+ "\tpublic " + service.getFullName(scope) + " get" + service.getName(scope) + "( ) throws IOException, "+generator.getDefaultException()+" {" + endl
+				+ "\t\treturn ( " + service.getFullName(scope) + " ) getRemoteService (\"" + path + (translated ? "-en": "")+ "\");" + endl
 				+ "\t}" + endl
 				+ "\t" );
 			}
@@ -285,7 +308,13 @@ public class ServiceGenerator {
 
 		String packageName;
 		String className;
-		if (generator.isPlugin())
+		if (generator.getBasePackage() != null)
+		{
+			packageName = generator.getBasePackage();
+			file = file + "/"+Util.packageToDir(packageName);
+			className = "ServiceLocator";
+		}
+		else if (generator.isPlugin())
 		{
 			file =  file + "/com/soffid/iam/addons/" + generator.getPluginName();
 			packageName = "com.soffid.iam.addons." + generator.getPluginName();
@@ -305,7 +334,9 @@ public class ServiceGenerator {
 			}
 			className = "ServiceLocator";
 		}
-		String commonPkg = translated ? "com.soffid.iam" : "es.caib.seycon.ng";
+		String commonPkg = generator.isTranslatedOnly() ? "com.soffid.iam" : "es.caib.seycon.ng";
+		if (generator.getBasePackage() != null)
+			commonPkg = generator.getBasePackage();
 
 		File f = new File (file+"/"+className+".java");
 		f.getParentFile().mkdirs();
@@ -459,12 +490,12 @@ public class ServiceGenerator {
 
 		for (AbstractModelClass service: parser.getServices ()) {
 			out.println ( "\t/**" + endl
-				+ "\t * Gets an instance of {@link "+ service.getFullName(translated)+"}." + endl
+				+ "\t * Gets an instance of {@link "+ service.getFullName(Translate.SERVICE_SCOPE)+"}." + endl
 				+ "\t */" + endl
-				+ "\tpublic final "+ service.getFullName(translated)+" get"+ service.getName(translated)+"()" + endl
+				+ "\tpublic final "+ service.getFullName(Translate.SERVICE_SCOPE)+" get"+ service.getName(Translate.SERVICE_SCOPE)+"()" + endl
 				+ "\t{" + endl
-				+ "\t\treturn ("+ service.getFullName(translated)+")" + endl
-				+ "\t\t\tgetContext().getBean(\""+ service.getSpringBeanName(generator, false)+"\");" + endl
+				+ "\t\treturn ("+ service.getFullName(Translate.SERVICE_SCOPE)+")" + endl
+				+ "\t\t\tgetContext().getBean(\""+ service.getSpringBeanName(generator, Translate.SERVICE_SCOPE)+"\");" + endl
 				+ "\t}" + endl
 				+ "" );
 		}
@@ -481,33 +512,151 @@ public class ServiceGenerator {
 		}
 		out.println ( "}" );
 
+		out.close();
 
 	}
 
-	void generateEjbLocator (boolean translated) throws FileNotFoundException, UnsupportedEncodingException {
+	void generateAltServiceLocator () throws FileNotFoundException, UnsupportedEncodingException {
+
+		String file;
+		file = generator.getCoreDir();
+
+		String packageName;
+		String className;
+		if (generator.isPlugin())
+			return;
+		
+		String altClassName;
+		if (generator.getBasePackage() != null)
+		{
+			return;
+		}
+		
+		if (generator.isTranslatedOnly())
+		{
+			file = file + "/es/caib/seycon/ng";
+			packageName = "es.caib.seycon.ng";
+			altClassName = "com.soffid.iam.ServiceLocator";
+		}
+		else
+		{
+			file = file + "/com/soffid/iam";
+			packageName = "com.soffid.iam";
+			altClassName = "es.caib.seycon.ng.ServiceLocator";
+		}
+		className = "ServiceLocator";
+		String commonPkg = generator.isTranslatedOnly() ? "com.soffid.iam" : "es.caib.seycon.ng";
+
+		File f = new File (file+"/"+className+".java");
+		f.getParentFile().mkdirs();
+		PrintStream out = new PrintStream(f, "UTF-8");
+
+		System.out.println ("Generating "+f.getPath());
+
+		out.println ( "//" + endl
+			+ "// (C) 2013 Soffid" + endl
+			+ "//" + endl
+			+ "//" + endl
+			+ endl
+			+ "package " + packageName + ";" + endl
+			+ "" + endl
+			+ "/**" + endl
+			+ " * Locates and provides all available application services." + endl
+			+ " */" );
+		out.println ( "public class "+className );
+		out.println ( "{" + endl
+			+ "" + endl
+			+ "\tprivate "+className+"()" + endl
+			+ "\t{" + endl
+			+ "\t\t// shouldn't be instantiated" + endl
+			+ "\t}" + endl
+			+ "" + endl
+			+ "\t/**" + endl
+			+ "\t * The shared instance of this ServiceLocator." + endl
+			+ "\t */" + endl
+			+ "\tprivate final static "+className+" instance = new "+className+"();" + endl
+			+ "" + endl
+			+ "\t/**" + endl
+			+ "\t * Gets the shared instance of this Class" + endl
+			+ "\t *" + endl
+			+ "\t * @return the shared service locator instance." + endl
+			+ "\t */" + endl
+			+ "\tpublic static final "+className+" instance()" + endl
+			+ "\t{" + endl
+			+ "\t\treturn instance;" + endl
+			+ "\t}" + endl
+			+ "" );
+
+		for (AbstractModelClass service: parser.getServices ()) {
+			if ( service.isTranslated())
+			{
+				out.println ( "\t/**" + endl
+					+ "\t * Gets an instance of {@link "+ service.getFullName(Translate.SERVICE_SCOPE)+"}." + endl
+					+ "\t */" + endl
+					+ "\tpublic final "+ service.getFullName(Translate.ALTSERVICE_SCOPE)+" get"+ service.getName(Translate.ALTSERVICE_SCOPE)+"()" + endl
+					+ "\t{" + endl
+					+ "\t\treturn ("+service.getFullName(Translate.ALTSERVICE_SCOPE)+") "+altClassName+".instance().getService(\""+ service.getSpringBeanName(generator, Translate.ALTSERVICE_SCOPE)+"\");" + endl
+					+ "\t}" + endl
+					+ "" );
+			} else {
+				out.println ( "\t/**" + endl
+						+ "\t * Gets an instance of {@link "+ service.getFullName(Translate.ALTSERVICE_SCOPE)+"}." + endl
+						+ "\t */" + endl
+						+ "\tpublic final "+ service.getFullName(Translate.ALTSERVICE_SCOPE)+" get"+ service.getName(Translate.ALTSERVICE_SCOPE)+"()" + endl
+						+ "\t{" + endl
+						+ "\t\treturn ("+service.getFullName(Translate.ALTSERVICE_SCOPE)+") "+altClassName+".instance().getService(\""+ service.getSpringBeanName(generator, Translate.SERVICE_SCOPE)+"\");" + endl
+						+ "\t}" + endl
+						+ "" );
+			}
+		}
+		if (! generator.isPlugin())
+		{
+			out.println( "\t/**" + endl
+				+ "\t * Gets an instance of the given service." + endl
+				+ "\t */" + endl
+				+ "\tpublic final Object getService(String serviceName)" + endl
+				+ "\t{" + endl
+				+ "\t\treturn "+altClassName+".instance().getService(serviceName);" + endl
+				+ "\t}" + endl
+				+ "" );
+		}
+		
+		out.println ( "\tpublic org.springframework.context.ApplicationContext getContext()" + endl
+		+ "\t{" + endl
+		+ "\t\treturn "+altClassName+".instance().getContext();" + endl
+		+ "\t}" + endl
+		+ "" );
+
+		out.println ( "\t/**" + endl
+				+ "\t * Shuts down the ServiceLocator and releases any used resources." + endl
+				+ "\t */" + endl
+				+ "\tpublic void shutdown()" + endl
+				+ "\t{" + endl
+				+ "\t\t"+altClassName+".instance().shutdown();" + endl
+				+ "\t}" + endl
+				+ "" );
+		out.println ( "}" );
+
+		out.close();
+
+	}
+
+	void generateEjbLocator (int scope) throws FileNotFoundException, UnsupportedEncodingException {
 		String file;
 		file = generator.getCommonsDir();
 
 		String packageName;
 		if (generator.isPlugin())
 		{
-			if (translated)
-			{
-				file = file + "/com/soffid/iam/addons/";
-				packageName = "com.soffid.iam.addons.";
-			}
-			else
-			{
-				file = file + "/es/caib/seycon/ng/addons/";
-				packageName = "es.caib.seycon.ng.addons.";
-			}
+			file = file + "/com/soffid/iam/addons/";
+			packageName = "com.soffid.iam.addons.";
 			file = file + generator.getPluginName();
 			packageName = packageName + generator.getPluginName();
 			return;
 		}
 		else
 		{
-			if (translated)
+			if (Translate.mustTranslate(scope, generator))
 			{
 				file = file + "/com/soffid/iam";
 				packageName = "com.soffid.iam";
@@ -546,15 +695,15 @@ public class ServiceGenerator {
 			if (!service.isInternal() && ! service.isServerOnly())
 			{
 				out.println( "\t/**" + endl
-					+ "\t * Gets an instance of {@link "+ service.getEjbInterfaceFullName(translated) + "}." + endl
+					+ "\t * Gets an instance of {@link "+ service.getEjbInterfaceFullName(scope) + "}." + endl
 					+ "\t */" + endl
-					+ "\tpublic static "+ service.getEjbInterfaceFullName(translated)+" get"+ service.getName(translated)+"()" + endl
+					+ "\tpublic static "+ service.getEjbInterfaceFullName(scope)+" get"+ service.getName(scope)+"()" + endl
 					+ "\t\tthrows javax.naming.NamingException, javax.ejb.CreateException" + endl
 					+ "\t{" + endl
-					+ "\t\t" + service.getEjbHomeFullName(translated) + " home = ("
-						+ service.getEjbHomeFullName(translated) +  ") " + endl
+					+ "\t\t" + service.getEjbHomeFullName(scope) + " home = ("
+						+ service.getEjbHomeFullName(scope) +  ") " + endl
 					+ "\t\t\tnew javax.naming.InitialContext()." + endl
-						+ "\t\t\t\tlookup("+ service.getEjbHomeFullName(translated) + ".JNDI_NAME);" + endl
+						+ "\t\t\t\tlookup("+ service.getEjbHomeFullName(scope) + ".JNDI_NAME);" + endl
 					+ "\t\treturn home.create();" + endl
 					+ "\t}" + endl
 					+ "" );
@@ -562,7 +711,7 @@ public class ServiceGenerator {
 		}
 		out.println ( "}" );
 
-
+		out.close();
 	}
 
 	void generateEjbJarXml () throws FileNotFoundException, UnsupportedEncodingException {
@@ -588,7 +737,7 @@ public class ServiceGenerator {
 			if (!service.isInternal() && ! service.isServerOnly())
 			{
 
-				boolean translated = false;
+				int scope = Translate.SERVICE_SCOPE;
 				do
 				{
 					out.println ( "\t\t<session>" + endl
@@ -597,18 +746,18 @@ public class ServiceGenerator {
 							+ "\t\t\t\t" + Util.formatXmlComments(service.getComments(), "\t\t\t\t\t") + endl
 							+ "\t\t\t\t]]>" + endl
 							+ "\t\t\t</description>" + endl
-							+ "\t\t\t<ejb-name>" + service.getEjbName(translated) + "</ejb-name>" + endl
-							+ "\t\t\t<local-home>" + service.getEjbHomeFullName(translated) + "</local-home>" + endl
-							+ "\t\t\t<local>" + service.getEjbInterfaceFullName(translated) + "</local>" + endl
-							+ "\t\t\t<ejb-class>" + service.getBeanFullName(translated) + "</ejb-class>" + endl
+							+ "\t\t\t<ejb-name>" + service.getEjbName(scope) + "</ejb-name>" + endl
+							+ "\t\t\t<local-home>" + service.getEjbHomeFullName(scope) + "</local-home>" + endl
+							+ "\t\t\t<local>" + service.getEjbInterfaceFullName(scope) + "</local>" + endl
+							+ "\t\t\t<ejb-class>" + service.getBeanFullName(scope) + "</ejb-class>" + endl
 							+ "\t\t\t<session-type>" + (service.isStateful() ? "Stateful": "Stateless") + "</session-type>" + endl
 							+ "\t\t   " + endl
 							+ "\t\t\t<transaction-type>Container</transaction-type>" + endl
 							+ "\t\t</session>" + endl
 							+ "" );
-					if (translated || ! service.isTranslated())
+					if (scope == Translate.ALTSERVICE_SCOPE || ! service.isTranslated())
 						break;
-					translated = true;
+					scope = Translate.ALTSERVICE_SCOPE;
 				} while (true);
 			}
 		}
@@ -633,7 +782,7 @@ public class ServiceGenerator {
 				Set<AbstractModelClass> allActors = service.getAllActors();
 				if (!allActors.isEmpty())
 				{
-					boolean translated = false;
+					int scope = Translate.SERVICE_SCOPE;
 					do
 					{
 						out.println ( "\t\t<method-permission>" + endl
@@ -647,22 +796,22 @@ public class ServiceGenerator {
 								out.println ( "\t\t\t<role-name>" + actor.getRoleName() + "</role-name>" );
 						}
 						out.println ( "\t\t\t<method>" + endl
-								+ "\t\t\t\t<description><![CDATA[Creates the " + service.getName(translated) + " Session EJB]]></description>" + endl
-								+ "\t\t\t\t<ejb-name>" + service.getEjbName(translated) + "</ejb-name>" + endl
+								+ "\t\t\t\t<description><![CDATA[Creates the " + service.getName(scope) + " Session EJB]]></description>" + endl
+								+ "\t\t\t\t<ejb-name>" + service.getEjbName(scope) + "</ejb-name>" + endl
 								+ "\t\t\t\t<method-intf>LocalHome</method-intf>" + endl
 								+ "\t\t\t\t<method-name>create</method-name>" + endl
 								+ "\t\t\t</method>" + endl
 								+ "\t\t\t<method>" + endl
-							+ "\t\t\t\t<description><![CDATA[Removes the " + service.getName(translated) + " Session EJB]]></description>" + endl
-							+ "\t\t\t\t<ejb-name>" + service.getEjbName(translated) + "</ejb-name>" + endl
+							+ "\t\t\t\t<description><![CDATA[Removes the " + service.getName(scope) + " Session EJB]]></description>" + endl
+							+ "\t\t\t\t<ejb-name>" + service.getEjbName(scope) + "</ejb-name>" + endl
 							+ "\t\t\t\t<method-intf>Local</method-intf>" + endl
 							+ "\t\t\t\t<method-name>remove</method-name>" + endl
 							+ "\t\t\t</method>" + endl
 							+ "\t\t</method-permission>" + endl
 							+ "" );
-						if (translated || ! service.isTranslated())
+						if (scope == Translate.ALTSERVICE_SCOPE || ! service.isTranslated())
 							break;
-						translated = true;
+						scope = Translate.ALTSERVICE_SCOPE;
 					} while (true);
 				}
 
@@ -671,11 +820,11 @@ public class ServiceGenerator {
 					Set<AbstractModelClass> actors = op.getActors();
 					if (!actors.isEmpty())
 					{
-						Boolean translated = false;
+						int scope = Translate.SERVICE_SCOPE;
 						do
 						{
 							out.println ( "\t\t<method-permission>" + endl
-									+ "\t\t\t<description><![CDATA[" + op.getSpec(translated) + " security constraint]]></description>" );
+									+ "\t\t\t<description><![CDATA[" + op.getSpec(scope) + " security constraint]]></description>" );
 							for (AbstractModelClass actor: actors)
 							{
 								if (actor.getRoleName().equals ("anonymous"))
@@ -688,9 +837,9 @@ public class ServiceGenerator {
 							}
 							out.println ( "\t\t\t<method>" + endl
 									+ "\t\t\t\t<description><![CDATA[" + Util.formatXmlComments(op.getComments(), "\t\t\t\t\t") + "]]></description>" + endl
-							+ "\t\t\t\t<ejb-name>"+ service.getEjbName(translated) + "</ejb-name>" + endl
+							+ "\t\t\t\t<ejb-name>"+ service.getEjbName(scope) + "</ejb-name>" + endl
 							+ "\t\t\t\t<method-intf>Local</method-intf>" + endl
-							+ "\t\t\t\t<method-name>" + op.getName(translated) + "</method-name>" );
+							+ "\t\t\t\t<method-name>" + op.getName(scope) + "</method-name>" );
 
 							if ( ! op.getParameters().isEmpty()) {
 								out.println ( "\t\t\t\t<method-params>" );
@@ -705,9 +854,9 @@ public class ServiceGenerator {
 							out.println ( "\t\t\t</method>" + endl
 									+ "\t\t</method-permission>" + endl
 									+ "" );
-							if (translated || ! service.isTranslated())
+							if (scope == Translate.ALTSERVICE_SCOPE || ! service.isTranslated())
 								break;
-							translated = true;
+							scope = Translate.ALTSERVICE_SCOPE;
 						} while (true);
 					}
 				}
@@ -719,13 +868,13 @@ public class ServiceGenerator {
 			{
 				for (ModelOperation op: service.getOperations())
 				{
-					boolean translated = false;
+					int scope = Translate.SERVICE_SCOPE;
 					do
 					{
 						out.println ( "\t\t<container-transaction>" + endl
 								+ "\t\t\t<method>" + endl
-								+ "\t\t\t\t<ejb-name>" + service.getEjbName(translated) + "</ejb-name>" + endl
-								+ "\t\t\t\t<method-name>" + op.getName(translated)+ "</method-name>" + endl
+								+ "\t\t\t\t<ejb-name>" + service.getEjbName(scope) + "</ejb-name>" + endl
+								+ "\t\t\t\t<method-name>" + op.getName(scope)+ "</method-name>" + endl
 								+ "\t\t\t\t<method-params>" );
 						for (ModelParameter param: op.getParameters())
 						{
@@ -738,9 +887,9 @@ public class ServiceGenerator {
 								+ "\t\t\t<trans-attribute>Supports</trans-attribute>" + endl
 								+ "\t\t</container-transaction>" + endl
 								+ "" );
-						if (translated || ! service.isTranslated())
+						if (scope == Translate.ALTSERVICE_SCOPE || ! service.isTranslated())
 							break;
-						translated = true;
+						scope = Translate.ALTSERVICE_SCOPE;
 					} while (true);
 				}
 			}
@@ -775,28 +924,29 @@ public class ServiceGenerator {
 		for (AbstractModelClass service: parser.getServices()) {
 			if (!service.isInternal() && ! service.isServerOnly())
 			{
-				boolean translated = false;
+				int scope = Translate.SERVICE_SCOPE;
 				do
 				{
 					out.println ( "\t\t<session>" + endl
-						+ "\t\t\t<ejb-name>" + service.getEjbName(translated) + "</ejb-name>" + endl
-						+ "\t\t\t<local-jndi-name>soffid/ejb/" + service.getFullName(translated) + "</local-jndi-name>" + endl
+						+ "\t\t\t<ejb-name>" + service.getEjbName(scope) + "</ejb-name>" + endl
+						+ "\t\t\t<local-jndi-name>soffid/ejb/" + service.getFullName(scope) + "</local-jndi-name>" + endl
 						+ "\t\t</session>" + endl
 						+ "" );
-					if (translated || ! service.isTranslated())
+					if (scope == Translate.ALTSERVICE_SCOPE || ! service.isTranslated())
 						break;
-					translated = true;
+					scope = Translate.ALTSERVICE_SCOPE;
 				} while (true);
 			}
 		}
 		out.println ( "   </enterprise-beans>" + endl
 				+ "" + endl
 				+ "</jboss>" );
+		out.close();
 
 	}
 
 
-	void generateInterface (AbstractModelClass service, boolean translated) throws FileNotFoundException, UnsupportedEncodingException {
+	void generateInterface (AbstractModelClass service, int scope) throws FileNotFoundException, UnsupportedEncodingException {
 		String file;
 		if (service.isInternal())
 		{
@@ -805,11 +955,11 @@ public class ServiceGenerator {
 		else {
 			file = generator.getCommonsDir();
 		}
-		String packageName = service.getPackage(translated);
+		String packageName = service.getPackage(scope);
 
 		file = file + File.separator + Util.packageToDir(packageName);
 
-		file += service.getName(translated);
+		file += service.getName(scope);
 		file += ".java";
 		File f = new File (file);
 		f.getParentFile().mkdirs();
@@ -826,36 +976,40 @@ public class ServiceGenerator {
 			out.println ( "package " + packageName + ";" );
 
 		out.println ( "/**" + endl
-				+ " * Service " + service.getName(translated) + endl
+				+ " * Service " + service.getName(scope) + endl
 				+ Util.formatComments(service.getComments())
 				+ " */" );
-		out.print ( "public interface " + service.getName(translated) );
+		out.print ( "public interface " + service.getName(scope) );
 		boolean first = true;
 		if (service.getSuperClass() != null) {
-			out.print ( " extends " + service.getSuperClass().getFullName(translated) );
+			out.print ( " extends " + service.getSuperClass().getFullName(scope) );
 			first = false;
 		}
 
 		out.println ( " {" );
 		String serverPath = service.getServerPath() ;
 		if (!serverPath.isEmpty())
+		{
+			if (Translate.mustTranslate(service, scope))
+				serverPath = serverPath + "-en";
 			out.println ( "\tpublic final static String REMOTE_PATH = \""
-			+ serverPath + "\";" + endl );
+					+ serverPath + "\";" + endl );
+		}
 		out.println ( "\tpublic final static String SERVICE_NAME = \""
-				+ service.getSpringBeanName(generator, translated) + "\";" + endl );
+				+ service.getSpringBeanName(generator, scope) + "\";" + endl );
 
 		for (ModelOperation op: service.getOperations())
 		{
 			boolean found = false;
-			String spec = op.getPrettySpec(translated);
+			String spec = op.getPrettySpec(scope);
 
 			out.println ( "\t/**" + endl
-					+ "\t * Operation " + op.getName(translated) + endl
+					+ "\t * Operation " + op.getName(scope) + endl
 					+ Util.formatComments(op.getComments(), "\t") );
 
 			for (ModelParameter param: op.getParameters()) {
 				out.print ( "\t * @param "
-					+ param.getName(translated)
+					+ param.getName(scope)
 					+ " " );
 				String cmt = Util.formatComments( param.getComments(), "\t           ");
 				if (cmt.length () > 15)
@@ -875,8 +1029,8 @@ public class ServiceGenerator {
 					out.println ();
 			}
 			out.println ( "\t */" );
-			out.println ( "\t" + op.getPrettySpec (translated) + endl
-					+ "\t\t\t" + op.getThrowsClause(this.translated) + ";" + endl );
+			out.println ( "\t" + op.getPrettySpec (scope) + endl
+					+ "\t\t\t" + op.getThrowsClause(Translate.SERVICE_SCOPE) + ";" + endl );
 		}
 		out.println ( "}" );
 		out.close();
@@ -908,7 +1062,7 @@ public class ServiceGenerator {
 				{
 					out.print(separator);
 					AbstractModelClass mc = (AbstractModelClass) parser.getElement(cl);
-					out.print(mc.getFullName(true));
+					out.print(mc.getFullName(Translate.SERVICE_SCOPE));
 					out.print(".class");
 					separator = ",";
 				}
@@ -923,7 +1077,7 @@ public class ServiceGenerator {
 				{
 					out.print(separator);
 					AbstractModelClass mc = (AbstractModelClass) parser.getElement(cl);
-					out.print(mc.getFullName(true));
+					out.print(mc.getFullName(Translate.SERVICE_SCOPE));
 					out.print(".class");
 					separator = ",";
 				}
@@ -972,45 +1126,45 @@ public class ServiceGenerator {
 	}
 
 
-	void generateNullChecks (PrintStream out, ModelOperation op, boolean translated)
+	void generateNullChecks (PrintStream out, ModelOperation op, int scope)
 	{
 		for (ModelParameter param: op.getParameters())
 		{
 			if (param.isRequired()) {
 				if (param.getDataType().isCollection()) {
-					out.println ( "\t\tif ("+param.getName(translated)
+					out.println ( "\t\tif ("+param.getName(scope)
 							+ " == null ) {" + endl
 							+ "\t\t\tthrow new IllegalArgumentException(\""
-							+ op.getFullSpec(translated) + " - "
-							+ param.getName(translated)
+							+ op.getFullSpec(scope) + " - "
+							+ param.getName(scope)
 							+ " cannot be empty\");" + endl
 							+ "\t\t}" );
 				} else if (param.getDataType().isArray()) {
-						out.println ( "\t\tif ("+param.getName(translated)
+						out.println ( "\t\tif ("+param.getName(scope)
 								+ " == null ) {" + endl
 								+ "\t\t\tthrow new IllegalArgumentException(\""
-								+ op.getFullSpec(translated) + " - "
-								+ param.getName(translated)
+								+ op.getFullSpec(scope) + " - "
+								+ param.getName(scope)
 								+ " cannot be empty\");" + endl
 								+ "\t\t}" );
 				} else if (param.getDataType().isString()) {
-					out.println ( "\t\tif ("+param.getName(translated)
+					out.println ( "\t\tif ("+param.getName(scope)
 							+ " == null || "
-							+ param.getName(translated)
+							+ param.getName(scope)
 							+ ".trim().length() == 0) {" + endl
 							+ "\t\t\tthrow new IllegalArgumentException(\""
-							+ op.getFullSpec(translated) + " - "
-							+ param.getName(translated)
+							+ op.getFullSpec(scope) + " - "
+							+ param.getName(scope)
 							+ " cannot be null\");" + endl
 							+ "\t\t}" );
 				}
 				else if (! param.getDataType().isPrimitive())
 				{
-					out.println ( "\t\tif ("+param.getName(translated)
+					out.println ( "\t\tif ("+param.getName(scope)
 							+ " == null) {" + endl
 							+ "\t\t\tthrow new IllegalArgumentException(\""
-							+ op.getFullSpec(translated) + " - "
-							+ param.getName(translated)
+							+ op.getFullSpec(scope) + " - "
+							+ param.getName(scope)
 							+ " cannot be null\");" + endl
 							+ "\t\t}" );
 					AbstractModelClass modelClass = param.getDataType();
@@ -1020,33 +1174,33 @@ public class ServiceGenerator {
 							if (at.isRequired())
 							{
 								if (at.getDataType().isCollection()) {
-									out.println ( "\t\tif ("+param.getName(translated)+"."+at.getterName(translated)
+									out.println ( "\t\tif ("+param.getName(scope)+"."+at.getterName(scope)
 											+ "() == null || "
-											+ param.getName(translated)+"."+at.getterName(translated)
+											+ param.getName(scope)+"."+at.getterName(scope)
 											+ "().isEmpty()) {" + endl
 											+ "\t\t\tthrow new IllegalArgumentException(\""
-											+ op.getFullSpec(translated) + " - "
-											+ param.getName(translated)+"." +at.getName(translated)
+											+ op.getFullSpec(scope) + " - "
+											+ param.getName(scope)+"." +at.getName(scope)
 											+ " cannot be empty\");" + endl
 											+ "\t\t}" );
 								} else if (at.getDataType().isString()) {
-									out.println ( "\t\tif ("+param.getName(translated)+"."+at.getterName(translated)
+									out.println ( "\t\tif ("+param.getName(scope)+"."+at.getterName(scope)
 											+ "() == null || "
-											+ param.getName(translated)+"."+at.getterName(translated)
+											+ param.getName(scope)+"."+at.getterName(scope)
 											+ "().trim().length() == 0) {" + endl
 											+ "\t\t\tthrow new IllegalArgumentException(\""
-											+ op.getFullSpec(translated) + " - "
-											+ param.getName(translated)+"." +at.getName(translated)
+											+ op.getFullSpec(scope) + " - "
+											+ param.getName(scope)+"." +at.getName(scope)
 											+ " cannot be null\");" + endl
 											+ "\t\t}" );
 								}
 								else if (! at.getDataType().isPrimitive())
 								{
-									out.println ( "\t\tif ("+param.getName(translated)+"."+ at.getterName(translated)
+									out.println ( "\t\tif ("+param.getName(scope)+"."+ at.getterName(scope)
 											+ "() == null ) {" + endl
 											+ "\t\t\tthrow new IllegalArgumentException(\""
-											+ op.getFullSpec(translated) + " - "
-											+ param.getName(translated)+"." +at.getName(translated)
+											+ op.getFullSpec(scope) + " - "
+											+ param.getName(scope)+"." +at.getName(scope)
 											+ " cannot be null\");" + endl
 											+ "\t\t}" );
 								}
@@ -1059,59 +1213,57 @@ public class ServiceGenerator {
 		}
 	}
 
-	void generateOperationBase (AbstractModelClass service, ModelOperation op, boolean translated, PrintStream out)
+	void generateOperationBase (AbstractModelClass service, ModelOperation op, int scope, PrintStream out)
 	{
 		out.println ( "\t/**" + endl
-				+ "\t * @see " + service.getFullName(translated) + "#"
-				+ op.getSpec(translated) + endl
+				+ "\t * @see " + service.getFullName(scope) + "#"
+				+ "\t * @see " + service.getFullName(Translate.DONT_TRANSLATE) + "#"
+				+ op.getSpec(scope) + endl
 				+ "\t */" );
 
 		generateTransactionAnnotation(op, out);
 
-		out.println ( "\tpublic " + op.getPrettySpec (translated) );
-		String throwsClause = op.getThrowsClause(this.translated);
+		out.println ( "\tpublic " + op.getPrettySpec (scope) );
+		String throwsClause = op.getThrowsClause(Translate.SERVICE_SCOPE);
 		if (throwsClause.isEmpty())
-			out.println ( "\t\tthrows "+rootPkg+".exception.InternalErrorException" );
+			out.println ( "\t\tthrows "+generator.getDefaultException()+"" );
 		else
 			out.println ( "\t\t" + throwsClause );
 		out.println ( "\t{" );
-		generateNullChecks (out, op, translated);
+
+		generateNullChecks (out, op, scope);
 		out.println ( "\t\ttry" + endl
 				+ "\t\t{" );
 		if (op.getReturnParameter().getDataType().isVoid())
-			out.println ( "\t\t\t" + op.getImplCall(translated) + ";" );
+			out.println ( "\t\t\t" + op.getImplCall(scope) + ";" );
 		else
-			out.println ( "\t\t\treturn " + op.getImplCall(translated) + ";" );
+			out.println ( "\t\t\treturn " + op.getImplCall(scope) + ";" );
 		out.println ( "\t\t}" + endl
-				+ "\t\tcatch ("+rootPkg+".exception.InternalErrorException __internalException)" + endl
+				+ "\t\tcatch ("+generator.getDefaultException()+" __internalException)" + endl
 				+ "\t\t{" + endl
 				+ "\t\t\tthrow __internalException;" );
 		for (AbstractModelClass exception: op.getExceptions())
 		{
-			if (! exception.getFullName(this.translated) .equals (rootPkg+".exception.InternalErrorException"))
+			if (! exception.getFullName(Translate.SERVICE_SCOPE) .equals (""+generator.getDefaultException()+""))
 				out.println ( "\t\t}" + endl
-						+ "\t\tcatch (" + exception.getFullName(this.translated) + " ex)" + endl
+						+ "\t\tcatch (" + exception.getFullName(Translate.SERVICE_SCOPE) + " ex)" + endl
 						+ "\t\t{" + endl
 						+ "\t\t\tthrow ex;" );
 		}
 		out.println ( "\t\t}" + endl
 				+ "\t\tcatch (Throwable th)" + endl
 				+ "\t\t{" + endl
-				+ "\t\t\torg.apache.commons.logging.LogFactory.getLog(" + service.getFullName(translated) + ".class)." + endl
-				+ "\t\t\t\twarn (\"Error on " + service.getName(translated) + "." + op.getName(translated) + "\", th);" + endl
-				+ "\t\t\tthrow new "+rootPkg+".exception.InternalErrorException(" + endl
-				+ "\t\t\t\t\"Error on " + service.getName(translated) + "." + op.getName(translated) + ": \"+th.toString(), th);" + endl
+				+ "\t\t\torg.apache.commons.logging.LogFactory.getLog(" + service.getFullName(scope) + ".class)." + endl
+				+ "\t\t\t\twarn (\"Error on " + service.getName(scope) + "." + op.getName(scope) + "\", th);" + endl
+				+ "\t\t\tthrow new "+generator.getDefaultException()+"(" + endl
+				+ "\t\t\t\t\"Error on " + service.getName(scope) + "." + op.getName(scope) + ": \"+th.toString(), th);" + endl
 				+ "\t\t}" + endl
 				+ "\t}" + endl );
-		out.println ( "\tprotected abstract " + op.getImplSpec(translated) + " throws Exception;" + endl );
-
+		out.println ( "\tprotected abstract " + op.getImplSpec(scope) + " throws Exception;" + endl );
 	}
 
-	void generateBase(AbstractModelClass service, boolean translated) throws FileNotFoundException {
-		if (translated)
-			return;
-
-		String className = service.getBaseName(translated);
+	void generateBase(AbstractModelClass service, int scope) throws FileNotFoundException {
+		String className = service.getBaseName(scope);
 		String file;
 		if (service.isServerOnly())
 		{
@@ -1121,7 +1273,7 @@ public class ServiceGenerator {
 			file = generator.getCoreDir();
 		}
 		
-		String packageName = service.getPackage(translated);
+		String packageName = service.getPackage(scope);
 
 		file = file + File.separator + Util.packageToDir(packageName) + File.separator + className + ".java";
 
@@ -1143,69 +1295,70 @@ public class ServiceGenerator {
 
 		out.println ( "/**" + endl
 			+ " * <p> " + endl
-			+ " * Spring Service base class for <code>" + service.getFullName(translated) + "</code>," + endl
+			+ " * Spring Service base class for <code>" + service.getFullName(scope) + "</code>," + endl
 			+ " * provides access to all services and entities referenced by this service. " + endl
 			+ " * </p>" + endl
 			+ " * " + endl
-			+ " * see " + service.getFullName(translated) + endl
+			+ " * see " + service.getFullName(scope) + endl
 			+ " */" );
-		out.println ( "public abstract class " + className );
+		
+		boolean isAbstract = true;
+			
+		if (isAbstract)
+			out.println ( "public abstract class " + className );
+		else
+			out.println ( "public class " + className );
 		if (service.getSuperClass() != null)
-			out.println ( " extends " + service.getSuperClass().getBaseFullName(translated) );
-		out.println ( "\timplements " + service.getFullName(translated) ) ;
+			out.println ( " extends " + service.getSuperClass().getBaseFullName(scope) );
+		out.println ( "\timplements " + service.getFullName(scope) ) ;
 		out.println ( " {" );
 
-		//
-		// Generate clients
-		//
+		if (service.isTranslatedImpl()? 
+				scope == Translate.SERVICE_SCOPE:
+				scope == Translate.ALTSERVICE_SCOPE)
+		{
+			int reverseScope = service.isTranslatedImpl() ?
+					Translate.ALTSERVICE_SCOPE: Translate.SERVICE_SCOPE;
+			String name = service.getName(reverseScope);
+			String fullName  = service.getFullName(reverseScope);
+			String varName = Util.firstLower(name);
+			outputDependency(out, fullName, name, varName);
+		}
+		else
+		{
+			//
+			// Generate clients
+			//
 
-		for (AbstractModelClass provider: service.getDepends()) {
-			if (provider != null) {
-				String fullName;
-				String name;
-				String varName;
-				if (provider . isEntity())
-				{
-					name = provider.getDaoName(translated);
-					fullName = provider.getDaoFullName(translated);
-					varName = provider.getVarName() + "Dao";
-				} else {
-					name = provider.getName(translated);
-					fullName  = provider.getFullName(translated);
-					varName = provider.getVarName();
+			for (AbstractModelClass provider: service.getDepends()) {
+				if (provider != null) {
+					String fullName;
+					String name;
+					String varName;
+					if (provider . isEntity())
+					{
+						name = provider.getDaoName(scope);
+						fullName = provider.getDaoFullName(scope);
+						varName = provider.getVarName() + "Dao";
+						outputDependency(out, fullName, name, varName);
+						if (generator.translateEntities && generator.generateDeprecated &&
+								!name.equals (provider.getDaoName(scope)))
+						{
+							name = provider.getDaoName(scope);
+							fullName = provider.getDaoFullName(scope);
+							varName = provider.getVarName() + "Dao";
+							outputDependency(out, fullName, name, varName);
+						}
+					} else {
+						name = provider.getName(scope);
+						fullName  = provider.getFullName(scope);
+						varName = provider.getVarName();
+						outputDependency(out, fullName, name, varName);
+					}
 				}
-				out.println ( "\t"
-						+ "private " + fullName
-						+ " " + varName + ";"
-						+ endl
-						);
-				out.println ( "\t/**" + endl
-						+ "\t * Sets reference to <code>"
-						+ varName
-						+ "</code>." + endl
-						+ "\t */" + endl
-						+ "\tpublic void set"
-						+ name
-						+ " (" + fullName
-						+ " " + varName
-						+ ") {" );
-				out.println ( "\t\tthis." + varName
-						+ " = " + varName
-						+ ";" );
-				out.println ( "\t}" + endl );
-				out.println ( "\t/**" + endl
-						+ "\t * Gets reference to <code>"
-						+ varName
-						+ "</code>." + endl
-						+ "\t */" + endl
-						+ "\tpublic "+fullName+" get"
-						+ name
-						+ " () {" );
-				out.println ( "\t\treturn " + varName
-						+ ";" );
-				out.println ( "\t}" + endl );
-			}
 
+			}
+			
 		}
 		out. println ( );
 
@@ -1214,35 +1367,251 @@ public class ServiceGenerator {
 
 		for (ModelOperation op: service.getOperations())
 		{
-			generateOperationBase(service, op, translated, out);
+			generateOperationBase(service, op, scope, out);
 		}
 
 
 
-		out .println( "\t/**" + endl
-				+ "\t * Gets the current <code>principal</code> if one has been set," + endl
-				+ "\t * otherwise returns <code>null</code>." + endl
-				+ "\t *" + endl
-				+ "\t * @return the current principal" + endl
-				+ "\t */" + endl
-				+ "\tprotected java.security.Principal getPrincipal()" + endl
-				+ "\t{" + endl
-				+ "\t\treturn "+rootPkg+".PrincipalStore.get();" + endl
-				+ "\t}" + endl
-				+ "}" );
+		if (generator.isGenerateEjb())
+		{
+			out .println( "\t/**" + endl
+					+ "\t * Gets the current <code>principal</code> if one has been set," + endl
+					+ "\t * otherwise returns <code>null</code>." + endl
+					+ "\t *" + endl
+					+ "\t * @return the current principal" + endl
+					+ "\t */" + endl
+					+ "\tprotected java.security.Principal getPrincipal()" + endl
+					+ "\t{" + endl
+					+ "\t\treturn "+rootPkg+".PrincipalStore.get();" + endl
+					+ "\t}" + endl);
+		}
+		out.println( "}" );
 		out.close();
 	}
 
-	void generateEjbInterface (AbstractModelClass service, boolean translated) throws FileNotFoundException {
+
+	void generateBaseProxy(AbstractModelClass service, int scope) throws FileNotFoundException {
+		String className = service.getBaseName(scope) + "Proxy";
+		String file;
+		if (service.isServerOnly())
+		{
+			file = generator.getSyncDir();
+		}
+		else {
+			file = generator.getCoreDir();
+		}
+		
+		String packageName = service.getPackage(scope);
+
+		file = file + File.separator + Util.packageToDir(packageName) + File.separator + className + ".java";
+
+		File f = new File (file);
+		f.getParentFile().mkdirs();
+		System.out.println ( "Generating " + f.getPath() );
+
+		PrintStream out = new PrintStream (f);
+		
+		out.println ( "//" + endl
+				+ "// (C) 2013 Soffid" + endl
+				+ "//" + endl
+				+ "//" + endl
+				);
+		if (!packageName.isEmpty())
+			out.println ( "package " + packageName + ";" );
+
+		out.println ( "import org.springframework.transaction.annotation.Transactional;" );
+
+		out.println ( "/**" + endl
+			+ " * <p> " + endl
+			+ " * Spring Service base class for <code>" + service.getFullName(scope) + "</code>," + endl
+			+ " * provides access to all services and entities referenced by this service. " + endl
+			+ " * </p>" + endl
+			+ " * " + endl
+			+ " * see " + service.getFullName(scope) + endl
+			+ " */" );
+		
+		boolean isAbstract = false;
+			
+		out.println ( "public class " + className );
+		if (service.getSuperClass() != null)
+			out.println ( " extends " + service.getSuperClass().getBaseFullName(scope) );
+		out.println ( "\timplements " + service.getFullName(scope) ) ;
+		out.println ( " {" );
+
+		int reverseScope = service.isTranslatedImpl() ?
+				Translate.ALTSERVICE_SCOPE: Translate.SERVICE_SCOPE;
+		String name = service.getName(reverseScope);
+		String fullName  = service.getFullName(reverseScope);
+		String varName = Util.firstLower(name);
+		outputDependency(out, fullName, name, varName);
+
+		out. println ( );
+
+		///////////////////////////////////////
+		// Generate OPERATIONS
+
+		for ( AbstractModelClass c = service; c != null; c = c.getSuperClass())
+		{
+			
+			for (ModelOperation op: c.getOperations())
+			{
+				generateOperationBaseProxy(service, c, op, scope, false, out);
+				if (c != service)
+					generateOperationBaseProxy(service, c, op, scope, true, out);
+			}
+		}
+
+
+
+		if (generator.isGenerateEjb())
+		{
+			out .println( "\t/**" + endl
+					+ "\t * Gets the current <code>principal</code> if one has been set," + endl
+					+ "\t * otherwise returns <code>null</code>." + endl
+					+ "\t *" + endl
+					+ "\t * @return the current principal" + endl
+					+ "\t */" + endl
+					+ "\tprotected java.security.Principal getPrincipal()" + endl
+					+ "\t{" + endl
+					+ "\t\treturn "+rootPkg+".PrincipalStore.get();" + endl
+					+ "\t}" + endl);
+		}
+		out.println( "}" );
+		out.close();
+	}
+
+
+	void generateOperationBaseProxy (AbstractModelClass baseClass, AbstractModelClass service, ModelOperation op, int scope, boolean voidHandle, PrintStream out)
+	{
+		out.println ( "\t/**" + endl
+				+ "\t * @see " + service.getFullName(scope) + "#"
+				+ "\t * @see " + service.getFullName(Translate.DONT_TRANSLATE) + "#"
+				+ op.getSpec(scope) + endl
+				+ "\t */" );
+
+		generateTransactionAnnotation(op, out);
+
+		if (voidHandle)
+		{
+			out.println ( "\tprotected " + op.getImplSpec(scope) + " throws Exception" );
+			out.println ("\t{");
+			if (!op.getReturnParameter().getDataType().isVoid())
+				out.print ( "\t\treturn null;" );
+			out.println ("\t}");
+		} else { 
+			out.println ( "\tpublic " + op.getPrettySpec (scope) );
+			
+			String throwsClause = op.getThrowsClause(Translate.SERVICE_SCOPE);
+			if (throwsClause.isEmpty())
+				out.println ( "\t\tthrows "+generator.getDefaultException()+"" );
+			else
+				out.println ( "\t\t" + throwsClause );
+			out.println ( "\t{" );
+
+			int reverseScope = scope == Translate.ALTSERVICE_SCOPE ? Translate.SERVICE_SCOPE: Translate.ALTSERVICE_SCOPE;
+			out.print("\t\t");
+			if (!op.getReturnParameter().getDataType().isVoid())
+				out.print ( "return " );
+
+			ModelParameter result = op.getReturnParameter();
+			String invocationSuffix = "";
+			if (scope == Translate.ALTSERVICE_SCOPE)
+			{
+				if (result.getDataType().isArray() && result.getDataType().getChildClass() != null &&
+						result.getDataType().getChildClass().isTranslated() && result.getDataType().getChildClass().isValueObject())
+				{
+					AbstractModelClass childclass = result.getDataType().getChildClass();
+					out.print ( childclass.getFullName(scope) + ".to" + childclass.getName(scope) + "Array (" + endl + "\t\t\t\t" );
+					invocationSuffix = ")";
+				}
+				else if (result.getDataType().isCollection() && result.getDataType().getChildClass() != null &&
+						result.getDataType().getChildClass().isTranslated() && result.getDataType().getChildClass().isValueObject())
+				{
+					AbstractModelClass childclass = result.getDataType().getChildClass();
+					out.print ( childclass.getFullName(scope) + ".to" + childclass.getName(scope) + "List (" + endl + "\t\t\t\t" );
+					invocationSuffix = ")";
+				}
+				else if (result.getDataType().isTranslated() && result.getDataType().isValueObject())
+				{
+					out.print ( result.getDataType().getJavaType(scope) + ".to" + result.getDataType().getName(scope) + "(" + endl + "\t\t\t\t" );
+					invocationSuffix = ")";
+				}
+			}
+			out.print ( "get" + baseClass.getName(reverseScope) + "()." + op.getName(reverseScope) + "(" );
+			boolean first = true;
+			for (ModelParameter param: op.getParameters()) {
+					if (first)
+						first = false;
+					else
+						out.print ( ", " + endl
+								+ "\t\t\t\t");
+					
+					if (param.getDataType().isCollection() && param.getDataType().getChildClass() != null &&
+						param.getDataType().getChildClass().isTranslated() && param.getDataType().getChildClass().isValueObject())
+					{
+						out.print ( param.getDataType().getChildClass().getFullName(reverseScope)+ ".to" + 
+							param.getDataType().getChildClass().getName(reverseScope) + "List ("
+							+  param.getName(reverseScope) + ")" );
+					}
+					else if (param.getDataType().isTranslated() && param.getDataType().isValueObject())
+					{
+						out.print (  param.getDataType().getJavaType(reverseScope) + ".to" + 
+									param.getDataType().getName(reverseScope)+ "("+ param.getName(scope) + ")" );
+					}
+					else
+						out.print ( param.getName(scope) );
+
+			}
+			out.println (invocationSuffix+");" + endl
+					+ "\t}"+endl);
+		}
+
+	}
+
+	private void outputDependency(PrintStream out, String fullName,
+			String name, String varName) {
+		out.println ( "\t"
+				+ "private " + fullName
+				+ " " + varName + ";"
+				+ endl
+				);
+		out.println ( "\t/**" + endl
+				+ "\t * Sets reference to <code>"
+				+ varName
+				+ "</code>." + endl
+				+ "\t */" + endl
+				+ "\tpublic void set"
+				+ name
+				+ " (" + fullName
+				+ " " + varName
+				+ ") {" );
+		out.println ( "\t\tthis." + varName
+				+ " = " + varName
+				+ ";" );
+		out.println ( "\t}" + endl );
+		out.println ( "\t/**" + endl
+				+ "\t * Gets reference to <code>"
+				+ varName
+				+ "</code>." + endl
+				+ "\t */" + endl
+				+ "\tpublic "+fullName+" get"
+				+ name
+				+ " () {" );
+		out.println ( "\t\treturn " + varName
+				+ ";" );
+		out.println ( "\t}" + endl );
+	}
+
+	void generateEjbInterface (AbstractModelClass service, int scope) throws FileNotFoundException {
 
 		if (service.isInternal() || service.isServerOnly())
 			return;
 
-		String packageName = service.getPackage(translated);
+		String packageName = service.getPackage(scope);
 
 		String file;
 		file = generator.getCommonsDir() + File.separator+ Util.packageToDir(packageName) + 
-				"ejb/" + service.getName(translated) + ".java";
+				"ejb/" + service.getName(scope) + ".java";
 
 		File f = new File (file);
 		f.getParentFile().mkdirs();
@@ -1261,32 +1630,32 @@ public class ServiceGenerator {
 			out.println ( "package ejb;" );
 
 		out.println ( "/**" + endl
-				+ " * EJB " + service.getName(translated) + endl
+				+ " * EJB " + service.getName(scope) + endl
 				+ Util.formatComments(service.getComments())
 				+ " */" );
-		out.println ( "public interface " + service.getName(translated) + endl
+		out.println ( "public interface " + service.getName(scope) + endl
 				+ "\textends javax.ejb.EJBLocalObject" );
 		out.println ( " {" );
 		out.println ( );
 		for (ModelOperation op: service.getOperations())
 		{
 			if (!op.getActors().isEmpty() || ! service.getActors().isEmpty())
-				out.println ( "\t" + op.getPrettySpec (translated) + endl + "\t" + op.getThrowsClause(this.translated) + ";" + endl );
+				out.println ( "\t" + op.getPrettySpec (scope) + endl + "\t" + op.getThrowsClause(Translate.SERVICE_SCOPE) + ";" + endl );
 		}
 		out.println ( "}" );
 		out.close();
 	}
 
 
-	void generateEjbHome (AbstractModelClass service, boolean translated) throws FileNotFoundException {
+	void generateEjbHome (AbstractModelClass service, int scope) throws FileNotFoundException {
 
 		if (service.isInternal() || service.isServerOnly())
 			return;
 
-		String packageName = service.getPackage(translated);
+		String packageName = service.getPackage(scope);
 
 		String file;
-		file = generator.getCommonsDir() + "/" + Util.packageToDir(packageName) + "ejb/" + service.getName(translated) + "Home.java";
+		file = generator.getCommonsDir() + "/" + Util.packageToDir(packageName) + "ejb/" + service.getName(scope) + "Home.java";
 
 		File f = new File (file);
 		f.getParentFile().mkdirs();
@@ -1305,23 +1674,23 @@ public class ServiceGenerator {
 			out.println ( "package ejb;" );
 
 		out.println ( "/**" + endl
-				+ " * EJB Home " + service.getName(translated) + endl
+				+ " * EJB Home " + service.getName(scope) + endl
 				+ Util.formatComments(service.getComments())
 				+ " */" );
-		out.println ( "public interface " + service.getName(translated) + "Home" + endl
+		out.println ( "public interface " + service.getName(scope) + "Home" + endl
 				+ "\textends javax.ejb.EJBLocalHome" );
 		out.println ( " {" + endl
 				+ "\t/**" + endl
 				+ "\t * The logical JDNI name" +endl
 				+ "\t */" + endl
-				+ "\tpublic static final String COMP_NAME=\"java:comp/ejb/" + service.getName(translated) + "\";"
+				+ "\tpublic static final String COMP_NAME=\"java:comp/ejb/" + service.getName(scope) + "\";"
 				+ endl + endl
 				+ "\t/**" + endl
 				+ "\t * The physical JDNI name" +endl
 				+ "\t */" + endl
-				+ "\tpublic static final String JNDI_NAME=\"soffid/ejb/" + service.getFullName(translated) + "\";"
+				+ "\tpublic static final String JNDI_NAME=\"soffid/ejb/" + service.getFullName(scope) + "\";"
 				+ endl + endl
-				+ "\tpublic "+ packageName  + ".ejb." + service.getName(translated) + " create()" + endl
+				+ "\tpublic "+ packageName  + ".ejb." + service.getName(scope) + " create()" + endl
 				+ "\t\tthrows javax.ejb.CreateException;" + endl
 				+ endl
 				+ "}" );
@@ -1329,11 +1698,13 @@ public class ServiceGenerator {
 	}
 
 
-	void generateEjbBean(AbstractModelClass service, boolean translated) throws FileNotFoundException {
+	void generateEjbBean(AbstractModelClass service, int scope) throws FileNotFoundException {
 
-		String className= service.getBeanName(translated);
+		int inverseScope = scope == Translate.SERVICE_SCOPE ? Translate.ALTSERVICE_SCOPE : Translate.SERVICE_SCOPE;
+		
+		String className= service.getBeanName(scope);
 
-		String packageName = service.getPackage(translated);
+		String packageName = service.getPackage(scope);
 
 		String file = generator.getCoreDir() + "/" + Util.packageToDir(packageName ) + "ejb/" + className + ".java";
 
@@ -1352,34 +1723,32 @@ public class ServiceGenerator {
 			out.println ( "package " + packageName + ".ejb;" );
 
 		out.println ( "/**" + endl
-			+ " * @see <code>" + service.getFullName(translated) + "</code>," + endl
+			+ " * @see <code>" + service.getFullName(scope) + "</code>," + endl
+			+ " * @see <code>" + service.getFullName(Translate.DONT_TRANSLATE) + "</code>," + endl
 			+ " */" );
 		out.print ( "public class " + className );
 		out.println ( " extends org.springframework.ejb.support.AbstractStatelessSessionBean" );
-		String svcName = service.getLocalServiceName(false);
+		String svcName = service.getLocalServiceName(scope);
 		out.println ( "{" + endl
-				+ "\tprivate " + service.getFullName(false) + " " + svcName + ";" + endl );
+				+ "\tprivate " + service.getFullName(scope) + " " + svcName + ";" + endl );
 
 		for (ModelOperation op: service.getOperations())
 		{
 			if (!op.getActors().isEmpty() || ! service.getActors().isEmpty())
 			{
 				out.println ( "\t/**" + endl
-						+ "\t * @see " + service.getFullName(translated) + "#"
-						+ op.getSpec(translated) + endl
+						+ "\t * @see " + service.getFullName(scope) + "#"
+						+ op.getSpec(scope) + endl
 						+ "\t */" );
-				out.println ( "\tpublic " + op.getPrettySpec (translated) );
-				String throwsClause = op.getThrowsClause(this.translated);
+				out.println ( "\tpublic " + op.getPrettySpec (scope) );
+				String throwsClause = op.getThrowsClause(Translate.SERVICE_SCOPE);
 				if (!throwsClause.isEmpty())
 					out.println ( "\t\t" + throwsClause );
 				out.println ( "\t{" );
 				out.println ( "\t\t"+rootPkg+".PrincipalStore.set(super.getSessionContext().getCallerPrincipal());" );
 				///////////////////////
 				// Add null checks
-				if (translated)
-				{
-					generateNullChecks(out, op, translated);
-				}
+				generateNullChecks(out, op, scope);
 				out.print ( "\t\ttry" + endl
 						+ "\t\t{" + endl
 						+ "\t\t\t" );
@@ -1388,42 +1757,14 @@ public class ServiceGenerator {
 
 				ModelParameter result = op.getReturnParameter();
 				String invocationSuffix = "";
-				if (!this.translated && translated)
-				{
-					if (result.getDataType().isCollection() && result.getDataType().getChildClass() != null &&
-							result.getDataType().getChildClass().isTranslated() && result.getDataType().getChildClass().isValueObject())
-					{
-						AbstractModelClass childclass = result.getDataType().getChildClass();
-						out.print ( childclass.getFullName(translated) + ".to" + childclass.getName(translated) + "List (" + endl + "\t\t\t\t" );
-						invocationSuffix = ")";
-					}
-					else if (result.getDataType().isTranslated() && result.getDataType().isValueObject())
-					{
-						out.print ( result.getDataType().getJavaType(translated) + ".to" + result.getDataType().getName(translated) + "(" + endl + "\t\t\t\t" );
-						invocationSuffix = ")";
-					}
-				}
-				out.print ( "this." + svcName + "." + op.getName(false) + "(" );
+				out.print ( "this." + svcName + "." + op.getName(scope) + "(" );
 				boolean first = true;
 				for (ModelParameter param: op.getParameters()) {
 						if (first)
 							first = false;
 						else
 							out.print ( ", " );
-						if (!this.translated && translated && 
-							param.getDataType().isCollection() && param.getDataType().getChildClass() != null &&
-							param.getDataType().getChildClass().isTranslated() && param.getDataType().getChildClass().isValueObject())
-						{
-							out.print ( param.getDataType().getChildClass().getFullName(!translated)+ ".to" + 
-								param.getDataType().getChildClass().getName(!translated) + "List ("
-								+  param.getName(translated) + ")" );
-						}
-						else if (!this.translated && translated && param.getDataType().isTranslated() && param.getDataType().isValueObject())
-						{
-							out.print (  param.getDataType().getJavaType(!translated) + ".to" + param.getDataType().getName(!translated)+ "("+ param.getName(translated) + ")" );
-						}
-						else
-							out.print ( param.getName(translated) );
+						out.print ( param.getName(scope) );
 
 				}
 				out.println ( ")" + invocationSuffix + "; " + endl
@@ -1432,8 +1773,8 @@ public class ServiceGenerator {
 						+ "\t\t{" + endl
 						+ "\t\t\tfinal Throwable cause = getRootCause(exception);" );
 				for (AbstractModelClass ex: op.getExceptions()) {
-					out.println ( "\t\t\tif (cause instanceof " + ex.getFullName(this.translated) + ")" + endl
-							+ "\t\t\t\tthrow (" + ex.getFullName(this.translated) + ") cause;" );
+					out.println ( "\t\t\tif (cause instanceof " + ex.getFullName(Translate.SERVICE_SCOPE) + ")" + endl
+							+ "\t\t\t\tthrow (" + ex.getFullName(Translate.SERVICE_SCOPE) + ") cause;" );
 				}
 				out.println ( "\t\t\tif (cause instanceof Exception)" + endl
 					+ "\t\t\t\tthrow new javax.ejb.EJBException ((Exception)cause);" + endl
@@ -1452,8 +1793,8 @@ public class ServiceGenerator {
 				+ "\t */" + endl
 				+ "\tprotected void onEjbCreate()" + endl
 				+ "\t{" + endl
-				+ "\t\tthis." + svcName  + " = (" + service.getFullName(false)+ ")" + endl
-				+ "\t\tgetBeanFactory().getBean(\"" + service.getSpringBeanName(generator, false) + "\");" + endl
+				+ "\t\tthis." + svcName  + " = (" + service.getFullName(scope)+ ")" + endl
+				+ "\t\tgetBeanFactory().getBean(\"" + service.getSpringBeanName(generator, scope) + "\");" + endl
 				+ "\t}" + endl
 				+ "\t" + endl
 				+ "\t/**" + endl
@@ -1520,14 +1861,14 @@ public class ServiceGenerator {
 		out.close();
 	}
 
-	void generateUml (AbstractModelClass service, boolean translated) throws IOException {
+	void generateUml (AbstractModelClass service, int scope) throws IOException {
 		String file;
 		file = generator.getUmlDir();
-		String packageName = service.getPackage(translated);
+		String packageName = service.getPackage(scope);
 
 		file = file + File.separator + Util.packageToDir(packageName);
 
-		file += service.getName(translated);
+		file += service.getName(scope);
 		file += ".svg";
 		File f = new File (file);
 		f.getParentFile().mkdirs();
@@ -1540,49 +1881,48 @@ public class ServiceGenerator {
 				"BackgroundColor<<ValueObject>> Pink"+endl+
 				"BackgroundColor<<Service>> LightBlue"+endl+
 				"}" +endl );
-		source.append (service.generatePlantUml(service,translated, false, true));
+		source.append (service.generatePlantUml(service,scope, false, true));
 
 		boolean generate = Util.isModifiedClass(service, f);
 		for (AbstractModelClass provider: service.getDepends()) {
 			generate = generate || Util.isModifiedClass(provider, f);
 			if (provider.isEntity())
 			{
-				source.append( provider.generatePlantUml(service,translated, true, false) );
+				source.append( provider.generatePlantUml(service,scope, true, false) );
 				for (AbstractModelClass vo: provider.getDepends())
 				{
 					if (vo.isValueObject())
 					{
 						generate = generate || Util.isModifiedClass(vo, f);
-						source.append (vo.generatePlantUml(service, translated, true, false));
-						source.append (provider.getName(translated) + " ..> "+vo.getName(translated)+endl);
+						source.append (vo.generatePlantUml(service, scope, true, false));
+						source.append (provider.getName(scope) + " ..> "+vo.getName(scope)+endl);
 					}
 				}
 			}
 			else 
 			{
-				source.append( provider.generatePlantUml(service,translated, false, false) );
+				source.append( provider.generatePlantUml(service,scope, false, false) );
 			}
-			source.append (service.getName(translated) + " ..> "+provider.getName(translated)+endl);
+			source.append (service.getName(scope) + " ..> "+provider.getName(scope)+endl);
 		}
 		source.append ("@enduml");
 
 		if (generate)
 		{
 			System.out.println ( "Generating " + f.getPath() );
-	
 			SourceStringReader reader = new SourceStringReader(source.toString());
 			reader.generateImage(new FileOutputStream(f), new FileFormatOption(FileFormat.SVG));
 		}
 	}
 
-	void generateUmlUseCase (AbstractModelClass service, boolean translated) throws IOException {
+	void generateUmlUseCase (AbstractModelClass service, int scope) throws IOException {
 		String file;
 		file = generator.getUmlDir();
-		String packageName = service.getPackage(translated);
+		String packageName = service.getPackage(scope);
 
 		file = file + File.separator + Util.packageToDir(packageName);
 
-		file += service.getName(translated);
+		file += service.getName(scope);
 		file += "-uc.svg";
 		File f = new File (file);
 		
@@ -1598,26 +1938,26 @@ public class ServiceGenerator {
 					"left to right direction"+endl+
 					"skinparam backgroundColor white"+endl+
 					"skinparam packageStyle rect"+endl+
-					"("+service.getName(translated)+")"+ endl );
+					"("+service.getName(scope)+")"+ endl );
 			
 			boolean left = true;
 			for (AbstractModelClass actor: service.getAllActors())
 			{
 				actor.left = left;
-				source.append ("actor "+actor.getName(translated) +endl);
+				source.append ("actor "+actor.getName(scope) +endl);
 				left = !left;
 			}
 			
 			source.append ("rectangle "+service.getName()+ " {"+ endl);
 			for (ModelOperation op: service.getOperations()) {
 				Set<AbstractModelClass> actors = op.getActors();
-				source.append ("usecase ").append(op.getName(translated)).append("\n");
+				source.append ("usecase ").append(op.getName(scope)).append("\n");
 				for (AbstractModelClass actor: actors)
 				{
 					if (actor.left)
-						source.append (actor.getName(translated) + " -- ("+op.getName(translated)+")"+endl);
+						source.append (actor.getName(scope) + " -- ("+op.getName(scope)+")"+endl);
 					else
-						source.append ("("+op.getName(translated)+ ") -- "+actor.getName(translated) +endl);
+						source.append ("("+op.getName(scope)+ ") -- "+actor.getName(scope) +endl);
 				}
 			}
 			source.append ("}"+endl);
