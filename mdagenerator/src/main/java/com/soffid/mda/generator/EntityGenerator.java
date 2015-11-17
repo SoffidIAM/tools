@@ -287,8 +287,7 @@ public class EntityGenerator<E> {
 		if (element.getSuperClass() != null && element.getSuperClass().isEntity()) {
 			out.println( "\t\treturn super.hashCode();");
 		} else {
-	        out.println( "\t\tint hashCode = 0;" + "\n"
-	        + "\t\thashCode = 29 * hashCode + (id == null ? 0 : id.hashCode());" + "\n"
+	        out.println( "\t\tint hashCode = (id == null ? super.hashCode() : id.hashCode());" + "\n"
 	        + "\t\treturn hashCode;" );
 		}
 		out.println ( "\t}" );
