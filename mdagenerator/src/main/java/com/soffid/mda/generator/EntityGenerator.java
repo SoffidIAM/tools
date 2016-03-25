@@ -272,8 +272,7 @@ public class EntityGenerator<E> {
 		if (element.getSuperClass() != null && element.getSuperClass().isEntity()) {
 			out.println( "\t\treturn super.hashCode();");
 		} else {
-	        out.println( "\t\tint hashCode = 0;" + "\n"
-	        + "\t\thashCode = 29 * hashCode + (id == null ? 0 : id.hashCode());" + "\n"
+	        out.println( "\t\tint hashCode = (id == null ? super.hashCode() : id.hashCode());" + "\n"
 	        + "\t\treturn hashCode;" );
 		}
 		out.println ( "\t}" );
@@ -732,6 +731,7 @@ public class EntityGenerator<E> {
 				out.print( "null" );
 			out.println( ");" );
 		}
+		out.println ("\t\tq.setParameter(\"tenantId\", 0);");
 		out.println ("\t\ttry {");
 		if (generator.hqlFullTest)
 			out.println ("\t\t\tq.list();");
@@ -800,6 +800,11 @@ public class EntityGenerator<E> {
 		{
 			sqlString = "from " + entity.getFullName(Translate.DEFAULT);
 			boolean first = true;
+			if (entity.hasTenantAttribute())
+			{
+				sqlString += " where tenant.id=:tenantId";
+				first = false;
+			}
 			for (ModelParameter param: op.getParameters()) {
 				
 				// Criteria param must not be considered
@@ -891,6 +896,15 @@ public class EntityGenerator<E> {
 					out.println ( "\t\t\t}" );
 				}
 			}
+			if (entity.hasTenantAttribute())
+			{
+				i++;
+				out.println ( "\t\t\t" + modelPackage + ".criteria.CriteriaSearchParameter param" + i + " =" + "\n"
+						+ "\t\t\t\tnew " + modelPackage + ".criteria.CriteriaSearchParameter(" + "\n"
+						+ "\t\t\t\t\tcom.soffid.iam.utils.Security.getTenantId(),\"tenant.id\", "
+						+ modelPackage + ".criteria.CriteriaSearchParameter.EQUAL_COMPARATOR);" + "\n"
+						+ "\t\t\tcriteriaSearch.addParameter(param"+i+");" );
+			}
 			out.println ( "\t\t\tjava.util.List results = criteriaSearch.executeAsList();" + "\n"
 					+ "\t\t\treturn ("+op.getReturnType(Translate.DEFAULT)+") results;" + "\n"
 					+ "\t\t}" + "\n"
@@ -960,6 +974,10 @@ public class EntityGenerator<E> {
 				out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(Translate.DEFAULT)+"\", "+param.getName(Translate.DEFAULT)+ ");" );
 
 			}
+//			if (entity.hasTenantAttribute())
+//			{
+				out.println ( "\t\t\tqueryObject.setParameter(\"tenantId\", com.soffid.iam.utils.Security.getTenantId());" );
+//			}
 			out.println ( "\t\t\tif (criteria != null && criteria.getMaximumResultSize () != null) {" + "\n"
 					+ "\t\t\t\tqueryObject.setMaxResults (criteria.getMaximumResultSize ().intValue()); " + "\n"
 					+ "\t\t\t}" );
@@ -1662,9 +1680,15 @@ public class EntityGenerator<E> {
 					+ "\t\t}" );
 			}
 
-			out.println ( "\t\treturn (" + entity.getFullName(Translate.DEFAULT)
+			out.println ( "\t\t"+entity.getFullName(Translate.DEFAULT)+" result = (" + entity.getFullName(Translate.DEFAULT)
 					+ ") this.getHibernateTemplate().get("
-					+ entity.getImplFullName(Translate.DEFAULT) + ".class, "+id.getName(Translate.DEFAULT)+ ");" + "\n"
+					+ entity.getImplFullName(Translate.DEFAULT) + ".class, "+id.getName(Translate.DEFAULT)+ ");" + "\n");
+			if (entity.hasTenantAttribute())
+			{
+				out.println ( "\t\tif (! Security.isAuthorizedTenant( entity.getTenant())) \n"+
+						"\t\t\treturn null;\n");
+			}
+			out.println ("\t\treturn result;\n"
 					+ "\t}" );
 
 			// load all
@@ -1675,10 +1699,22 @@ public class EntityGenerator<E> {
 					+ "\t " + endComment );
 			out.println ( "\tpublic java.util.List<"+ entity.getFullName(Translate.DEFAULT)
 					+ "> loadAll() {" + "\n"
-					+ "\t\treturn (java.util.List<" + entity.getFullName(Translate.DEFAULT)
+					+ "\t\tjava.util.List<" + entity.getFullName(Translate.DEFAULT)
+					+ "> result = (java.util.List<" + entity.getFullName(Translate.DEFAULT)
 					+ ">)" + "\n"
-					+ "\t\t\tthis.getHibernateTemplate().loadAll("+entity.getImplFullName(Translate.DEFAULT)+".class);" + "\n"
-					+ "\t};" + "\n" );
+					+ "\t\t\tthis.getHibernateTemplate().loadAll("+entity.getImplFullName(Translate.DEFAULT)+".class);" + "\n");
+			if (entity.hasTenantAttribute())
+			{
+				out.println ( "\t\tfor (java.util.Iterator<" + entity.getFullName(Translate.DEFAULT)
+					+ "> it = result.iterator(); iterator.hasNext();)\n"
+					+ "\t\t{\n"
+					+ "\t\t\tif (! Security.isAuthorizedTenant( entity.getTenant())) \n"
+					+ "\t\t\t\tit.remove();\n"
+					+ "\t\t}");
+				out.println ( "\t\tif (! Security.isAuthorizedTenant( entity.getTenant())) \n"+
+						"\t\t\treturn null;\n");
+			}
+			out.println("\t};" + "\n" );
 
 			// create, update, remove entity
 			out.println ( "\t/**" + "\n"

@@ -443,4 +443,9 @@ public class ModelClassCollection extends AbstractModelClass {
 		return false;
 	}
 
+	@Override
+	public boolean hasTenantAttribute() {
+		return false;
+	}
+
 }

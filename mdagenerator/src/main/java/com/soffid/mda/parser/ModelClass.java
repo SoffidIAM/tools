@@ -1126,4 +1126,21 @@ public class ModelClass extends AbstractModelClass {
 			return false;
 	}
 
+	Boolean hasTenant = null;
+	@Override
+	public boolean hasTenantAttribute() {
+		if (hasTenant != null)
+			return hasTenant.booleanValue();
+		for (AbstractModelAttribute att: getAllAttributes())
+		{
+			if (att.getName().equals("tenant"))
+			{
+				hasTenant = Boolean.TRUE;
+				return hasTenant.booleanValue();
+			}
+		}
+		hasTenant = Boolean.FALSE;
+		return hasTenant.booleanValue();
+	}
+
 }
