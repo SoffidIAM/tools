@@ -678,6 +678,8 @@ public class EntityGenerator<E> {
 									out.print( "null" );
 								out.println( ");" );
 							}
+							
+							out.println ("\t\tq.setParameter(\"tenantId\", 0);");
 
 							out.println( "\t}" + "\n" );
 							numTest ++;
@@ -748,15 +750,20 @@ public class EntityGenerator<E> {
 		{
 			sqlString = "from " + entity.getFullName(translated);
 			boolean first = true;
+			if (entity.hasTenantAttribute())
+			{
+				sqlString += " where tenant.id=:tenantId";
+				first = false;
+			}
 			for (ModelParameter param: op.getParameters()) {
 				if (first) {
 					sqlString += " where ";
 					first = false;
 				} else
 					sqlString += " and ";
-				sqlString += param.getName(translated);
+				String s = param.getName(translated);
 				sqlString += "=:";
-				sqlString += param.getName(translated);
+				sqlString += s;
 			}
 		} else {
 			sqlString = Util.formatString(sqlString);
@@ -825,6 +832,15 @@ public class EntityGenerator<E> {
 					out.println ( "\t\t\t}" );
 				}
 			}
+			if (entity.hasTenantAttribute())
+			{
+				i++;
+				out.println ( "\t\t\t" + modelPackage + ".criteria.CriteriaSearchParameter param" + i + " =" + "\n"
+						+ "\t\t\t\tnew " + modelPackage + ".criteria.CriteriaSearchParameter(" + "\n"
+						+ "\t\t\t\t\tcom.soffid.iam.utils.Security.getTenantId(),\"tenant.id\", "
+						+ modelPackage + ".criteria.CriteriaSearchParameter.EQUAL_COMPARATOR);" + "\n"
+						+ "\t\t\tcriteriaSearch.addParameter(param"+i+");" );
+			}
 			out.println ( "\t\t\tjava.util.List results = criteriaSearch.executeAsList();" + "\n"
 					+ "\t\t\treturn ("+op.getReturnType(false)+") results;" + "\n"
 					+ "\t\t}" + "\n"
@@ -884,8 +900,11 @@ public class EntityGenerator<E> {
 					+ "\t\t\torg.hibernate.Query queryObject = super.getSession(false).createQuery(queryString);" );
 			for (ModelParameter param: op.getParameters()) {
 				out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(translated)+"\", "+param.getName(translated)+ ");" );
-
 			}
+//			if (entity.hasTenantAttribute())
+//			{
+				out.println ( "\t\t\tqueryObject.setParameter(\"tenantId\", com.soffid.iam.utils.Security.getTenantId());" );
+//			}
 			out.println ( "\t\t\tif (criteria != null && criteria.getMaximumResultSize () != null) {" + "\n"
 					+ "\t\t\t\tqueryObject.setMaxResults (criteria.getMaximumResultSize ().intValue()); " + "\n"
 					+ "\t\t\t}" );
@@ -1467,9 +1486,15 @@ public class EntityGenerator<E> {
 					+ "\t\t}" );
 			}
 
-			out.println ( "\t\treturn (" + entity.getFullName(translated)
+			out.println ( "\t\t"+entity.getFullName(translated)+" result = (" + entity.getFullName(translated)
 					+ ") this.getHibernateTemplate().get("
-					+ entity.getImplFullName(translated) + ".class, "+id.getName(translated)+ ");" + "\n"
+					+ entity.getImplFullName(translated) + ".class, "+id.getName(translated)+ ");" + "\n");
+			if (entity.hasTenantAttribute())
+			{
+				out.println ( "\t\tif (! Security.isAuthorizedTenant( entity.getTenant()) \n"+
+						"\t\t\treturn null;\n");
+			}
+			out.println ("\t\treturn result;\n"
 					+ "\t}" );
 
 			// load all
@@ -1480,10 +1505,22 @@ public class EntityGenerator<E> {
 					+ "\t " + endComment );
 			out.println ( "\tpublic java.util.List<"+ entity.getFullName(translated)
 					+ "> loadAll() {" + "\n"
-					+ "\t\treturn (java.util.List<" + entity.getFullName(translated)
+					+ "\t\tjava.util.List<" + entity.getFullName(translated)
+					+ "> result = (java.util.List<" + entity.getFullName(translated)
 					+ ">)" + "\n"
-					+ "\t\t\tthis.getHibernateTemplate().loadAll("+entity.getImplFullName(translated)+".class);" + "\n"
-					+ "\t};" + "\n" );
+					+ "\t\t\tthis.getHibernateTemplate().loadAll("+entity.getImplFullName(translated)+".class);" + "\n");
+			if (entity.hasTenantAttribute())
+			{
+				out.println ( "\t\tfor (java.util.Iterator<" + entity.getFullName(translated)
+					+ "> it = result.iterator(); iterator.hasNext();)\n"
+					+ "\t\t{\n"
+					+ "\t\t\tif (! Security.isAuthorizedTenant( entity.getTenant()) \n"
+					+ "\t\t\t\tit.remove();\n"
+					+ "\t\t}");
+				out.println ( "\t\tif (! Security.isAuthorizedTenant( entity.getTenant()) \n"+
+						"\t\t\treturn null;\n");
+			}
+			out.println("\t};" + "\n" );
 
 			// create, update, remove entity
 			out.println ( "\t/**" + "\n"

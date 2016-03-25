@@ -183,6 +183,8 @@ public abstract class AbstractModelClass extends ModelElement {
 
 	public abstract LinkedList<AbstractModelAttribute> getForeignKeys();
 
+	public abstract boolean hasTenantAttribute ();
+	
 	public String generatePlantUml(AbstractModelClass fromClass, boolean translated, boolean attributes, boolean methods) {
 		return generatePlantUml(fromClass, translated, attributes, methods, "", false);
 	}
