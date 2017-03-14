@@ -7,13 +7,13 @@
 	</parent>
 	<groupId>com.soffid.iam.console</groupId>
 	<artifactId>dbtools</artifactId>
-	<version>1.15</version>
+	<version>1.16-SNAPSHOT</version>
 	<name>Soffid DB Tools</name>
 	<description>Tools to extract, create or modify a DB Schema</description>
         <scm>   
                 <connection>scm:git:ssh://git@github.com:/SoffidIAM/tools.git</connection>
                 <developerConnection>scm:git:ssh://git@github.com:/SoffidIAM/tools.git</developerConnection>
-                <tag>dbtools-1.15</tag>
+                <tag>HEAD</tag>
         </scm>
         <licenses>
           <license>
