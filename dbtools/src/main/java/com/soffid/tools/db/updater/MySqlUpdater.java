@@ -1,5 +1,6 @@
 package com.soffid.tools.db.updater;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +12,14 @@ import com.soffid.tools.db.schema.Index;
 import com.soffid.tools.db.schema.Table;
 
 public class MySqlUpdater extends DBUpdater{
+
+	@Override
+	protected boolean isCaseSensitive() {
+		if (File.separatorChar == '\\')
+			return false;
+		else
+			return true;
+	}
 
 	protected void dropPrimaryKey(Connection conn, Table t, String pk) throws SQLException {
 		executeStatement (conn, String.format ("ALTER TABLE %s DROP PRIMARY KEY",
@@ -101,7 +110,7 @@ public class MySqlUpdater extends DBUpdater{
 
 	protected void generateCreateTableSentence(Table t, StringBuffer sb) {
 		super.generateCreateTableSentence(t, sb);
-		sb.append (" Engine=InnoDB");
+		sb.append (" Engine=InnoDB row_format=Dynamic");
 	}
 
 	protected void generateAlterColumnSentence(Table t, Column c, StringBuffer sb) {
