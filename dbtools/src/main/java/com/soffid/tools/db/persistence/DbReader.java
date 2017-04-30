@@ -1,5 +1,6 @@
 package com.soffid.tools.db.persistence;
 
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -9,15 +10,28 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Vector;
+
 import com.soffid.tools.db.schema.*;
 
 
 public class DbReader {
+	PrintStream log  = null;
+	
+	public PrintStream getLog() {
+		return log;
+	}
+
+	public void setLog(PrintStream log) {
+		this.log = log;
+	}
+
 	public Database parse (Connection conn, String schema) throws Exception
 	{
 		Database db = new Database();
 		DatabaseMetaData metadata = conn.getMetaData();
 		try {
+			if (log != null)
+				log.println("Getting sequences ....");
 			ResultSet rset = conn.prepareStatement("SELECT SEQUENCE_NAME FROM USER_SEQUENCES").executeQuery();
 			while (rset.next())
 			{
@@ -25,16 +39,22 @@ public class DbReader {
 				Sequence seq = new Sequence();
 				seq.name = name;
 				db.sequences.add(seq);
+				if (log != null)
+					log.println ("  > "+name);
 			}
 		} catch (SQLException e) {
 			// No sequences available
 		}
-		ResultSet tables = metadata.getTables(null, schema, null, null);
+		if (log != null)
+			log.println ("Getting tables ....");
+		ResultSet tables = metadata.getTables(null, schema, null, new String[]{"TABLE"});
 		while (tables.next())
 		{
 			String catalog = tables.getString(1);
 			String tableName =tables.getString(3);
 			String tableType = tables.getString(4);
+			if (log != null)
+				log.println ("  > "+tableName);
 			if (tableType.contains ("TABLE"))
 			{
 				Table t = new Table();

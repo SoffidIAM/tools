@@ -48,18 +48,26 @@ public abstract class DBUpdater {
 
 	protected void update(Connection conn, Database db,
 			boolean ignoreForeignKeys) throws Exception {
-		actual = new DbReader().parse(conn, getCurrentUser(conn));
-
+		log.println("Retrieving existing database objects");
+		DbReader dbr = new DbReader();
+		dbr.setLog(log);
+		actual = dbr.parse(conn, getCurrentUser(conn));
+		log.println("Got existing database objects");
 		initialFixups(actual);
 		initialFixups(db);
 		// First create / update all tables
+		log.println("Removing no longer needed indexes");
 		removeForeignKeys(conn, actual, db);
 		removeIndexes(conn, actual, db);
+		log.println("Updating tables");
 		updateTables(conn, actual, db);
+		log.println("Updating indexes");
 		updateIndexes(conn, actual, db);
 		if (!ignoreForeignKeys)
 			updateForeignKeys(conn, actual, db);
+		log.println("Updating sequences");
 		updateSequences(conn, actual, db);
+		log.println("Data model verified");
 	}
 
 	String getIndexHash (Index index)
