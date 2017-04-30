@@ -281,7 +281,7 @@ public class SpringGenerator {
 					out.println("\t\t<property name=\"targetName\" value=\""+
 							service.getSpringBeanName(generator,scope)+"Target\"/>");
 				} else {
-					out.print("\t\t<property name=\"target\">" + endl +
+					out.println("\t\t<property name=\"target\">" + endl +
 							"\t\t\t<bean class=\"" + service.getImplFullName(scope) +"\">" );
 					generateBeanInjections(out, service, scope);
 

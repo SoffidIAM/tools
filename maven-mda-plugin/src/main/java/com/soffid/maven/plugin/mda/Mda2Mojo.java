@@ -186,6 +186,14 @@ public class Mda2Mojo extends AbstractMojo {
 	private String pluginName = null;
 
 	/**
+	 * Target application server
+	 * 
+	 * @parameter
+	 */
+	private String targetServer = null;
+
+
+	/**
 	 * The Maven project.
 	 * 
 	 * @parameter expression="${project}"
@@ -295,6 +303,8 @@ public class Mda2Mojo extends AbstractMojo {
 					g.setXmlModule(xmiDir);
 				if (docDir != null)
 					g.setUmlDir(docDir);
+				if (targetServer != null)
+					g.setTargetServer(targetServer);
 				g.setDefaultException(defaultException);
 				g.setGenerateUml(generateDoc);
 				g.setTranslatedOnly(translate);

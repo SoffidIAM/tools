@@ -500,7 +500,7 @@ public class EntityGenerator<E> {
 			// create, update remove
 			out.println ( "\t/**" + "\n"
 					+ "\t * Adds an instance of {@link " + entity.getFullName(Translate.DEFAULT)
-					+ "} andto the persistent store." + "\n"
+					+ "} to the persistent store." + "\n"
 					+ "\t " + endComment );
 			out.println ( "\tpublic void create ("+ entity.getFullName(Translate.DEFAULT)
 					+ " entity);" + "\n" );
@@ -731,7 +731,8 @@ public class EntityGenerator<E> {
 				out.print( "null" );
 			out.println( ");" );
 		}
-		out.println ("\t\tq.setParameter(\"tenantId\", 0);");
+		if (sqlString.contains(":tenantId"))
+			out.println ("\t\tq.setParameter(\"tenantId\", 0L);");
 		out.println ("\t\ttry {");
 		if (generator.hqlFullTest)
 			out.println ("\t\t\tq.list();");
@@ -901,7 +902,7 @@ public class EntityGenerator<E> {
 				i++;
 				out.println ( "\t\t\t" + modelPackage + ".criteria.CriteriaSearchParameter param" + i + " =" + "\n"
 						+ "\t\t\t\tnew " + modelPackage + ".criteria.CriteriaSearchParameter(" + "\n"
-						+ "\t\t\t\t\tcom.soffid.iam.utils.Security.getTenantId(),\"tenant.id\", "
+						+ "\t\t\t\t\tcom.soffid.iam.utils.Security.getCurrentTenantId(),\"tenant.id\", "
 						+ modelPackage + ".criteria.CriteriaSearchParameter.EQUAL_COMPARATOR);" + "\n"
 						+ "\t\t\tcriteriaSearch.addParameter(param"+i+");" );
 			}
@@ -974,10 +975,9 @@ public class EntityGenerator<E> {
 				out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(Translate.DEFAULT)+"\", "+param.getName(Translate.DEFAULT)+ ");" );
 
 			}
-//			if (entity.hasTenantAttribute())
-//			{
-				out.println ( "\t\t\tqueryObject.setParameter(\"tenantId\", com.soffid.iam.utils.Security.getTenantId());" );
-//			}
+			if (sqlString.contains(":tenantId"))
+				out.println ( "\t\t\tqueryObject.setParameter(\"tenantId\", com.soffid.iam.utils.Security.getCurrentTenantId());" );
+			
 			out.println ( "\t\t\tif (criteria != null && criteria.getMaximumResultSize () != null) {" + "\n"
 					+ "\t\t\t\tqueryObject.setMaxResults (criteria.getMaximumResultSize ().intValue()); " + "\n"
 					+ "\t\t\t}" );
@@ -1310,7 +1310,7 @@ public class EntityGenerator<E> {
 		if (entity != subClass || ! entity.getSpecializations().isEmpty()) {
 			out.println ( "\t/**" + "\n"
 					+ "\t * Adds an instance of {@link " + subClass.getFullName(Translate.DEFAULT)
-					+ "} andto the persistent store." + "\n"
+					+ "} to the persistent store." + "\n"
 					+ "\t " + endComment );
 			out.println ( "\tpublic void create" + subClass.getName(Translate.DEFAULT) + " ("+ subClass.getFullName(Translate.DEFAULT)
 					+ " entity)" + "\n"
@@ -1320,8 +1320,12 @@ public class EntityGenerator<E> {
 						+ "\t\t{" + "\n"
 						+ "\t\t\tthrow new IllegalArgumentException(" + "\n"
 						+ "\t\t\t\t\"" + subClass.getDaoName(Translate.DEFAULT) + ".create - 'entity' can not be null\");" + "\n"
-						+ "\t\t}" + "\n"
-						+ "\t\tthis.getHibernateTemplate().save(entity);" + "\n"
+						+ "\t\t}" + "\n");
+					if (entity.hasTenantAttribute())
+					{
+						out.println("\t\tentity.setTenant ( getTenantEntityDao().load (com.soffid.iam.utils.Security.getCurrentTenantId()) );");
+					}
+					out.println ("\t\tthis.getHibernateTemplate().save(entity);" + "\n"
 						+ "\t\tthis.getHibernateTemplate().flush();" ) ;
 //				generateHibernateListenerMethods("created", out);
 				out.println ( "\t}" + "\n" );
@@ -1685,7 +1689,7 @@ public class EntityGenerator<E> {
 					+ entity.getImplFullName(Translate.DEFAULT) + ".class, "+id.getName(Translate.DEFAULT)+ ");" + "\n");
 			if (entity.hasTenantAttribute())
 			{
-				out.println ( "\t\tif (! Security.isAuthorizedTenant( entity.getTenant())) \n"+
+				out.println ( "\t\tif ( result != null && ! com.soffid.iam.utils.Security.isAuthorizedTenant( result.getTenant())) \n"+
 						"\t\t\treturn null;\n");
 			}
 			out.println ("\t\treturn result;\n"
@@ -1702,24 +1706,24 @@ public class EntityGenerator<E> {
 					+ "\t\tjava.util.List<" + entity.getFullName(Translate.DEFAULT)
 					+ "> result = (java.util.List<" + entity.getFullName(Translate.DEFAULT)
 					+ ">)" + "\n"
-					+ "\t\t\tthis.getHibernateTemplate().loadAll("+entity.getImplFullName(Translate.DEFAULT)+".class);" + "\n");
+					+ "\t\t\tthis.getHibernateTemplate().loadAll("+entity.getFullName(Translate.DEFAULT)+".class);" + "\n");
 			if (entity.hasTenantAttribute())
 			{
 				out.println ( "\t\tfor (java.util.Iterator<" + entity.getFullName(Translate.DEFAULT)
-					+ "> it = result.iterator(); iterator.hasNext();)\n"
+					+ "> it = result.iterator(); it.hasNext();)\n"
 					+ "\t\t{\n"
-					+ "\t\t\tif (! Security.isAuthorizedTenant( entity.getTenant())) \n"
+					+ "\t\t\t" + entity.getFullName(Translate.DEFAULT) + " entity = it.next();\n"
+					+ "\t\t\tif (! com.soffid.iam.utils.Security.isAuthorizedTenant( entity.getTenant())) \n"
 					+ "\t\t\t\tit.remove();\n"
 					+ "\t\t}");
-				out.println ( "\t\tif (! Security.isAuthorizedTenant( entity.getTenant())) \n"+
-						"\t\t\treturn null;\n");
 			}
+			out.println ( "\t\treturn result;\n");
 			out.println("\t};" + "\n" );
 
 			// create, update, remove entity
 			out.println ( "\t/**" + "\n"
 					+ "\t * Adds an instance of {@link " + entity.getFullName(Translate.DEFAULT)
-					+ "} andto the persistent store." + "\n"
+					+ "} to the persistent store." + "\n"
 					+ "\t " + endComment );
 			out.println ( "\tpublic void create ("+ entity.getFullName(Translate.DEFAULT)
 					+ " entity)" + "\n"
@@ -1729,8 +1733,12 @@ public class EntityGenerator<E> {
 						+ "\t\t{" + "\n"
 						+ "\t\t\tthrow new IllegalArgumentException(" + "\n"
 						+ "\t\t\t\t\"" + entity.getDaoName(Translate.DEFAULT) + ".create - 'entity' can not be null\");" + "\n"
-						+ "\t\t}" + "\n"
-						+ "\t\tthis.getHibernateTemplate().save(entity);" + "\n"
+						+ "\t\t}" + "\n");
+					if (entity.hasTenantAttribute())
+					{
+						out.println("\t\tentity.setTenant  ( getTenantEntityDao().load (com.soffid.iam.utils.Security.getCurrentTenantId()) );");
+					}
+					out.println ( "\t\tthis.getHibernateTemplate().save(entity);" + "\n"
 						+ "\t\tthis.getHibernateTemplate().flush();" );
 //					generateHibernateListenerMethods(rep, "created", out);
 					out.println ( "\t}" + "\n" );

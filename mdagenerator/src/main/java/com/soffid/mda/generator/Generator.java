@@ -19,7 +19,28 @@ public class Generator {
 	String coreTestResourcesDir;
 	String syncDir;
 	String syncResourcesDir;
-	String xmlModuleDir;
+	String xmlModuleDir; 
+	String targetServer = "jboss3"; 
+	
+	public String getTargetServer() {
+		return targetServer;
+	}
+
+	public void setTargetServer(String targetServer) {
+		this.targetServer = targetServer;
+	}
+	
+	public boolean isTargetTomee () 
+	{
+		return "tomee".equals(targetServer);
+	}
+
+	
+	public boolean isTargetJboss3 () 
+	{
+		return "jboss3".equals(targetServer);
+	}
+
 	public boolean isHqlFullTest() {
 		return hqlFullTest;
 	}
@@ -35,6 +56,7 @@ public class Generator {
 	boolean generateDeprecated = false;
 	boolean hqlFullTest = true;
 	boolean generateEjb = true;
+
 	public boolean isGenerateEjb() {
 		return generateEjb;
 	}
@@ -211,6 +233,7 @@ public class Generator {
 		new ValueObjectGenerator().generate (this, parser);
 		new SpringGenerator().generate (this, parser);
 		new SqlGenerator().generate (this, parser);
+		new CodeMirrorGenerator().generate (this, parser);
 		new XmiGenerator().generate (this, parser);
 		new JascutGenerator().generate (this, parser);
 		new DocGenerator().generate(this, parser);

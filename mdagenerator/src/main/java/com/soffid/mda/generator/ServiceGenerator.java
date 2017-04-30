@@ -35,7 +35,9 @@ public class ServiceGenerator {
 	public void generate(Generator generator, Parser parser) throws IOException {
 		this.generator = generator;
 		this.parser = parser;
-		if (generator.isTranslatedOnly())
+		if (generator.getBasePackage() != null)
+			rootPkg = generator.getBasePackage();
+		else if (generator.isTranslatedOnly())
 		{
 			rootPkg = "com.soffid.iam";
 		}
@@ -80,10 +82,14 @@ public class ServiceGenerator {
 			}
 		}
 
-		if (generator.isGenerateEjb())
+		if (generator.isGenerateEjb() && generator.isTargetJboss3())
 		{
 			generateEjbJarXml();
 			generateJbossXml();
+		}
+		else
+		{
+			generateOpenEjbXml();
 		}
 		generateServiceLocator();
 		generateAltServiceLocator();
@@ -177,6 +183,11 @@ public class ServiceGenerator {
 		file = generator.getCommonsDir();
 		
 		String packageName = (translated ? "com.soffid.iam": "es.caib.seycon.ng");
+		if (generator.getBasePackage () != null)
+		{
+			packageName = generator.getBasePackage();
+		}
+
 		if (generator.isPlugin())
 		{
 			packageName = packageName + ".addons."+generator.getPluginName();
@@ -218,6 +229,7 @@ public class ServiceGenerator {
 				+ "" + endl
 				+ "\tString server = null;" + endl
 				+ "\tString authToken = null;" + endl
+				+ "\tString tenant = null;" + endl
 				+ "\t" + endl
 				+ "\tpublic RemoteServiceLocator()" + endl
 				+ "\t{" + endl
@@ -244,6 +256,14 @@ public class ServiceGenerator {
 				+ "\t\tthis.authToken = authToken;" + endl
 				+ "\t}" + endl
 				+ "" + endl
+				+ "\tpublic String getTenant() {" + endl
+				+ "\t\treturn tenant;" + endl
+				+ "\t}" + endl
+				+ "" + endl
+				+ "\tpublic void setTenant(String tenant) {" + endl
+				+ "\t\tthis.tenant = tenant;" + endl
+				+ "\t}" + endl
+				+ "" + endl
 				+ "\t" + endl
 				+ "\tprivate static int roundRobin = 0;" + endl
 				+ "\t" + endl
@@ -268,9 +288,12 @@ public class ServiceGenerator {
 				+ "\t\t\t\tm = new URLManager(list[ (i+roundRobin) % list.length ]);" + endl
 				+ "\t\t\t\tif (authToken == null)" + endl
 				+ "	                return factory.getInvoker(m.getHttpURL(serviceName));" + endl
-				+ "	            else" + endl
-				+ "	                return factory.getInvoker(m.getHttpURL(serviceName), authToken);" + endl
-				+ "\t\t\t} catch (Exception e) {" + endl
+				+ "	            else" + endl);
+		if (generator.isTargetTomee())
+			out.print("	                return factory.getInvoker(m.getHttpURL(serviceName), tenant, authToken);" + endl);
+		else
+			out.print("	                return factory.getInvoker(m.getHttpURL(serviceName), authToken);" + endl);
+		out.print("\t\t\t} catch (Exception e) {" + endl
 //				+ "\t\t\t\tlog.warn(\"Unable to locate server at \" + m.getServerURL(), e);" + endl
 				+ "\t\t\t\tlastException = e;" + endl
 				+ "\t\t\t}" + endl
@@ -656,7 +679,13 @@ public class ServiceGenerator {
 		}
 		else
 		{
-			if (Translate.mustTranslate(scope, generator))
+			if (generator.getBasePackage() != null)
+			{
+				packageName = generator.getBasePackage();
+				file = file + "/" + packageName.replace('.', '/');
+				
+			}
+			else if (Translate.mustTranslate(scope, generator))
 			{
 				file = file + "/com/soffid/iam";
 				packageName = "com.soffid.iam";
@@ -699,14 +728,22 @@ public class ServiceGenerator {
 					+ "\t */" + endl
 					+ "\tpublic static "+ service.getEjbInterfaceFullName(scope)+" get"+ service.getName(scope)+"()" + endl
 					+ "\t\tthrows javax.naming.NamingException, javax.ejb.CreateException" + endl
-					+ "\t{" + endl
-					+ "\t\t" + service.getEjbHomeFullName(scope) + " home = ("
+					+ "\t{" + endl);
+				if (generator.isTargetJboss3())
+					out.println( "\t\t" + service.getEjbHomeFullName(scope) + " home = ("
 						+ service.getEjbHomeFullName(scope) +  ") " + endl
-					+ "\t\t\tnew javax.naming.InitialContext()." + endl
-						+ "\t\t\t\tlookup("+ service.getEjbHomeFullName(scope) + ".JNDI_NAME);" + endl
-					+ "\t\treturn home.create();" + endl
-					+ "\t}" + endl
-					+ "" );
+						+ "\t\t\tnew javax.naming.InitialContext()." + endl
+							+ "\t\t\t\tlookup("+ service.getEjbHomeFullName(scope) + ".JNDI_NAME);" + endl
+						+ "\t\treturn home.create();" + endl
+						+ "\t}" + endl
+						+ "" );
+				else
+					out.println( "\t\treturn ("
+							+ service.getEjbInterfaceFullName(scope) +  ") " + endl
+							+ "\t\t\tnew javax.naming.InitialContext()." + endl
+								+ "\t\t\t\tlookup("+ service.getEjbHomeFullName(scope) + ".JNDI_NAME);" + endl
+							+ "\t}" + endl
+							+ "" );
 			}
 		}
 		out.println ( "}" );
@@ -833,7 +870,7 @@ public class ServiceGenerator {
 									break;
 								}
 								else
-									out.println ( "\t\t\t<role-name>" + actor.getRoleName() + "</role-name>" );
+									out.println ( "\t\t\t<role-name>" + Util.hardTrim(actor.getRoleName()) + "</role-name>" );
 							}
 							out.println ( "\t\t\t<method>" + endl
 									+ "\t\t\t\t<description><![CDATA[" + Util.formatXmlComments(op.getComments(), "\t\t\t\t\t") + "]]></description>" + endl
@@ -941,6 +978,40 @@ public class ServiceGenerator {
 		out.println ( "   </enterprise-beans>" + endl
 				+ "" + endl
 				+ "</jboss>" );
+		out.close();
+
+	}
+
+	void generateOpenEjbXml () throws FileNotFoundException, UnsupportedEncodingException {
+		String file;
+		File f = new File (generator.getCoreResourcesDir() + "/META-INF/openejb-jar.xml");
+		f.getParentFile().mkdirs();
+		PrintStream out = new PrintStream(f, "UTF-8");
+		System.out.println ("Generating "+f.getPath());
+
+
+		out.println ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + endl
+				+ "<openejb-jar>" + endl
+				+ "" );
+
+		for (AbstractModelClass service: parser.getServices()) {
+			if (!service.isInternal() && ! service.isServerOnly())
+			{
+				int scope = Translate.SERVICE_SCOPE;
+				do
+				{
+					out.println ( "\t<ejb-deployment ejb-name=\"" + service.getEjbName(scope) + "\">" + endl
+						+ "\t\t<jndi name=\"soffid.ejb." + service.getFullName(scope) + "\"/>" + endl
+						+ "\t</ejb-deployment>" + endl
+						+ "" );
+					if (scope == Translate.ALTSERVICE_SCOPE || ! service.isTranslated())
+						break;
+					scope = Translate.ALTSERVICE_SCOPE;
+				} while (true);
+			}
+		}
+		out.println ( "" + endl
+				+ "</openejb-jar>" );
 		out.close();
 
 	}
@@ -1633,8 +1704,9 @@ public class ServiceGenerator {
 				+ " * EJB " + service.getName(scope) + endl
 				+ Util.formatComments(service.getComments())
 				+ " */" );
-		out.println ( "public interface " + service.getName(scope) + endl
-				+ "\textends javax.ejb.EJBLocalObject" );
+		out.println ( "public interface " + service.getName(scope) + endl);
+		if (generator.isTargetJboss3())
+				out.println( "\textends javax.ejb.EJBLocalObject" );
 		out.println ( " {" );
 		out.println ( );
 		for (ModelOperation op: service.getOperations())
@@ -1688,12 +1760,13 @@ public class ServiceGenerator {
 				+ "\t/**" + endl
 				+ "\t * The physical JDNI name" +endl
 				+ "\t */" + endl
-				+ "\tpublic static final String JNDI_NAME=\"soffid/ejb/" + service.getFullName(scope) + "\";"
-				+ endl + endl
-				+ "\tpublic "+ packageName  + ".ejb." + service.getName(scope) + " create()" + endl
-				+ "\t\tthrows javax.ejb.CreateException;" + endl
-				+ endl
-				+ "}" );
+				+ "\tpublic static final String JNDI_NAME=\"openejb:/local/soffid.ejb." + service.getFullName(scope) + "\";"
+				+ endl + endl);
+		if (generator.isTargetJboss3())
+			out.println (
+				  "\tpublic "+ packageName  + ".ejb." + service.getName(scope) + " create()" + endl
+				+ "\t\tthrows javax.ejb.CreateException;" + endl + endl);
+		out.println( "}" );
 		out.close();
 	}
 
@@ -1726,8 +1799,25 @@ public class ServiceGenerator {
 			+ " * @see <code>" + service.getFullName(scope) + "</code>," + endl
 			+ " * @see <code>" + service.getFullName(Translate.DONT_TRANSLATE) + "</code>," + endl
 			+ " */" );
+		if (generator.isTargetTomee())
+		{
+			if (service.isStateful())
+			{
+				out.println("@javax.ejb.Stateful(name=\""+service.getEjbName(scope)+"\")");
+			}
+			else
+				out.println("@javax.ejb.Stateless(name=\""+service.getEjbName(scope)+"\")");
+			if (generator.isTargetTomee())
+				out.println("@javax.ejb.Local("+service.getEjbInterfaceFullName(scope)+".class)");
+			out.println("@javax.ejb.TransactionManagement(value=javax.ejb.TransactionManagementType.CONTAINER)");
+			out.println("@javax.ejb.TransactionAttribute(value=javax.ejb.TransactionAttributeType.SUPPORTS)");
+		}
 		out.print ( "public class " + className );
 		out.println ( " extends org.springframework.ejb.support.AbstractStatelessSessionBean" );
+		if (generator.isTargetTomee())
+		{
+			out.println ("  implements "+service.getEjbInterfaceFullName(scope));
+		}
 		String svcName = service.getLocalServiceName(scope);
 		out.println ( "{" + endl
 				+ "\tprivate " + service.getFullName(scope) + " " + svcName + ";" + endl );
@@ -1740,6 +1830,33 @@ public class ServiceGenerator {
 						+ "\t * @see " + service.getFullName(scope) + "#"
 						+ op.getSpec(scope) + endl
 						+ "\t */" );
+				// Generate authorization tags
+				Set<AbstractModelClass> actors = op.getActors();
+				if (!actors.isEmpty())
+				{
+					StringBuffer annotation = new StringBuffer ("\t@javax.annotation.security.RolesAllowed({");
+					String closeAnnotation = "})";
+					boolean first = true;
+					for (AbstractModelClass actor: actors)
+					{
+						if (actor.getRoleName().equals ("anonymous") || actor.getRoleName().equals("*"))
+						{
+							annotation = new StringBuffer("\t@javax.annotation.security.PermitAll");
+							closeAnnotation = "";
+							break;
+						}
+						else
+						{
+							if (first) first = false;
+							else annotation.append(", ");
+							annotation.append ("\"").append(Util.hardTrim(actor.getRoleName())).append("\"");
+							
+						}
+					}
+					annotation.append(closeAnnotation);
+					out.println (annotation);
+				}
+				// Generate method body
 				out.println ( "\tpublic " + op.getPrettySpec (scope) );
 				String throwsClause = op.getThrowsClause(Translate.SERVICE_SCOPE);
 				if (!throwsClause.isEmpty())
@@ -1784,79 +1901,116 @@ public class ServiceGenerator {
 			}
 		}
 
-		out.println ( "\t/**" + endl
-				+ "\t * Every Spring Session EJB needs to" + endl
-				+ "\t * call this to instantiate the Spring" + endl
-				+ "\t * Business Object." + endl
-				+ "\t *" + endl
-				+ "\t * @see org.springframework.ejb.support.AbstractStatelessSessionBean#onEjbCreate()" + endl
-				+ "\t */" + endl
-				+ "\tprotected void onEjbCreate()" + endl
-				+ "\t{" + endl
-				+ "\t\tthis." + svcName  + " = (" + service.getFullName(scope)+ ")" + endl
-				+ "\t\tgetBeanFactory().getBean(\"" + service.getSpringBeanName(generator, scope) + "\");" + endl
-				+ "\t}" + endl
-				+ "\t" + endl
-				+ "\t/**" + endl
-				+ "\t * Override default BeanFactoryLocator implementation to" + endl
-				+ "\t * provide singleton loading of the application context Bean factory." + endl
-				+ "\t *" + endl
-				+ "\t * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)" + endl
-				+ "\t */" + endl
-				+ "\tpublic void setSessionContext(javax.ejb.SessionContext sessionContext)" + endl
-				+ "\t{" + endl
-				+ "\t\tsuper.setSessionContext(sessionContext);" + endl
-				+ "\t\tsuper.setBeanFactoryLocator(" + endl
-				+ "\t\torg.springframework.context.access.ContextSingletonBeanFactoryLocator.getInstance(\"beanRefFactory.xml\"));" + endl
-				+ "\t\tsuper.setBeanFactoryLocatorKey(\"beanRefFactory\");" + endl
-				+ "\t}" + endl
-				+ endl
-				+ "\torg.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog (getClass());" + endl
-				+ "\t/**" + endl
-				+ "\t * Finds the root cause of the parent exception" + endl
-				+ "\t * by traveling up the exception tree." + endl
-				+ "\t */" + endl
-				+ "\tprivate static Throwable getRootCause(Throwable throwable)" + endl
-				+ "\t{" + endl
-				+ "\t\tif (throwable != null)" + endl
-				+ "\t\t{" + endl
-				+ "\t\t\t// Reflectively get any exception causes." + endl
-				+ "\t\t\ttry" + endl
-				+ "\t\t\t{" + endl
-				+ "\t\t\t\tThrowable targetException = null;" + endl
-				+ "\t\t\t\t// java.lang.reflect.InvocationTargetException" + endl
-				+ "\t\t\t\tString exceptionProperty = \"targetException\";" + endl
-				+ "\t\t\t\tif (org.apache.commons.beanutils.PropertyUtils.isReadable(throwable, exceptionProperty))" + endl
-				+ "\t\t\t\t{" + endl
-				+ "\t\t\t\t\ttargetException = (Throwable)org.apache.commons.beanutils.PropertyUtils.getProperty(throwable, exceptionProperty);" + endl
-				+ "\t\t\t\t}" + endl
-				+ "\t\t\t\telse" + endl
-				+ "\t\t\t\t{" + endl
-				+ "\t\t\t\t\texceptionProperty = \"causedByException\";" + endl
-				+ "\t\t\t\t\t//javax.ejb.EJBException" + endl
-				+ "\t\t\t\t\tif (org.apache.commons.beanutils.PropertyUtils.isReadable(throwable, exceptionProperty))" + endl
-				+ "\t\t\t\t\t{" + endl
-				+ "\t\t\t\t\t\ttargetException = (Throwable)org.apache.commons.beanutils.PropertyUtils.getProperty(throwable, exceptionProperty);" + endl
-				+ "\t\t\t\t\t}" + endl
-				+ "\t\t\t\t}" + endl
-				+ "\t\t\t\tif (targetException != null)" + endl
-				+ "\t\t\t\t{" + endl
-				+ "\t\t\t\t\tthrowable = targetException;" + endl
-				+ "\t\t\t\t}" + endl
-				+ "\t\t\t}" + endl
-				+ "\t\t\tcatch (Exception exception)" + endl
-				+ "\t\t\t{" + endl
-				+ "\t\t\t\t// just print the exception and continue" + endl
-				+ "\t\t\t\texception.printStackTrace();" + endl
-				+ "\t\t\t}" + endl
-				+ "\t\t\tif (throwable.getCause() != null)" + endl
-				+ "\t\t\t{" + endl
-				+ "\t\t\t\tthrowable = throwable.getCause();" + endl
-				+ "\t\t\t\tthrowable = getRootCause(throwable);" + endl
-				+ "\t\t\t}" + endl
-				+ "\t\t}" + endl
-				+ "\t\treturn throwable;" + endl
-				+ "\t}" );
+		if (generator.isTargetJboss3())
+		{
+			// Generate init method
+			out.println ( "\t/**" + endl
+					+ "\t * Every Spring Session EJB needs to" + endl
+					+ "\t * call this to instantiate the Spring" + endl
+					+ "\t * Business Object." + endl
+					+ "\t *" + endl
+					+ "\t * @see org.springframework.ejb.support.AbstractStatelessSessionBean#onEjbCreate()" + endl
+					+ "\t */" +endl
+					+ "\tjavax.ejb.PostConstruct" + endl
+					+ "\tprotected void onEjbCreate()" + endl
+					+ "\t{" + endl
+					+ "\t\tthis." + svcName  + " = (" + service.getFullName(scope)+ ")" + endl
+					+ "\t\tgetBeanFactory().getBean(\"" + service.getSpringBeanName(generator, scope) + "\");" + endl
+					+ "\t}" + endl
+					+ "\t" + endl
+					+ "\t/**" + endl
+					+ "\t * Override default BeanFactoryLocator implementation to" + endl
+					+ "\t * provide singleton loading of the application context Bean factory." + endl
+					+ "\t *" + endl
+					+ "\t * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)" + endl
+					+ "\t */" + endl
+					+ "\tpublic void setSessionContext(javax.ejb.SessionContext sessionContext)" + endl
+					+ "\t{" + endl
+					+ "\t\tsuper.setSessionContext(sessionContext);" + endl
+					+ "\t\tsuper.setBeanFactoryLocator(" + endl
+					+ "\t\torg.springframework.context.access.ContextSingletonBeanFactoryLocator.getInstance(\"beanRefFactory.xml\"));" + endl
+					+ "\t\tsuper.setBeanFactoryLocatorKey(\"beanRefFactory\");" + endl
+					+ "\t}" + endl
+					+ endl
+					+ "\torg.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog (getClass());" + endl);
+
+		} else {
+
+			out.println ( "\t/**" + endl
+					+ "\t * Initizlizes been" + endl
+					+ "\t *" + endl
+					+ "\t * @see org.springframework.ejb.support.AbstractStatelessSessionBean#onEjbCreate()" + endl
+					+ "\t */" + endl
+					+ "\t@Override" + endl
+					+ "\t@javax.annotation.PostConstruct" + endl
+					+ "\tprotected void onEjbCreate()" + endl
+					+ "\t{" + endl
+					+ "\t\tthis." + svcName  + " = (" + service.getFullName(scope)+ ")" + endl
+					+ "\t\tgetBeanFactory().getBean(\"" + service.getSpringBeanName(generator, scope) + "\");" + endl
+					+ "\t}" + endl
+					+ "\t" + endl
+					+ "\t/**" + endl
+					+ "\t * Override default BeanFactoryLocator implementation to" + endl
+					+ "\t * provide singleton loading of the application context Bean factory." + endl
+					+ "\t *" + endl
+					+ "\t * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)" + endl
+					+ "\t */" + endl
+					+ "\tpublic void setSessionContext(javax.ejb.SessionContext sessionContext)" + endl
+					+ "\t{" + endl
+					+ "\t\tsuper.setSessionContext(sessionContext);" + endl
+					+ "\t\tsuper.setBeanFactoryLocator(" + endl
+					+ "\t\torg.springframework.context.access.ContextSingletonBeanFactoryLocator.getInstance(\"beanRefFactory.xml\"));" + endl
+					+ "\t\tsuper.setBeanFactoryLocatorKey(\"beanRefFactory\");" + endl
+					+ "\t}" + endl
+					+ endl
+					+ "\torg.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog (getClass());" + endl);
+		}
+		out.println ( 
+			  "\t/**" + endl
+			+ "\t * Finds the root cause of the parent exception" + endl
+			+ "\t * by traveling up the exception tree." + endl
+			+ "\t */" 
+			+ "\tprivate static Throwable getRootCause(Throwable throwable)" + endl
+			+ "\t{" + endl
+			+ "\t\tif (throwable != null)" + endl
+			+ "\t\t{" + endl
+			+ "\t\t\t// Reflectively get any exception causes." + endl
+			+ "\t\t\ttry" + endl
+			+ "\t\t\t{" + endl
+			+ "\t\t\t\tThrowable targetException = null;" + endl
+			+ "\t\t\t\t// java.lang.reflect.InvocationTargetException" + endl
+			+ "\t\t\t\tString exceptionProperty = \"targetException\";" + endl
+			+ "\t\t\t\tif (org.apache.commons.beanutils.PropertyUtils.isReadable(throwable, exceptionProperty))" + endl
+			+ "\t\t\t\t{" + endl
+			+ "\t\t\t\t\ttargetException = (Throwable)org.apache.commons.beanutils.PropertyUtils.getProperty(throwable, exceptionProperty);" + endl
+			+ "\t\t\t\t}" + endl
+			+ "\t\t\t\telse" + endl
+			+ "\t\t\t\t{" + endl
+			+ "\t\t\t\t\texceptionProperty = \"causedByException\";" + endl
+			+ "\t\t\t\t\t//javax.ejb.EJBException" + endl
+			+ "\t\t\t\t\tif (org.apache.commons.beanutils.PropertyUtils.isReadable(throwable, exceptionProperty))" + endl
+			+ "\t\t\t\t\t{" + endl
+			+ "\t\t\t\t\t\ttargetException = (Throwable)org.apache.commons.beanutils.PropertyUtils.getProperty(throwable, exceptionProperty);" + endl
+			+ "\t\t\t\t\t}" + endl
+			+ "\t\t\t\t}" + endl
+			+ "\t\t\t\tif (targetException != null)" + endl
+			+ "\t\t\t\t{" + endl
+			+ "\t\t\t\t\tthrowable = targetException;" + endl
+			+ "\t\t\t\t}" + endl
+			+ "\t\t\t}" + endl
+			+ "\t\t\tcatch (Exception exception)" + endl
+			+ "\t\t\t{" + endl
+			+ "\t\t\t\t// just print the exception and continue" + endl
+			+ "\t\t\t\texception.printStackTrace();" + endl
+			+ "\t\t\t}" + endl
+			+ "\t\t\tif (throwable.getCause() != null)" + endl
+			+ "\t\t\t{" + endl
+			+ "\t\t\t\tthrowable = throwable.getCause();" + endl
+			+ "\t\t\t\tthrowable = getRootCause(throwable);" + endl
+			+ "\t\t\t}" + endl
+			+ "\t\t}" + endl
+			+ "\t\treturn throwable;" + endl
+			+ "\t}" );
 		out.println ( "}" );
 		out.close();
 	}
