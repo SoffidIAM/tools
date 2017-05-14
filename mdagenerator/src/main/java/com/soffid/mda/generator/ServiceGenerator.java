@@ -963,7 +963,7 @@ public class ServiceGenerator {
 			if (trans.readOnly())
 			{
 				out.print(separator);
-				separator = "readOnly=true";
+				out.print("readOnly=true");
 				separator=", ";
 			}
 			out.println (")");
