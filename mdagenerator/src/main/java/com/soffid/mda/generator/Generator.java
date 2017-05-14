@@ -159,6 +159,7 @@ public class Generator {
 		new ValueObjectGenerator().generate (this, parser);
 		new SpringGenerator().generate (this, parser);
 		new SqlGenerator().generate (this, parser);
+		new CodeMirrorGenerator().generate (this, parser);
 		new XmiGenerator().generate (this, parser);
 		new JascutGenerator().generate (this, parser);
 		new DocGenerator().generate(this, parser);

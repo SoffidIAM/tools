@@ -7,10 +7,14 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
@@ -50,44 +54,54 @@ public class CodeMirrorGenerator<E> {
 	private void generateResources() throws FileNotFoundException, UnsupportedEncodingException {
 		String file = generator.getCoreResourcesDir();
 
-		File f = new File (file + File.separator + "codemirror/classes.js");
+		File f;
+		if (generator.isPlugin())
+			f = new File (file + File.separator + "web/js/codemirror/java-classes-"+generator.getPluginName()+".js");
+		else
+			f = new File (file + File.separator + "web/js/codemirror/java-classes.js");
+
 		f.getParentFile().mkdirs();
 		PrintStream out = new PrintStream(f, "UTF-8");
 
 		System.out.println ("Generating "+f.getPath());
 
 		out.println ( "//" + "\n"
-				+ "// (C) 2013 Soffid" + "\n"
+				+ "// (C) 2017 Soffid" + "\n"
 				+ "//" + "\n"
 				+ "//" + "\n"
 				);
 		
-		int[] bothTranslations = new int[]{Translate.TRANSLATE, Translate.DONT_TRANSLATE};
-		int[] defaultTranslation = new int[]{Translate.DEFAULT};
-		int[] noDump = new int[0];
+		boolean[] bothTranslations = new boolean[]{false, true};
+		boolean[] defaultTranslation = new boolean[]{false};
+		boolean[] noDump = new boolean[0];
 		HashSet<String> classNames = new HashSet<String>();
 		
+		HashMap<String, Set <String> > packages = new HashMap<String, Set<String> > ();
+		
 		boolean first = true;
-		for (ModelElement element: new LinkedList<ModelElement>( parser.getModelElements()))
+		LinkedList<ModelElement> elementList = new LinkedList<ModelElement>( parser.getModelElements());
+		elementList.add(new ModelClass(parser, Date.class));
+		elementList.add(new ModelClass(parser, Calendar.class));
+		for (ModelElement element: elementList)
 		{
 			if (element instanceof ModelClass)
 			{
 				ModelClass mc = (ModelClass) element;
-				int translations[];
+				boolean translations[];
 				if (mc.isService() || mc.isValueObject())
 					translations  = bothTranslations;
 				else if (mc.isEntity())
 					translations = noDump;
 				else
 					translations = defaultTranslation;
-				for (int translation: translations)
+				for (boolean translation: translations)
 				{
 					String javaClass = mc.getJavaType(translation);
 					if (classNames.contains(javaClass))
 						continue;
 					classNames.add(javaClass);
 					first = false;
-					out.println ("'"+javaClass+"': {");
+					out.println ("CodeMirrorJavaTypes[\""+javaClass+"\"]={");
 					HashSet<String> names = new HashSet<String>();
 					boolean firstOp = true;
 					if (javaClass.startsWith("java.util.List<") || 
@@ -95,15 +109,18 @@ public class CodeMirrorGenerator<E> {
 							javaClass.startsWith("java.util.Set<") )
 					{
 						String baseClass = mc.getChildClass().getJavaType(translation);
-						out.println("\t'size': 'int',");
-						out.print("\t'get': '"+baseClass+"'");
+						out.println("\t\"size\": \"int\",");
+						out.print("\t\"get\": \""+baseClass+"\"");
 					} else  {
 						if (javaClass.endsWith("[]"))
 						{
-							out.print("\t'length':'int'");
+							out.print("\t\"length\":\"int\"");
 							firstOp = false;
 							mc = mc.getChildClass();
 						}
+						
+						registerPackage(packages, mc, translation);
+						
 						for (ModelOperation op: mc.getOperations())
 						{
 							if (! names.contains(op.getName(translation)))
@@ -112,7 +129,7 @@ public class CodeMirrorGenerator<E> {
 									out.println (",");
 								firstOp = false;
 								names.add(op.getName());
-								out.print("\t'"+op.getName()+"':'"+op.getReturnType(translation)+"'");
+								out.print("\t\""+op.getName()+"\":\""+op.getReturnType(translation)+"\"");
 							}
 						}
 						for (AbstractModelAttribute att: mc.getAllAttributes())
@@ -123,15 +140,63 @@ public class CodeMirrorGenerator<E> {
 									out.println (",");
 								firstOp = false;
 								names.add(att.getName());
-								out.print("\t'"+att.getName()+"':'"+att.getJavaType(translation)+"'");
+								out.print("\t\""+att.getName()+"\":\""+att.getJavaType(translation)+"\"");
 							}
 						}
 					}
-					out.println("\n},");
+					out.println("\n};");
 				}
 			}
 		}
-		out.println("");
+		String slName;
+		if (generator.isPlugin())
+		{
+			slName = "com.soffid.iam.addons." + generator.getPluginName()+".ServiceLocator";
+		}
+		else
+		{
+			slName = "es.caib.seycon.ng.ServiceLocator";
+		}
+		out.println("CodeMirrorJavaTypes[\""+slName+"\"]={");
+		for ( ModelClass service: parser.getServices())
+		{
+			out.println("\t\"get"+service.getName()+"\":\""+service.getFullName()+"\",");
+		}
+		out.println("\t\"instance\":\"java.lang.Object\",");
+		out.println("\t\"getService\":\"java.lang.Object\"");
+		out.println("};");
 		
+		
+		for (String pkg : packages.keySet())
+		{
+			out.println("CodeMirrorJavaPackages[\""+pkg+"\"]=[");
+			first = true;
+			for ( String className: packages.get(pkg) )
+			{
+				if (!first) out.print(",");
+				first = false;
+				out.print("\n\t\""+className+"\"");
+			}
+			out.println ("];"); 
+		}
+	}
+
+	private void registerPackage(HashMap<String, Set<String>> packages,
+			ModelClass mc, boolean translation) {
+		String split[] = mc.getJavaType(translation).split("\\.");
+		
+		String pkgName = "";
+		for (int i = 0;  i < split.length; i++)
+		{
+			Set<String> list = packages.get(pkgName);
+			if (list == null)
+			{
+				list = new HashSet<String>();
+				packages.put(pkgName, list);
+			}
+			String className = i == 0 ? split[i] : pkgName + "." + split[i];
+			list.add(split[i]);
+			pkgName = className;
+		}
 	}
 }
