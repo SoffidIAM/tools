@@ -10,4 +10,6 @@ import java.lang.annotation.Target;
 public @interface ValueObject {
 	String translatedName() default "";
 	String translatedPackage() default "";
+	int cache() default 0;
+	int cacheTimeout() default 5000;
 }

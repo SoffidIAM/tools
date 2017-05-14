@@ -167,6 +167,7 @@ public class EntityGenerator<E> {
 			}
 		}
 		out.println( "}" );
+		
 		out.close();
 	}
 
@@ -1203,17 +1204,42 @@ public class EntityGenerator<E> {
 				out.println ( "\t}" + "\n" );
 
 				// Creates value object
-				out.println ( "\t/**" + "\n"
-						+ "\t *  Transforms to {@link " + cl.getFullName(translated) + "} object " + "\n"
-						+ "\t " + endComment );
-				out.println ( "\tpublic " + cl.getFullName(translated)
-						+ " to" + cl.getName(translated)
-						+ "(" + subClass.getFullName(translated)
-						+ " entity) {" + "\n"
-						+ "\t\tfinal " + 	cl.getFullName(translated) + " target = new " + cl.getFullName(translated)+ "();" + "\n"
-						+ "\t\tthis.to"+cl.getName(translated) + "(entity, target);" + "\n"
-						+ "\t\treturn target;" + "\n"
-						+ "\t}" + "\n" );
+				if (cl.getCache() > 0)
+				{
+					out.println ( "\t/**" + "\n"
+							+ "\t *  Transforms to {@link " + cl.getFullName(translated) + "} object " + "\n"
+							+ "\t " + endComment );
+					out.println ( "\tpublic " + cl.getFullName(translated)
+							+ " to" + cl.getName(translated)
+							+ "(" + subClass.getFullName(translated)
+							+ " entity) {" + "\n"
+							+ "\t\t" + 	cl.getFullName(translated) + " target = es.caib.seycon.ng.utils.Security.isDisableAllSecurityForEver() ? \n"
+							+ "\t\t\tnull : \n"
+							+ "\t\t\tget" + cl.getName(translated)+ "CacheEntry(entity."+entity.getIdentifier().getterName(false)+"());" + "\n"
+							+ "\t\tif (target != null)\n"
+							+ "\t\t\treturn target;\n"
+							+ "\t\telse\n"
+							+ "\t\t{\n"
+							+ "\t\t\ttarget = new " + cl.getFullName(translated)+ "();" + "\n"
+							+ "\t\t\tthis.to"+cl.getName(translated) + "(entity, target);" + "\n"
+							+ "\t\t\tif (!es.caib.seycon.ng.utils.Security.isDisableAllSecurityForEver() )\n"
+							+ "\t\t\t\tstore" + cl.getName(translated)+ "CacheEntry(entity."+entity.getIdentifier().getterName(false)+"(), target);" + "\n"
+							+ "\t\t\treturn target;" + "\n"
+							+ "\t\t}\n"
+							+ "\t}" + "\n" );
+				} else {
+					out.println ( "\t/**" + "\n"
+							+ "\t *  Transforms to {@link " + cl.getFullName(translated) + "} object " + "\n"
+							+ "\t " + endComment );
+					out.println ( "\tpublic " + cl.getFullName(translated)
+							+ " to" + cl.getName(translated)
+							+ "(" + subClass.getFullName(translated)
+							+ " entity) {" + "\n"
+							+ "\t\tfinal " + 	cl.getFullName(translated) + " target = new " + cl.getFullName(translated)+ "();" + "\n"
+							+ "\t\tthis.to"+cl.getName(translated) + "(entity, target);" + "\n"
+							+ "\t\treturn target;" + "\n"
+							+ "\t}" + "\n" );
+				}
 
 				// Creates value object list
 
@@ -1270,8 +1296,11 @@ public class EntityGenerator<E> {
 							+ "\t\t"+subClass.getFullName(translated)+ " entity;"+"\n"
 							+ "\t\tif (instance." + voPk.getterName(translated) + "() == null) " + "\n"
 							+ "\t\t\tentity = new" + subClass.getName(translated) + "();" + "\n"
-							+ "\t\telse" + "\n"
+							+ "\t\telse {" + "\n"
 							+ "\t\t\tentity = load(instance." + voPk.getterName(translated) + "());" + "\n"
+							+ "\t\t\tif (entity == null)" + "\n"
+							+ "\t\t\t\tentity = new" + subClass.getName(translated) + "();" + "\n"
+							+ "\t\t}" + "\n"
 							+ "\t\t" + Util.firstLower(cl.getName(translated)) + "ToEntity(instance, entity, true);" + "\n"
 							+ "\t\treturn entity;" + "\n"
 							+ "\t}" + "\n" );
@@ -1295,6 +1324,46 @@ public class EntityGenerator<E> {
 						+ "\t\t}" + "\n"
 						+ "\t\treturn list;" + "\n"
 						+ "\t}" + "\n" );
+				
+				if (cl.getCache() > 0)
+				{
+					out.println ( "\t/**" + "\n"
+							+ "\t *  Stores {@link " + cl.getFullName(translated) + "} in cache " + "\n"
+							+ "\t " + endComment );
+					out.println ( "\tprotected synchronized void store" +cl.getName()+"CacheEntry (" +
+								entity.getIdentifier().getJavaType(translated)+" id, "+
+								cl.getFullName()+" "+cl.getVarName()+")\n"
+							+ "\t{" + "\n"
+							+ "\t\t"+cl.getName()+"CacheEntry entry = new "+cl.getName()+"CacheEntry ();\n"
+							+ "\t\tentry."+cl.getVarName()+" = new "+cl.getFullName()+"("+cl.getVarName()+");\n"
+							+ "\t\tentry.timeStamp = System.currentTimeMillis();\n"
+							+ "\t\tmap"+cl.getName()+".put(id, entry);\n"
+							+ "\t}" + "\n" );
+
+					out.println ( "\t/**" + "\n"
+							+ "\t *  Retrieves {@link " + cl.getFullName(translated) + "} from cache " + "\n"
+							+ "\t " + endComment );
+					out.println ( "\tprotected synchronized "+cl.getFullName()+" get" +cl.getName()+"CacheEntry (" +
+								entity.getIdentifier().getJavaType(false)+" "+entity.getIdentifier().getName()+")\n"
+							+ "\t{" + "\n"
+							+ "\t\t"+cl.getName()+"CacheEntry entry = ("+cl.getName()+"CacheEntry) map"+cl.getName()+".get ("+entity.getIdentifier().getName()+");\n"
+							+ "\t\tif (entry == null) return null;\n"
+							+ "\t\tif (entry.timeStamp + map"+cl.getName()+"Timeout < System.currentTimeMillis())\n"
+							+ "\t\t{\n"
+							+ "\t\t\tmap"+cl.getName()+".remove ("+entity.getIdentifier().getName()+");\n"
+							+ "\t\t\treturn null;\n"
+							+ "\t\t}\n"
+							+ "\t\treturn new "+cl.getFullName(translated)+"(entry."+cl.getVarName()+");\n"
+							+ "\t}" + "\n" );
+					out.println ( "\t/**" + "\n"
+							+ "\t *  Removes {@link " + cl.getFullName(translated) + "} from cache " + "\n"
+							+ "\t " + endComment );
+					out.println ( "\tprotected synchronized void remove" +cl.getName()+"CacheEntry (" +
+								entity.getIdentifier().getJavaType(false)+" "+entity.getIdentifier().getName()+")\n"
+							+ "\t{" + "\n"
+							+ "\t\tmap"+cl.getName()+".remove ("+entity.getIdentifier().getName()+");\n"
+							+ "\t}" + "\n" );
+				}
 			}
 		}
 
@@ -1450,6 +1519,9 @@ public class EntityGenerator<E> {
 				+ "\timplements " + entity.getDaoFullName(translated)
 				+ "\n" + "{" );
 			generateDependencies( entity, out);
+			
+			generateCache (entity, out);
+
 			generateDaoBaseMethods( out, entity, entity);
 
 			// load by id
@@ -1501,6 +1573,7 @@ public class EntityGenerator<E> {
 						+ "\t\t}" + "\n"
 						+ "\t\tthis.getHibernateTemplate().save(entity);" + "\n"
 						+ "\t\tthis.getHibernateTemplate().flush();" );
+					generateCleanCache (entity, out);
 //					generateHibernateListenerMethods(rep, "created", out);
 					out.println ( "\t}" + "\n" );
 			} else {
@@ -1524,6 +1597,7 @@ public class EntityGenerator<E> {
 						+ "\t\tthis.getHibernateTemplate().update(entity);" + "\n"
 						+ "\t\tthis.getHibernateTemplate().flush();" );
 //					generateHibernateListenerMethods(rep, "updated", out);
+					generateCleanCache (entity, out);
 					out.println ( "\t}" + "\n" );
 			} else {
 				generateCasts(out, "\t\t", "entity", "update", entity, entity);
@@ -1545,6 +1619,7 @@ public class EntityGenerator<E> {
 						+ "\t\t}" + "\n"
 						+ "\t\tthis.getHibernateTemplate().delete(entity);" + "\n"
 						+ "\t\tthis.getHibernateTemplate().flush();" );
+					generateCleanCache (entity, out);
 //					generateHibernateListenerMethods(rep, "deleted", out);
 					out.println ( "\t}" + "\n" );
 			} else {
@@ -1657,7 +1732,46 @@ public class EntityGenerator<E> {
 					+ "\t}" + "\n" );
 			out.println ( "}" );
 		}
+
+		generateCacheClass(entity, out);
+		
 		out.close();
+	}
+
+	private void generateCache(AbstractModelClass entity, PrintStream out) {
+		for (AbstractModelClass vo: entity.getDepends())
+		{
+			if (vo.isValueObject() && vo.getCache() > 0)
+			{
+				out.print ("\tprotected org.apache.commons.collections.map.LRUMap map"+vo.getName());
+				out.println (" = new org.apache.commons.collections.map.LRUMap("+vo.getCache()+");");
+				out.println ("\tprotected int map"+vo.getName()+"Timeout = 5000;");
+			}
+		}
+	}
+
+	private void generateCleanCache(AbstractModelClass entity, PrintStream out) {
+		for (AbstractModelClass vo: entity.getDepends())
+		{
+			if (vo.isValueObject() && vo.getCache() > 0)
+			{
+				out.print ("\t\tremove" +vo.getName()+"CacheEntry");
+				out.println ("(entity."+entity.getIdentifier().getterName(false)+"());");
+			}
+		}
+	}
+
+	private void generateCacheClass(AbstractModelClass entity, PrintStream out) {
+		for (AbstractModelClass vo: entity.getDepends())
+		{
+			if (vo.isValueObject() && vo.getCache() > 0)
+			{
+				out.println ("class "+vo.getName()+"CacheEntry {");
+				out.println ("\tpublic "+vo.getFullName()+" "+vo.getVarName()+";");
+				out.println ("\tpublic long timeStamp;");
+				out.println ("}");
+			}
+		}
 	}
 
 	void generateSearchCriteria() throws FileNotFoundException, UnsupportedEncodingException {

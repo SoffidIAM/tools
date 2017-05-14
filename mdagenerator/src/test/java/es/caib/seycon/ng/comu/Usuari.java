@@ -8,7 +8,8 @@ package es.caib.seycon.ng.comu;
 import com.soffid.mda.annotation.*;
 
 @ValueObject ( translatedName="User",
-	 translatedPackage="com.soffid.iam.api")
+	 translatedPackage="com.soffid.iam.api",
+	 cache=500)
 public abstract class Usuari {
 
 	@Attribute(translated = "userName" )

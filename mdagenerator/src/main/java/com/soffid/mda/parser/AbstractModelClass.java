@@ -349,4 +349,9 @@ public abstract class AbstractModelClass extends ModelElement {
 		return null;
 	}
 
+
+	public int getCache() {
+		return 0;
+	}
+
 }
