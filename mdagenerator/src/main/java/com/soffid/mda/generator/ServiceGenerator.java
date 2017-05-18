@@ -1188,7 +1188,7 @@ public class ServiceGenerator {
 			if (trans.readOnly())
 			{
 				out.print(separator);
-				separator = "readOnly=true";
+				out.print("readOnly=true");
 				separator=", ";
 			}
 			out.println (")");
@@ -1628,6 +1628,11 @@ public class ServiceGenerator {
 					{
 						out.print (  param.getDataType().getJavaType(reverseScope) + ".to" + 
 									param.getDataType().getName(reverseScope)+ "("+ param.getName(scope) + ")" );
+					}
+					else if (param.getDataType().isTranslated() && param.getDataType().isEnumeration())
+					{
+						out.print (  param.getDataType().getJavaType(reverseScope) + ".fromString" + 
+									"("+ param.getName(scope) + ".toString())" );
 					}
 					else
 						out.print ( param.getName(scope) );
