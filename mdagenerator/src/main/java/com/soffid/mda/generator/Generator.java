@@ -230,6 +230,7 @@ public class Generator {
 		parser.setTranslateEntities(translateEntities);
 		new EntityGenerator().generate (this, parser);
 		new ServiceGenerator().generate(this, parser);
+		new CodeMirrorGenerator().generate(this, parser);
 		new ValueObjectGenerator().generate (this, parser);
 		new SpringGenerator().generate (this, parser);
 		new SqlGenerator().generate (this, parser);

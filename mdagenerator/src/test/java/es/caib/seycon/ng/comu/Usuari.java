@@ -11,7 +11,8 @@ import es.caib.seycon.ng.model.UsuariEntity;
 import es.caib.seycon.ng.servei.UsuariService;
 
 @ValueObject ( translatedName="User",
-	 translatedPackage="com.soffid.iam.api")
+translatedPackage="com.soffid.iam.api",
+cache=500)
 @JsonObject(serializerDelegate=true, hibernateClass=UsuariEntity.class)
 public abstract class Usuari {
 	@JsonAttribute(hibernateAttribute="codi")

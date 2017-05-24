@@ -366,4 +366,9 @@ public abstract class AbstractModelClass extends ModelElement {
 	public abstract boolean isJsonObject() ;
 
 	public abstract JsonObject getJsonObject () ;
+
+	public int getCache() {
+		return 0;
+	}
+
 }

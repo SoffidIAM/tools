@@ -1143,4 +1143,12 @@ public class ModelClass extends AbstractModelClass {
 		return hasTenant.booleanValue();
 	}
 
+	public int getCache() {
+		ValueObject ann = (ValueObject) getAnnotation(ValueObject.class); 
+		if ( ann != null)
+			return ann.cache();
+		else
+			return 0;
+	}
+
 }
