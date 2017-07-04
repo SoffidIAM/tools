@@ -3,6 +3,7 @@ package com.soffid.tools.db.persistence;
 import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -39,28 +40,30 @@ public class DbReader {
 				Sequence seq = new Sequence();
 				seq.name = name;
 				db.sequences.add(seq);
-				if (log != null)
-					log.println ("  > "+name);
+//				if (log != null)
+//					log.println ("  > "+name);
 			}
 		} catch (SQLException e) {
 			// No sequences available
 		}
 		if (log != null)
 			log.println ("Getting tables ....");
-		ResultSet tables = metadata.getTables(null, schema, null, new String[]{"TABLE"});
+		ResultSet tables = getTables(schema, metadata);
 		while (tables.next())
 		{
 			String catalog = tables.getString(1);
 			String tableName =tables.getString(3);
 			String tableType = tables.getString(4);
-			if (log != null)
-				log.println ("  > "+tableName);
+//			if (log != null)
+//				log.println ("  > "+tableName);
 			if (tableType.contains ("TABLE"))
 			{
+//				if (log != null)
+//					log.println ("  > "+tableName+ " columns");
 				Table t = new Table();
 				t.name = tableName;
 				try {
-					ResultSet columns = metadata.getColumns(catalog, schema, tableName, null);
+					ResultSet columns = getTableColumns(schema, metadata, catalog, tableName);
 					while (columns.next())
 					{
 						Column c = new Column();
@@ -189,7 +192,9 @@ public class DbReader {
 					//
 					// PRIMARY KEY
 					//
-					ResultSet pk = metadata.getPrimaryKeys(catalog, schema, tableName);
+//					if (log != null)
+//						log.println ("  > "+tableName+ " primary keys");
+					ResultSet pk = getPrimaryKeys(schema, metadata, catalog, tableName);
 					String pkName = null;
 					while (pk.next())
 					{
@@ -206,7 +211,9 @@ public class DbReader {
 					// FOREIGN KEYS
 					//
 					
-					ResultSet fk = metadata.getImportedKeys(catalog, schema, tableName);
+//					if (log != null)
+//						log.println ("  > "+tableName+ " foreign keys");
+					ResultSet fk = getImportedKeys(schema, metadata, catalog, tableName);
 					Map<String, ForeignKey> foreignKeysMap = new HashMap<String, ForeignKey>();
 					while (fk.next())
 					{
@@ -234,12 +241,16 @@ public class DbReader {
 					fk.close ();
 					//
 					
-					ResultSet indexos = metadata.getIndexInfo(catalog, schema, tableName, false, false);
+//					if (log != null)
+//						log.println ("  > "+tableName+ " indexes");
+					ResultSet indexos = getIndexes(schema, metadata, catalog, tableName);
 					Index currentIndex = null;
 					while (indexos.next())
 					{
 						String indexName = indexos.getString(6);
 						String columnName = indexos.getString(9);
+//						if (log != null)
+//							log.println ("  > "+tableName+ " indexes "+indexName+ " "+columnName);
 						int order = indexos.getShort(8)-1;
 						if (currentIndex != null && 
 								! indexName.equals(currentIndex.name))
@@ -250,7 +261,10 @@ public class DbReader {
 							db.indexes.add(currentIndex);
 							currentIndex.name = indexName;
 							currentIndex.tableName = tableName;
-							currentIndex.unique = ! indexos.getBoolean(4);
+							Object obj = indexos.getObject(4);
+//							if (log != null)
+//								log.println ("  > "+tableName+ " indexes "+indexName+ " "+columnName+" unique "+obj);
+							currentIndex.unique = obj.equals(Boolean.FALSE) || obj.toString().equals("0"); 
 						}
 						if (currentIndex != null)
 						{
@@ -260,6 +274,8 @@ public class DbReader {
 						}
 					}
 					indexos.close();
+//					if (log != null)
+//						log.println ("  > "+tableName+ " done");
 					db.tables.add(t);
 				} catch (SQLException e) {
 					if (e.getMessage().startsWith ("ORA-01031")) // Ignore insufficient permissions
@@ -272,7 +288,60 @@ public class DbReader {
 			}
 			
 		}
+		if (indexStmt != null)
+		{
+			indexStmt.close();
+			indexStmt = null;
+		}
 		return db;
+	}
+
+	PreparedStatement indexStmt = null;
+	protected ResultSet getIndexes(String schema, DatabaseMetaData metadata,
+			String catalog, String tableName) throws SQLException {
+
+		try {
+//			if (log != null)
+//				log.println ("  > "+tableName+ " indexes start");
+
+			if (indexStmt == null)
+				indexStmt = metadata.getConnection().prepareStatement(
+					"select user, user, I.TABLE_NAME, DECODE(UNIQUENESS,'UNIQUE', 0, 1), I.INDEX_TYPE, I.INDEX_NAME, DECODE(UNIQUENESS,'UNIQUE', 0, 1), C.COLUMN_POSITION, COLUMN_NAME "
+					+ "FROM USER_INDEXES I, USER_IND_COLUMNS C "
+					+ "WHERE  I.INDEX_NAME=C.INDEX_NAME AND I.TABLE_NAME=C.TABLE_NAME AND I.TABLE_NAME=? "
+					+ "ORDER BY I.INDEX_NAME, C.COLUMN_POSITION");
+			else
+				indexStmt.clearParameters();
+			try {
+				indexStmt.setString(1, tableName);
+				return indexStmt.executeQuery();
+			} finally {
+//				if (log != null)
+//					log.println ("  > "+tableName+ " end");
+			}
+		} catch (SQLException e) {
+			return metadata.getIndexInfo(catalog, schema, tableName, false, false);
+		}
+	}
+
+	protected ResultSet getImportedKeys(String schema, DatabaseMetaData metadata,
+			String catalog, String tableName) throws SQLException {
+		return metadata.getImportedKeys(catalog, schema, tableName);
+	}
+
+	protected ResultSet getPrimaryKeys(String schema, DatabaseMetaData metadata,
+			String catalog, String tableName) throws SQLException {
+		return metadata.getPrimaryKeys(catalog, schema, tableName);
+	}
+
+	protected ResultSet getTableColumns(String schema, DatabaseMetaData metadata,
+			String catalog, String tableName) throws SQLException {
+		return metadata.getColumns(catalog, schema, tableName, null);
+	}
+
+	protected ResultSet getTables(String schema, DatabaseMetaData metadata)
+			throws SQLException {
+		return metadata.getTables(null, schema, null, new String[]{"TABLE"});
 	}
 
 }

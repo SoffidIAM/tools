@@ -2,6 +2,7 @@ package com.soffid.tools.db.updater;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -213,5 +214,4 @@ public class OracleUpdater extends DBUpdater{
 		if (c.autoIncrement && suportsAutoIncrement())
 			sb.append (" ").append(getAutoIncrementClause());
 	}
-	
 }
