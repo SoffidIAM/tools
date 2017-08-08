@@ -1818,7 +1818,7 @@ public class ServiceGenerator {
 			out.println("@javax.ejb.TransactionAttribute(value=javax.ejb.TransactionAttributeType.SUPPORTS)");
 		}
 		out.print ( "public class " + className );
-		if (service.isStateful())
+		if (service.isStateful() && generator.isTargetTomee())
 			out.println ( " extends org.springframework.ejb.support.AbstractStatefulSessionBean" );
 		else
 			out.println ( " extends org.springframework.ejb.support.AbstractStatelessSessionBean" );
@@ -1919,14 +1919,9 @@ public class ServiceGenerator {
 					+ "\t *" + endl
 					+ "\t * @see org.springframework.ejb.support.AbstractStatelessSessionBean#onEjbCreate()" + endl
 					+ "\t */" +endl
-					+ "\tjavax.ejb.PostConstruct" + endl
 					+ "\tprotected void onEjbCreate()" + endl
-					+ "\t{" + endl);
-			if (service.isStateful())
-			{
-				out.println("\t\tloadBeanFactory();");
-			}
-			out.println("\t\tthis." + svcName  + " = (" + service.getFullName(scope)+ ")" + endl
+					+ "\t{" + endl
+					+ "\t\tthis." + svcName  + " = (" + service.getFullName(scope)+ ")" + endl
 					+ "\t\tgetBeanFactory().getBean(\"" + service.getSpringBeanName(generator, scope) + "\");" + endl
 					+ "\t}" + endl
 					+ "\t" + endl
@@ -1952,15 +1947,45 @@ public class ServiceGenerator {
 					+ "\t * Initizlizes been" + endl
 					+ "\t *" + endl
 					+ "\t * @see org.springframework.ejb.support.AbstractStatelessSessionBean#onEjbCreate()" + endl
-					+ "\t */" + endl
-					+ "\t@Override" + endl
-					+ "\t@javax.annotation.PostConstruct" + endl
+					+ "\t */" + endl);
+			if (! service.isStateful())
+				out.println("\t@Override" + endl);
+			out.println("\t@javax.annotation.PostConstruct" + endl
 					+ "\tprotected void onEjbCreate()" + endl
-					+ "\t{" + endl
-					+ "\t\tthis." + svcName  + " = (" + service.getFullName(scope)+ ")" + endl
+					+ "\t{" + endl);
+			if (service.isStateful())
+			{
+				out.println("\t\tloadBeanFactory();");
+			}
+			out.println("\t\tthis." + svcName  + " = (" + service.getFullName(scope)+ ")" + endl
 					+ "\t\tgetBeanFactory().getBean(\"" + service.getSpringBeanName(generator, scope) + "\");" + endl
-					+ "\t}" + endl
-					+ "\t" + endl
+					+ "\t}" + endl);
+			if (service.isStateful())
+			{
+				out.println ( "\t" + endl
+						+ "\t/**" + endl
+						+ "\t/**" + endl
+						+ "\t * Every Session bean needs to implement this method" + endl
+						+ "\t *" + endl
+						+ "\t * @see javax.ejb.SessionBean#ejbPassivate()" + endl
+						+ "\t */" +endl
+						+ "\tprotected void ejbPassivate()" + endl
+						+ "\t{" + endl
+						+ "\t}" + endl);
+
+				out.println ( "\t" + endl
+						+ "\t/**" + endl
+						+ "\t/**" + endl
+						+ "\t * Every Session bean needs to implement this method" + endl
+						+ "\t *" + endl
+						+ "\t * @see javax.ejb.SessionBean#ejbActivate()" + endl
+						+ "\t */" +endl
+						+ "\tprotected void ejbActivate()" + endl
+						+ "\t{" + endl
+						+ "\t}" + endl);
+			}
+			
+			out.println("\t" + endl
 					+ "\t/**" + endl
 					+ "\t * Override default BeanFactoryLocator implementation to" + endl
 					+ "\t * provide singleton loading of the application context Bean factory." + endl
