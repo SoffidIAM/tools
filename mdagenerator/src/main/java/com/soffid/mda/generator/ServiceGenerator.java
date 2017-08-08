@@ -1969,7 +1969,7 @@ public class ServiceGenerator {
 						+ "\t *" + endl
 						+ "\t * @see javax.ejb.SessionBean#ejbPassivate()" + endl
 						+ "\t */" +endl
-						+ "\tprotected void ejbPassivate()" + endl
+						+ "\tpublic void ejbPassivate()" + endl
 						+ "\t{" + endl
 						+ "\t}" + endl);
 
@@ -1980,7 +1980,7 @@ public class ServiceGenerator {
 						+ "\t *" + endl
 						+ "\t * @see javax.ejb.SessionBean#ejbActivate()" + endl
 						+ "\t */" +endl
-						+ "\tprotected void ejbActivate()" + endl
+						+ "\tpublic void ejbActivate()" + endl
 						+ "\t{" + endl
 						+ "\t}" + endl);
 			}
