@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>com.soffid.iam.console</groupId>
 	<artifactId>dbtools</artifactId>
-	<version>1.16-SNAPSHOT</version>
+	<version>1.17-SNAPSHOT</version>
 	<name>Soffid DB Tools</name>
 	<description>Tools to extract, create or modify a DB Schema</description>
         <scm>   
