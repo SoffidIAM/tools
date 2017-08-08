@@ -1046,9 +1046,10 @@ public class ValueObjectGenerator {
 					+ "*/" + endl
 					);
 			out.println( "{" );
+			AbstractModelClass entity = null;
 			if (jsonObject.hibernateClass() != null)
 			{
-				AbstractModelClass entity = (AbstractModelClass) parser.getElement(jsonObject.hibernateClass());
+				entity = (AbstractModelClass) parser.getElement(jsonObject.hibernateClass());
 				if (! entity.isEntity())
 					throw new RuntimeException("Error parsing object "+
 							vo.getFullName()+": Class "+
@@ -1078,6 +1079,16 @@ public class ValueObjectGenerator {
 						out.print (",  hibernateName:\"");
 						out.print (att.getJsonHibernateAttribute());
 						out.print ("\"");
+					} else if (entity != null){
+						for (AbstractModelAttribute entityAtt: entity.getAllAttributes())
+						{
+							if (entityAtt.getName().equalsIgnoreCase(att.getName()))
+							{
+								out.print (", hibernateName:\"");
+								out.print (entityAtt.getName());
+								out.print ("\"");
+							}
+						}
 					}
 					out.print ("}");
 				}
