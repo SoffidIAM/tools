@@ -954,6 +954,7 @@ public class ModelClass extends AbstractModelClass {
 	@Override
 	public String getSpringBeanName(Generator generator, int scope) {
 		String name = "";
+		String suffix = "";
 		if (generator.isPlugin() && isGenerated())
 		{
 			name = generator.getPluginName() + "-";
@@ -961,13 +962,13 @@ public class ModelClass extends AbstractModelClass {
 		else if (isService() &&
 				scope == (generator.isTranslatedOnly() ? Translate.SERVICE_SCOPE: Translate.ALTSERVICE_SCOPE))
 		{
-			name = "v2-";
+			suffix = "-v2";
 		}
 		if (isEntity())
 			name = name + Util.firstLower(getDaoName(scope));
 		else
 			name = name + Util.firstLower(getName(scope));
-		return name;
+		return name + suffix;
 	}
 
 	@Override

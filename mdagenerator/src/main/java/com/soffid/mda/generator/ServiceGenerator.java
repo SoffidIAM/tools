@@ -1818,7 +1818,10 @@ public class ServiceGenerator {
 			out.println("@javax.ejb.TransactionAttribute(value=javax.ejb.TransactionAttributeType.SUPPORTS)");
 		}
 		out.print ( "public class " + className );
-		out.println ( " extends org.springframework.ejb.support.AbstractStatelessSessionBean" );
+		if (service.isStateful())
+			out.println ( " extends org.springframework.ejb.support.AbstractStatefulSessionBean" );
+		else
+			out.println ( " extends org.springframework.ejb.support.AbstractStatelessSessionBean" );
 		if (generator.isTargetTomee())
 		{
 			out.println ("  implements "+service.getEjbInterfaceFullName(scope));
@@ -1918,8 +1921,12 @@ public class ServiceGenerator {
 					+ "\t */" +endl
 					+ "\tjavax.ejb.PostConstruct" + endl
 					+ "\tprotected void onEjbCreate()" + endl
-					+ "\t{" + endl
-					+ "\t\tthis." + svcName  + " = (" + service.getFullName(scope)+ ")" + endl
+					+ "\t{" + endl);
+			if (service.isStateful())
+			{
+				out.println("\t\tloadBeanFactory();");
+			}
+			out.println("\t\tthis." + svcName  + " = (" + service.getFullName(scope)+ ")" + endl
 					+ "\t\tgetBeanFactory().getBean(\"" + service.getSpringBeanName(generator, scope) + "\");" + endl
 					+ "\t}" + endl
 					+ "\t" + endl
