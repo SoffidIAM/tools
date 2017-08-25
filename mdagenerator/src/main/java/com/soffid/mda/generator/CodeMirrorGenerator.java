@@ -153,19 +153,36 @@ public class CodeMirrorGenerator<E> {
 		if (generator.isPlugin())
 		{
 			slName = "com.soffid.iam.addons." + generator.getPluginName()+".ServiceLocator";
+			out.println("CodeMirrorJavaTypes[\""+slName+"\"]={");
+			for ( ModelClass service: parser.getServices())
+			{
+				out.println("\t\"get"+service.getName()+"\":\""+service.getFullName()+"\",");
+			}
+			out.println("\t\"instance\":\"java.lang.Object\",");
+			out.println("\t\"getService\":\"java.lang.Object\"");
+			out.println("};");
 		}
 		else
 		{
 			slName = "es.caib.seycon.ng.ServiceLocator";
+			out.println("CodeMirrorJavaTypes[\""+slName+"\"]={");
+			for ( ModelClass service: parser.getServices())
+			{
+				out.println("\t\"get"+service.getName(Translate.DONT_TRANSLATE)+"\":\""+service.getFullName(Translate.DONT_TRANSLATE)+"\",");
+			}
+			out.println("\t\"instance\":\"java.lang.Object\",");
+			out.println("\t\"getService\":\"java.lang.Object\"");
+			out.println("};");
+			slName = "com.soffid.iam.ServiceLocator";
+			out.println("CodeMirrorJavaTypes[\""+slName+"\"]={");
+			for ( ModelClass service: parser.getServices())
+			{
+				out.println("\t\"get"+service.getName(Translate.TRANSLATE)+"\":\""+service.getFullName(Translate.TRANSLATE)+"\",");
+			}
+			out.println("\t\"instance\":\"java.lang.Object\",");
+			out.println("\t\"getService\":\"java.lang.Object\"");
+			out.println("};");
 		}
-		out.println("CodeMirrorJavaTypes[\""+slName+"\"]={");
-		for ( ModelClass service: parser.getServices())
-		{
-			out.println("\t\"get"+service.getName()+"\":\""+service.getFullName()+"\",");
-		}
-		out.println("\t\"instance\":\"java.lang.Object\",");
-		out.println("\t\"getService\":\"java.lang.Object\"");
-		out.println("};");
 		
 		
 		for (String pkg : packages.keySet())
