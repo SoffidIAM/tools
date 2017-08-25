@@ -863,6 +863,15 @@ public class EntityGenerator<E> {
 					+ "\t\t\tcriteriaSearch.getConfiguration().setFirstResult(" + criteriaParam.getName(Translate.DEFAULT)+ ".getFirstResult());" + "\n"
 					+ "\t\t\tcriteriaSearch.getConfiguration().setFetchSize(" + criteriaParam.getName(Translate.DEFAULT)+ ".getFetchSize());" + "\n"
 					+ "\t\t\tcriteriaSearch.getConfiguration().setMaximumResultSize(" + criteriaParam.getName(Translate.DEFAULT)+ ".getMaximumResultSize());" );
+			if (entity.hasTenantAttribute())
+			{
+				out.println ( "\t\t\t" + modelPackage + ".criteria.CriteriaSearchParameter tenantParam =" + "\n"
+						+ "\t\t\t\tnew " + modelPackage + ".criteria.CriteriaSearchParameter(" + "\n"
+						+ "\t\t\t\t\t" + "com.soffid.iam.utils.Security.getCurrentTenantId()" + "," + "\n"
+						+ "\t\t\t\t\t\"tenant.id\", "
+						+ modelPackage + ".criteria.CriteriaSearchParameter.EQUAL_COMPARATOR);" + "\n"
+						+ "\t\t\tcriteriaSearch.addParameter(tenantParam);" );
+			}
 			int i = 0;
 			for ( AbstractModelAttribute att: criteriaClazz.getAttributes()) {
 				i++;
@@ -1522,11 +1531,11 @@ public class EntityGenerator<E> {
 			out.println ( "\t/**" + "\n"
 						+ "\t *  Stores {@link " + cl.getFullName(Translate.DEFAULT) + "} in cache " + "\n"
 						+ "\t " + endComment );
-			out.println ( "\tprotected synchronized void store" +cl.getName()+"CacheEntry (" +
+			out.println ( "\tprotected synchronized void store" +cl.getName(Translate.DEFAULT)+"CacheEntry (" +
 							entity.getIdentifier().getJavaType(Translate.DEFAULT)+" id, "+
 							cl.getFullName(Translate.DEFAULT)+" "+cl.getVarName()+")\n"
 					+ "\t{" + "\n"
-					+ "\t\t"+cl.getName(Translate.DEFAULT)+"CacheEntry entry = new "+cl.getName()+"CacheEntry ();\n"
+					+ "\t\t"+cl.getName(Translate.DEFAULT)+"CacheEntry entry = new "+cl.getName(Translate.DEFAULT)+"CacheEntry ();\n"
 					+ "\t\tentry."+cl.getVarName()+" = new "+cl.getFullName(Translate.DEFAULT)+"("+cl.getVarName()+");\n"
 					+ "\t\tentry.timeStamp = System.currentTimeMillis();\n"
 					+ "\t\tmap"+cl.getName(Translate.DEFAULT)+".put(id, entry);\n"
@@ -1568,7 +1577,7 @@ public class EntityGenerator<E> {
 					+ "\t\t\treturn target;\n"
 					+ "\t\telse\n"
 					+ "\t\t{\n"
-					+ "\t\t\tfinal " + 	cl.getFullName(Translate.DEFAULT) + " target = new " + cl.getFullName(Translate.DEFAULT)+ "();" + "\n"
+					+ "\t\t\ttarget = new " + cl.getFullName(Translate.DEFAULT)+ "();" + "\n"
 					+ "\t\t\tthis.to"+cl.getName(Translate.DEFAULT) + "(entity, target);" + "\n"
 					+ "\t\t\tif (!es.caib.seycon.ng.utils.Security.isSyncServer() )\n"
 					+ "\t\t\t\tstore" + cl.getName(Translate.DEFAULT)+ "CacheEntry(entity."+entity.getIdentifier().getterName(Translate.DEFAULT)+"(), target);" + "\n"
@@ -1979,9 +1988,9 @@ public class EntityGenerator<E> {
 		{
 			if (vo.isValueObject() && vo.getCache() > 0)
 			{
-				out.print ("\tprotected org.apache.commons.collections.map.LRUMap map"+vo.getName());
+				out.print ("\tprotected org.apache.commons.collections.map.LRUMap map"+vo.getName(Translate.DEFAULT));
 				out.println (" = new org.apache.commons.collections.map.LRUMap("+vo.getCache()+");");
-				out.println ("\tprotected int map"+vo.getName()+"Timeout = 5000;");
+				out.println ("\tprotected int map"+vo.getName(Translate.DEFAULT)+"Timeout = 5000;");
 			}
 		}
 	}
@@ -1991,7 +2000,7 @@ public class EntityGenerator<E> {
 		{
 			if (vo.isValueObject() && vo.getCache() > 0)
 			{
-				out.print ("\t\tremove" +vo.getName()+"CacheEntry");
+				out.print ("\t\tremove" +vo.getName(Translate.DEFAULT)+"CacheEntry");
 				out.println ("(entity."+entity.getIdentifier().getterName(Translate.DEFAULT)+"());");
 			}
 		}
@@ -2002,8 +2011,8 @@ public class EntityGenerator<E> {
 		{
 			if (vo.isValueObject() && vo.getCache() > 0)
 			{
-				out.println ("class "+vo.getName()+"CacheEntry {");
-				out.println ("\tpublic "+vo.getFullName()+" "+vo.getVarName()+";");
+				out.println ("class "+vo.getName(Translate.DEFAULT)+"CacheEntry {");
+				out.println ("\tpublic "+vo.getFullName(Translate.DEFAULT)+" "+vo.getVarName()+";");
 				out.println ("\tpublic long timeStamp;");
 				out.println ("}");
 			}
