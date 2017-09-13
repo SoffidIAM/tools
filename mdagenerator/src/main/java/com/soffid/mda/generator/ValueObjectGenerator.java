@@ -1012,6 +1012,7 @@ public class ValueObjectGenerator {
 					else if (att.getDataType().isEnumeration() && att.getDataType().isTranslated())
 					{
 						out.println( "\t\ttarget." + att.getName(scope) + " = "
+								+ "source."+ att.getterName(altScope) + "() == null ? null : \n\t\t\t"
 								+ att.getDataType().getJavaType(scope)+".fromString(source." + att.getterName(altScope) + "().getValue());" );
 					}
 					else

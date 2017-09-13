@@ -802,9 +802,9 @@ public class EntityGenerator<E> {
 		{
 			sqlString = "from " + entity.getFullName(Translate.DEFAULT);
 			boolean first = true;
-			if (entity.hasTenantAttribute())
+			if (entity.getTenantFilter() != null)
 			{
-				sqlString += " where tenant.id=:tenantId";
+				sqlString += " where "+entity.getTenantFilter()+"=:tenantId";
 				first = false;
 			}
 			for (ModelParameter param: op.getParameters()) {
@@ -863,12 +863,12 @@ public class EntityGenerator<E> {
 					+ "\t\t\tcriteriaSearch.getConfiguration().setFirstResult(" + criteriaParam.getName(Translate.DEFAULT)+ ".getFirstResult());" + "\n"
 					+ "\t\t\tcriteriaSearch.getConfiguration().setFetchSize(" + criteriaParam.getName(Translate.DEFAULT)+ ".getFetchSize());" + "\n"
 					+ "\t\t\tcriteriaSearch.getConfiguration().setMaximumResultSize(" + criteriaParam.getName(Translate.DEFAULT)+ ".getMaximumResultSize());" );
-			if (entity.hasTenantAttribute())
+			if (entity.getTenantFilter() != null)
 			{
 				out.println ( "\t\t\t" + modelPackage + ".criteria.CriteriaSearchParameter tenantParam =" + "\n"
 						+ "\t\t\t\tnew " + modelPackage + ".criteria.CriteriaSearchParameter(" + "\n"
 						+ "\t\t\t\t\t" + "com.soffid.iam.utils.Security.getCurrentTenantId()" + "," + "\n"
-						+ "\t\t\t\t\t\"tenant.id\", "
+						+ "\t\t\t\t\t\""+entity.getTenantFilter()+"\", "
 						+ modelPackage + ".criteria.CriteriaSearchParameter.EQUAL_COMPARATOR);" + "\n"
 						+ "\t\t\tcriteriaSearch.addParameter(tenantParam);" );
 			}
@@ -906,15 +906,6 @@ public class EntityGenerator<E> {
 				if (! att.getDataType().isPrimitive()) {
 					out.println ( "\t\t\t}" );
 				}
-			}
-			if (entity.hasTenantAttribute())
-			{
-				i++;
-				out.println ( "\t\t\t" + modelPackage + ".criteria.CriteriaSearchParameter param" + i + " =" + "\n"
-						+ "\t\t\t\tnew " + modelPackage + ".criteria.CriteriaSearchParameter(" + "\n"
-						+ "\t\t\t\t\tcom.soffid.iam.utils.Security.getCurrentTenantId(),\"tenant.id\", "
-						+ modelPackage + ".criteria.CriteriaSearchParameter.EQUAL_COMPARATOR);" + "\n"
-						+ "\t\t\tcriteriaSearch.addParameter(param"+i+");" );
 			}
 			out.println ( "\t\t\tjava.util.List results = criteriaSearch.executeAsList();" + "\n"
 					+ "\t\t\treturn ("+op.getReturnType(Translate.DEFAULT)+") results;" + "\n"
@@ -1779,24 +1770,31 @@ public class EntityGenerator<E> {
 					+ "\t * Loads all instances of {@link " + entity.getFullName(Translate.DEFAULT)
 					+ "} from the persistent store." + "\n"
 					+ "\t " + endComment );
-			out.println ( "\tpublic java.util.List<"+ entity.getFullName(Translate.DEFAULT)
+			if ( entity.getTenantFilter() == null)
+			{
+				out.println ( "\tpublic java.util.List<"+ entity.getFullName(Translate.DEFAULT)
 					+ "> loadAll() {" + "\n"
 					+ "\t\tjava.util.List<" + entity.getFullName(Translate.DEFAULT)
 					+ "> result = (java.util.List<" + entity.getFullName(Translate.DEFAULT)
 					+ ">)" + "\n"
-					+ "\t\t\tthis.getHibernateTemplate().loadAll("+entity.getFullName(Translate.DEFAULT)+".class);" + "\n");
-			if (entity.hasTenantAttribute())
-			{
-				out.println ( "\t\tfor (java.util.Iterator<" + entity.getFullName(Translate.DEFAULT)
-					+ "> it = result.iterator(); it.hasNext();)\n"
-					+ "\t\t{\n"
-					+ "\t\t\t" + entity.getFullName(Translate.DEFAULT) + " entity = it.next();\n"
-					+ "\t\t\tif (! com.soffid.iam.utils.Security.isAuthorizedTenant( entity.getTenant())) \n"
-					+ "\t\t\t\tit.remove();\n"
-					+ "\t\t}");
+					+ "\t\t\tthis.getHibernateTemplate().loadAll("+entity.getFullName(Translate.DEFAULT)+".class);" + "\n"
+					+ "\t\treturn result;\n"
+					+ "\t};" + "\n" );
 			}
-			out.println ( "\t\treturn result;\n");
-			out.println("\t};" + "\n" );
+			else
+			{
+				String sqlString = "from " + entity.getFullName(Translate.DEFAULT)
+					+ " where "+entity.getTenantFilter()+"=:tenantId";
+
+				out.println ( "\tpublic java.util.List<"+ entity.getFullName(Translate.DEFAULT)
+				+ "> loadAll() {" + "\n"
+				+ "\t\torg.hibernate.Query queryObject = super.getSession(false).createQuery\n"
+				+ "\t\t\t(\""+sqlString+"\");\n" 
+				+ "\t\tqueryObject.setParameter(\"tenantId\", com.soffid.iam.utils.Security.getCurrentTenantId());\n"
+				+ "\t\treturn (java.util.List<"+entity.getFullName(Translate.DEFAULT)+"> ) queryObject.list();\n"
+				+ "\t};" + "\n" );
+			}
+			
 
 			// create, update, remove entity
 			out.println ( "\t/**" + "\n"

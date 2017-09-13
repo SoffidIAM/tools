@@ -371,4 +371,9 @@ public abstract class AbstractModelClass extends ModelElement {
 		return 0;
 	}
 
+
+	public String getTenantFilter() {
+		return null;
+	}
+
 }

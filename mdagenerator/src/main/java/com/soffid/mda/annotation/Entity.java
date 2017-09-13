@@ -13,4 +13,5 @@ public @interface Entity  {
 	String table();
 	String discriminatorColumn() default "";
 	String discriminatorValue () default "";
+	String tenantFilter() default "";
 }

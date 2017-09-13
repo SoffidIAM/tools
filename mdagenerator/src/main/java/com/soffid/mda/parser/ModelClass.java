@@ -482,6 +482,22 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
+	public String getTenantFilter() {
+		if (hasTenantAttribute())
+			return "tenant.id";
+		if (getAnnotation(Entity.class) != null)
+		{
+			String filter = ((Entity)getAnnotation(Entity.class)).tenantFilter();
+			if (filter == null || filter.isEmpty())
+				return null;
+			else
+				return filter.trim();
+		}
+		else
+			return null;
+	}
+
+	@Override
 	public String getJavaType(int scope) {
 		if (isCollection() && _collectionClass != null && getChildClass() != null)
 		{
