@@ -2,7 +2,7 @@ package com.soffid.mda.generator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import com.soffid.mda.annotation.JsonObject;
@@ -17,7 +17,7 @@ public class ValueObjectGenerator {
 
 	private int scope;
 
-	public void generate(Generator generator, Parser parser) throws FileNotFoundException {
+	public void generate(Generator generator, Parser parser) throws FileNotFoundException, UnsupportedEncodingException {
 		this.generator = generator;
 		this.parser = parser;
 		this.scope = Translate.SERVICE_SCOPE; 
@@ -60,12 +60,12 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateEnumeration(AbstractModelClass vo, int entityScope) throws FileNotFoundException {
+	void generateEnumeration(AbstractModelClass vo, int entityScope) throws FileNotFoundException, UnsupportedEncodingException {
 		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(entityScope) + vo.getName(entityScope) + ".java";
-		System.out.println( "Generating " + file );
+//		System.out.println( "Generating " + file );
 		File f = new File(file);
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream (f);
+		SmartPrintStream out = new SmartPrintStream (f);
 		
 
 		out.println( "//" + endl
@@ -265,12 +265,12 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateHibernateEnumeration(AbstractModelClass vo, int entityScope) throws FileNotFoundException {
+	void generateHibernateEnumeration(AbstractModelClass vo, int entityScope) throws FileNotFoundException, UnsupportedEncodingException {
 		String file = generator.getCoreDir() + "/" + vo.getPackageDir(entityScope) + vo.getName(entityScope) + "Enum.java";
-		System.out.println( "Generating " + file );
+//		System.out.println( "Generating " + file );
 		File f = new File(file);
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream (f);
+		SmartPrintStream out = new SmartPrintStream (f);
 
 		String dataType = vo.getAttributes().get(0).getJavaType(entityScope);
 		String getterType;
@@ -449,12 +449,12 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateException(AbstractModelClass vo, int scope) throws FileNotFoundException {
+	void generateException(AbstractModelClass vo, int scope) throws FileNotFoundException, UnsupportedEncodingException {
 		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(scope) + vo.getName(scope) + ".java";
-		System.out.println( "Generating " + file );
+//		System.out.println( "Generating " + file );
 		File f = new File(file);
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream (f);
+		SmartPrintStream out = new SmartPrintStream (f);
 
 		out.println( "//" + endl
 				+ "// (C) 2013 Soffid" + endl
@@ -574,15 +574,15 @@ public class ValueObjectGenerator {
 
 	}
 
-	void generateValueObject(AbstractModelClass vo, int scope) throws FileNotFoundException {
+	void generateValueObject(AbstractModelClass vo, int scope) throws FileNotFoundException, UnsupportedEncodingException {
 		if (vo.isAbstract())
 			return;
 		
 		String file = generator.getCommonsDir() + "/" + vo.getPackageDir(scope) + vo.getName(scope) + ".java";
-		System.out.println( "Generating " + file );
+//		System.out.println( "Generating " + file );
 		File f = new File(file);
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream (f);
+		SmartPrintStream out = new SmartPrintStream (f);
 
 		out.println( "//" + endl
 				+ "// (C) 2013 Soffid" + endl
@@ -1029,17 +1029,17 @@ public class ValueObjectGenerator {
 
 	}
 	
-	void generateValueObjectQueryDescriptor(AbstractModelClass vo, int scope) throws FileNotFoundException {
+	void generateValueObjectQueryDescriptor(AbstractModelClass vo, int scope) throws FileNotFoundException, UnsupportedEncodingException {
 		if (vo.isJsonObject())
 		{
 			JsonObject jsonObject = vo.getJsonObject();
 
 			String modelPackage = generator.getModelPackage(scope);
 			String file = generator.getCoreResourcesDir()+ "/" + vo.getPackageDir(scope)+ vo.getName(scope) + ".query.json";
-			System.out.println( "Generating " + file );
+//			System.out.println( "Generating " + file );
 			File f = new File(file);
 			f.getParentFile().mkdirs();
-			PrintStream out = new PrintStream (f);
+			SmartPrintStream out = new SmartPrintStream (f);
 	
 			out.println( "/*" + endl
 					+ "// (C) 2015 Soffid" + endl

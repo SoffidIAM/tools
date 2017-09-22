@@ -2,7 +2,6 @@ package com.soffid.mda.generator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,9 +41,9 @@ public class XmiGenerator {
 				( generator.isPlugin() ? generator.getPluginName() : "core" ) +
 				".xmi");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 		prefix = generator.isPlugin() ? generator.getPluginName() : "core";
 		
 		DateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
@@ -76,10 +75,12 @@ public class XmiGenerator {
 					+"</XMI.content>" + endl
 					+"</XMI>");
 		
+		out.close();
+		
 		
 	}
 
-	private void generateSubPackages(PrintStream out, Package masterPkg, String prefix) {
+	private void generateSubPackages(SmartPrintStream out, Package masterPkg, String prefix) {
 		for (Package pkg: masterPkg.packages)
 		{
 			String name = prefix+"."+pkg.name;
@@ -93,7 +94,7 @@ public class XmiGenerator {
 		}
 	}
 
-	private void generateClasses(PrintStream out, Package masterPkg) {
+	private void generateClasses(SmartPrintStream out, Package masterPkg) {
 		for (AbstractModelClass element: masterPkg.classes)
 		{
 			if (element.isEntity())
@@ -121,13 +122,13 @@ public class XmiGenerator {
 		}
 	}
 
-	private void generateGenericClass(PrintStream out, AbstractModelClass element) {
+	private void generateGenericClass(SmartPrintStream out, AbstractModelClass element) {
 		out.println ("<UML:Class xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
 				"visibility='public' isActive='false' isSpecification = 'false' isRoot = 'false' isLeaf = 'false' isAbstract = 'false' >" );
 		out.println ("</UML:Class>");
 	}
 
-	private void generateActor(PrintStream out, AbstractModelClass element) {
+	private void generateActor(SmartPrintStream out, AbstractModelClass element) {
 		StringBuffer associations = new StringBuffer();
 		
 		out.println ("<UML:Actor xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
@@ -174,7 +175,7 @@ public class XmiGenerator {
 		out.println ("</UML:Actor>");
 	}
 
-	private void generateEntity(PrintStream out, AbstractModelClass element) {
+	private void generateEntity(SmartPrintStream out, AbstractModelClass element) {
 		StringBuffer associations = new StringBuffer();
 		
 		out.println ("<UML:Class xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
@@ -192,7 +193,7 @@ public class XmiGenerator {
 		out.println (associations);
 	}
 
-	private void generateEnumeration(PrintStream out, AbstractModelClass element) {
+	private void generateEnumeration(SmartPrintStream out, AbstractModelClass element) {
 		StringBuffer associations = new StringBuffer();
 		
 		out.println ("<UML:Class xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
@@ -210,7 +211,7 @@ public class XmiGenerator {
 		out.println (associations);
 	}
 
-	private void generateValueObject(PrintStream out, AbstractModelClass element) {
+	private void generateValueObject(SmartPrintStream out, AbstractModelClass element) {
 		StringBuffer associations = new StringBuffer();
 		
 		out.println ("<UML:Class xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
@@ -228,7 +229,7 @@ public class XmiGenerator {
 		out.println (associations);
 	}
 
-	private void generateService(PrintStream out, AbstractModelClass element) {
+	private void generateService(SmartPrintStream out, AbstractModelClass element) {
 		StringBuffer associations = new StringBuffer();
 		
 		out.println ("<UML:Class xmi.id='"+element.getXmlId()+"' name='"+element.getName()+"' " +
@@ -246,7 +247,7 @@ public class XmiGenerator {
 		out.println (associations);
 	}
 
-	private void generateAssociations(PrintStream out, AbstractModelClass entity,
+	private void generateAssociations(SmartPrintStream out, AbstractModelClass entity,
 			StringBuffer associations) 
 	{
 		for (AbstractModelAttribute att :entity.getAttributes())
@@ -299,7 +300,7 @@ public class XmiGenerator {
 		}
 	}
 
-	private void generateAttritbutes(PrintStream out, AbstractModelClass element) {
+	private void generateAttritbutes(SmartPrintStream out, AbstractModelClass element) {
 		for (AbstractModelAttribute att :element.getAttributes())
 		{
 			out.println ("<UML:Attribute xmi.id='attr."+element.getFullName()+"."+att.getName()+"' name='"+att.getName()+"' " +
@@ -339,7 +340,7 @@ public class XmiGenerator {
 		}
 	}
 
-	private void generateOperations(PrintStream out, AbstractModelClass element) {
+	private void generateOperations(SmartPrintStream out, AbstractModelClass element) {
 		int i = 0;
 		for (ModelOperation op :element.getOperations())
 		{
@@ -364,7 +365,7 @@ public class XmiGenerator {
 		}
 	}
 
-	private void generateDependenciess(PrintStream out, AbstractModelClass element) {
+	private void generateDependenciess(SmartPrintStream out, AbstractModelClass element) {
 		int i = 0;
 		String newId = newId();
 		for (AbstractModelClass dep :element.getDepends())
@@ -383,7 +384,7 @@ public class XmiGenerator {
 		out.println ("</UML:Namespace.ownedElement>");
 	}
 
-	private void generateStereotype(PrintStream out, String name) {
+	private void generateStereotype(SmartPrintStream out, String name) {
 		out.println ("<UML:Stereotype xmi.id='Stereotype."+name+"' name='"+name+"' "+endl
 				+"isSpecification = 'false' isRoot = 'false' isLeaf = 'false' isAbstract = 'false' />" );
 	}

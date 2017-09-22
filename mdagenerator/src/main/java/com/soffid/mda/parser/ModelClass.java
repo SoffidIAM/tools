@@ -283,7 +283,7 @@ public class ModelClass extends AbstractModelClass {
 
 					public int compare(ModelOperation o1,
 							ModelOperation o2) {
-						return o1.getName().compareTo(o2.getName());
+						return o1.toString().compareTo(o2.toString());
 					}
 					
 				});
@@ -306,7 +306,7 @@ public class ModelClass extends AbstractModelClass {
 				{
 					attributes.add((AbstractModelAttribute) parser.getElement(f));
 				}
-				sortAttributes();
+//				sortAttributes();
 			}
 		}
 		return attributes;
@@ -656,8 +656,8 @@ public class ModelClass extends AbstractModelClass {
 				if (att.getDataType().isEntity() && ! att.getDataType().getForeignKeys().contains(att))
 					att.getDataType().getForeignKeys().add(att);
 			}
-			sortAllAttributes();
-			sortAttributes();
+//			sortAllAttributes();
+//			sortAttributes();
 		}
 
 		for (AbstractModelClass depend: getDepends())
@@ -696,26 +696,26 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	private void sortAttributes() {
-//		Collections.sort(attributes, new Comparator<AbstractModelAttribute>() {
-//
-//			public int compare(AbstractModelAttribute o1,
-//					AbstractModelAttribute o2) {
-//				return o1.getName().compareTo(o2.getName());
-//			}
-//			
-//		});
+		Collections.sort(attributes, new Comparator<AbstractModelAttribute>() {
+
+			public int compare(AbstractModelAttribute o1,
+					AbstractModelAttribute o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+			
+		});
 	}
 
 
 	private void sortAllAttributes() {
-//		Collections.sort(getAllAttributes(), new Comparator<AbstractModelAttribute>() {
-//
-//			public int compare(AbstractModelAttribute o1,
-//					AbstractModelAttribute o2) {
-//				return o1.getName().compareTo(o2.getName());
-//			}
-//			
-//		});
+		Collections.sort(allAttributes, new Comparator<AbstractModelAttribute>() {
+
+			public int compare(AbstractModelAttribute o1,
+					AbstractModelAttribute o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+			
+		});
 	}
 
 	@Override
@@ -1062,7 +1062,7 @@ public class ModelClass extends AbstractModelClass {
 				allAttributes.addAll (m.getAllAttributes());
 			allAttributes.addAll(getAttributes());
 
-			sortAllAttributes();
+//			sortAllAttributes();
 
 		}
 		return allAttributes;

@@ -2,7 +2,6 @@ package com.soffid.mda.generator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
 import com.soffid.mda.parser.AbstractModelAttribute;
@@ -25,9 +24,9 @@ public class SqlGenerator {
 				( generator.isPlugin() ? "plugin" : "core" ) +
 				"-ddl.xml");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.println ( "<?xml version='1.0' encoding='UTF-8'?>" + endl
 				+ "<database name='Soffid'>" );
@@ -82,10 +81,11 @@ public class SqlGenerator {
 
 		out.println ( "</database>" );
 
+		out.close();
 	}
 
 
-	void generateTableSql (AbstractModelClass entity, PrintStream out)
+	void generateTableSql (AbstractModelClass entity, SmartPrintStream out)
 	{
 		// Create columns
 		AbstractModelAttribute pk = entity.getIdentifier();
@@ -146,7 +146,7 @@ public class SqlGenerator {
 	}
 
 
-	void generateIndex( PrintStream out, AbstractModelClass index )
+	void generateIndex( SmartPrintStream out, AbstractModelClass index )
 	{
 		AbstractModelClass table = index.getIndexEntity();
 		String tableName = table.getTableName();
@@ -165,7 +165,7 @@ public class SqlGenerator {
 	}
 
 
-	static void generateFK (PrintStream out, AbstractModelClass entity)
+	static void generateFK (SmartPrintStream out, AbstractModelClass entity)
 	{
 		// Create columns
 		for (AbstractModelAttribute att: entity.getAttributes())

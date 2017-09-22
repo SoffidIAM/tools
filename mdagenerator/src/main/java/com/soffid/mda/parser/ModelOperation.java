@@ -2,6 +2,8 @@ package com.soffid.mda.parser;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +20,7 @@ import com.soffid.mda.generator.Translate;
 import com.soffid.mda.generator.Util;
 
 public class ModelOperation extends ModelElement {
+	
 	private Method method;
 	LinkedList<ModelParameter> params = null;
 	private ModelParameter returnParameter;
@@ -263,21 +266,34 @@ public class ModelOperation extends ModelElement {
 		return method.getAnnotation(Transactional.class);
 	}
 
-	Set<AbstractModelClass> actors = null;
-	public Set<AbstractModelClass> getActors() {
+	List<AbstractModelClass> actors = null;
+	public List<AbstractModelClass> getActors() {
 		if (actors == null)
 		{
-			actors = new HashSet<AbstractModelClass>();
+			HashSet<AbstractModelClass> actors2 = new HashSet<AbstractModelClass>();
 			Operation op = method.getAnnotation(Operation.class);
 			if (op != null)
 			{
 				for (Class actor: op.grantees())
 				{
-					actors.add( (ModelClass) parser.getElement(actor));
+					actors2.add( (ModelClass) parser.getElement(actor));
 				}
 			}
-			actors.addAll(getModelClass().getActors());
+			actors2.addAll(getModelClass().getActors());
+			actors = new LinkedList<AbstractModelClass>(actors2);
+			Collections.sort(actors, new Comparator<AbstractModelClass>() {
+
+				public int compare(AbstractModelClass o1, AbstractModelClass o2) {
+					return o1.getFullName().compareTo(o2.getFullName());
+				}
+			});
 		}
+
 		return actors;
+	}
+
+	public String toString()
+	{
+		return method.toString();
 	}
 }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.HashSet;
@@ -81,9 +80,9 @@ public class EntityGenerator<E> {
 		File f = new File (file + File.separator + entity.getPackageDir(Translate.DEFAULT) + 
 					entity.getName(Translate.DEFAULT)+"DaoImpl.java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.println ( "//" + "\n"
 				+ "// (C) 2013 Soffid" + "\n"
@@ -115,9 +114,9 @@ public class EntityGenerator<E> {
 
 		File f = new File (file+ File.separator + entity.getPackageDir(Translate.DEFAULT) + entity.getName(Translate.DEFAULT)+"Impl.java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.println( "//" + "\n"
 				+ "// (C) 2013 Soffid" + "\n"
@@ -160,9 +159,9 @@ public class EntityGenerator<E> {
 		
 		File f = new File (generator.getCoreDir() + File.separator + element.getFile (Translate.DEFAULT));
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 		out.println("//");
 		out.println("// (c) 2014 Soffid");
 		out.println("//");
@@ -279,10 +278,11 @@ public class EntityGenerator<E> {
 		out.println ( "\t}" );
 
 		out.println ("}");
+		out.close();
 	}
 	
 
-	public void generateOperationComments (ModelOperation op, PrintStream out)
+	public void generateOperationComments (ModelOperation op, SmartPrintStream out)
 	{
 		out.println ("\t/**");
 		out.println ("\t * Operation "+op.getName(Translate.DEFAULT));
@@ -335,7 +335,7 @@ public class EntityGenerator<E> {
 	}
 
 
-	private void generateDaoMethods  (Generator generator, PrintStream out, AbstractModelClass entity, AbstractModelClass subClass)
+	private void generateDaoMethods  (Generator generator, SmartPrintStream out, AbstractModelClass entity, AbstractModelClass subClass)
 	{
 		//
 		// Methods
@@ -418,7 +418,7 @@ public class EntityGenerator<E> {
 		}
 	}
 
-	private void generateVoHandlers(PrintStream out,
+	private void generateVoHandlers(SmartPrintStream out,
 			AbstractModelClass subClass, AbstractModelClass vo, int scope) {
 		out.println ( "\t/**" + "\n"
 				+ "\t *  Copy data to {@link " + vo.getFullName(scope) + "} object " + "\n"
@@ -471,9 +471,9 @@ public class EntityGenerator<E> {
 	public void generateEntityDao(AbstractModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
 		File f = new File (generator.getCoreDir() + File.separator + entity.getPackageDir(Translate.DEFAULT) + entity.getName(Translate.DEFAULT)+"Dao.java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.println ( "//" + "\n"
 				+ "// (C) 2013 Soffid" + "\n"
@@ -596,9 +596,9 @@ public class EntityGenerator<E> {
 	{
 		File f = new File (generator.getCoreTestSrcDir() + "/com/soffid/test/AbstractHibernateTest.java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.println ( "//" + "\n"
 				+ "// (C) 2013 Soffid" + "\n"
@@ -646,9 +646,9 @@ public class EntityGenerator<E> {
 	{
 		File f = new File (generator.getCoreTestSrcDir() + "/com/soffid/test/HibernateTest.java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 
 		out.println( "//" + "\n"
@@ -700,7 +700,7 @@ public class EntityGenerator<E> {
 		out.close();
 	}
 
-	private void generateEntityTestImpl(PrintStream out, int numTest,
+	private void generateEntityTestImpl(SmartPrintStream out, int numTest,
 			AbstractModelClass entity, ModelOperation op, String sqlString) {
 		out.println( "\tpublic void test" + numTest + "_" + entity.getName(Translate.DONT_TRANSLATE)+"_" + op.getName(Translate.DONT_TRANSLATE) + " () throws Exception" + "\n"
 			+ "\t{" + "\n"
@@ -743,7 +743,7 @@ public class EntityGenerator<E> {
 		out.println( "\t}" + "\n" );
 	}
 
-	void generateDependency(AbstractModelClass provider, PrintStream out) {
+	void generateDependency(AbstractModelClass provider, SmartPrintStream out) {
 		if (provider != null && (provider.isEntity() || provider.isService())) {
 			String fullName;
 			String name;
@@ -762,7 +762,7 @@ public class EntityGenerator<E> {
 		}
 	}
 
-	private void outputDependency(PrintStream out, String fullName,
+	private void outputDependency(SmartPrintStream out, String fullName,
 			String name, String varName) {
 		out.println ( "\t" + fullName + " " + varName + ";" + "\n" );
 		out.println ( "\t/**" + "\n" + "\t * Sets reference to <code>" + varName
@@ -777,7 +777,7 @@ public class EntityGenerator<E> {
 		out.println ( "\t}" + "\n" );
 	}
 
-	void generateDependencies (AbstractModelClass entity, PrintStream out)
+	void generateDependencies (AbstractModelClass entity, SmartPrintStream out)
 	{
 		//
 		// Generate clients
@@ -792,7 +792,7 @@ public class EntityGenerator<E> {
 
 
 
-	void generateFinderMethod  (PrintStream out, AbstractModelClass entity,
+	void generateFinderMethod  (SmartPrintStream out, AbstractModelClass entity,
 			ModelOperation op) {
 		String sqlString;
 
@@ -1010,7 +1010,7 @@ public class EntityGenerator<E> {
 	}
 
 
-	void generateCopy (PrintStream out,
+	void generateCopy (SmartPrintStream out,
 			String prefix,
 			String srcName, AbstractModelAttribute source,
 			String targetName, AbstractModelAttribute target) {
@@ -1050,7 +1050,7 @@ public class EntityGenerator<E> {
 		}
 	}
 
-	void generateCopyObject (PrintStream out,
+	void generateCopyObject (SmartPrintStream out,
 			String srcName, AbstractModelClass source, 
 			String targetName, AbstractModelClass target) {
 		AbstractModelClass baseTarget = target;
@@ -1087,7 +1087,7 @@ public class EntityGenerator<E> {
 
 	}
 
-	void generateCopyEntity (PrintStream out,
+	void generateCopyEntity (SmartPrintStream out,
 			String srcName, AbstractModelClass source,
 			String targetName, AbstractModelClass target) {
 		AbstractModelClass baseTarget = target;
@@ -1137,7 +1137,7 @@ public class EntityGenerator<E> {
 
 	}
 
-	void generateBusinessMethod (PrintStream out, AbstractModelClass service, ModelOperation op) {
+	void generateBusinessMethod (SmartPrintStream out, AbstractModelClass service, ModelOperation op) {
 		out.println ( "\t/**" + "\n"
 				+ "\t * @see " + service.getFullName(Translate.DEFAULT) + "#"
 				+ "\t * @see " + service.getFullName(Translate.DONT_TRANSLATE) + "#"
@@ -1264,7 +1264,7 @@ public class EntityGenerator<E> {
 		out.println ( "\tprotected abstract " + getImplSpec(op, false, true) + " throws Exception;" + "\n" );
 	}
 
-	void generateDaoBaseMethods  (PrintStream out,
+	void generateDaoBaseMethods  (SmartPrintStream out,
 			AbstractModelClass entity,
 			AbstractModelClass subClass) {
 		//
@@ -1390,7 +1390,7 @@ public class EntityGenerator<E> {
 		}
 	}
 
-	private void generateAltVOCopiers(PrintStream out,
+	private void generateAltVOCopiers(SmartPrintStream out,
 			AbstractModelClass entity, AbstractModelClass subClass,
 			AbstractModelClass cl) {
 		// Copy to Value Object
@@ -1495,7 +1495,7 @@ public class EntityGenerator<E> {
 				+ "\t}" + "\n" );
 	}
 
-	private void generateVOTransformers(PrintStream out,
+	private void generateVOTransformers(SmartPrintStream out,
 			AbstractModelClass entity, AbstractModelClass subClass,
 			AbstractModelClass cl) {
 		// Copy to Value Object
@@ -1672,7 +1672,7 @@ public class EntityGenerator<E> {
 	}
 
 
-	void generateCasts(PrintStream out, String indent,
+	void generateCasts(SmartPrintStream out, String indent,
 			String entityName, String method, AbstractModelClass entity, AbstractModelClass subClass)
 	{
 		if (entity == subClass) {
@@ -1704,9 +1704,9 @@ public class EntityGenerator<E> {
 	public void generateEntityDaoBase(AbstractModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
 		File f = new File (generator.getCoreDir() + File.separator + entity.getPackageDir(Translate.DEFAULT) + entity.getDaoBaseName(Translate.DEFAULT)+ ".java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 		out.println("//");
 		out.println("// (c) 2014 Soffid");
 		out.println("//");
@@ -1981,7 +1981,7 @@ public class EntityGenerator<E> {
 		out.close();
 	}
 
-	private void generateCache(AbstractModelClass entity, PrintStream out) {
+	private void generateCache(AbstractModelClass entity, SmartPrintStream out) {
 		for (AbstractModelClass vo: entity.getDepends())
 		{
 			if (vo.isValueObject() && vo.getCache() > 0)
@@ -1993,7 +1993,7 @@ public class EntityGenerator<E> {
 		}
 	}
 
-	private void generateCleanCache(AbstractModelClass entity, PrintStream out) {
+	private void generateCleanCache(AbstractModelClass entity, SmartPrintStream out) {
 		for (AbstractModelClass vo: entity.getDepends())
 		{
 			if (vo.isValueObject() && vo.getCache() > 0)
@@ -2004,7 +2004,7 @@ public class EntityGenerator<E> {
 		}
 	}
 
-	private void generateCacheClass(AbstractModelClass entity, PrintStream out) {
+	private void generateCacheClass(AbstractModelClass entity, SmartPrintStream out) {
 		for (AbstractModelClass vo: entity.getDepends())
 		{
 			if (vo.isValueObject() && vo.getCache() > 0)
@@ -2020,9 +2020,9 @@ public class EntityGenerator<E> {
 	void generateSearchCriteria() throws FileNotFoundException, UnsupportedEncodingException {
 		File f = new File (generator.getCoreDir() + File.separator + modelDir + File.separator + "criteria" + File.separator + "CriteriaSearch.java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.println ( "//" );
 				out.println("// (C) 2013 Soffid" );
@@ -2642,14 +2642,15 @@ public class EntityGenerator<E> {
 		out.println("\t\treturn this.configuration;" );
 		out.println("\t}" );
 		out.println("}" );
+		out.close();
 	}
 
 	void generateSearchCriteriaParameter() throws FileNotFoundException, UnsupportedEncodingException {
 		File f = new File (generator.getCoreDir() + File.separator + modelDir + File.separator + "criteria" + File.separator + "CriteriaSearchParameter.java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 
 		out.println ( "//" + "\n"
@@ -3142,9 +3143,9 @@ public class EntityGenerator<E> {
 	void generateSearchCriteriaConfiguration() throws FileNotFoundException, UnsupportedEncodingException {
 		File f = new File (generator.getCoreDir() + File.separator + modelDir + File.separator + "criteria" + File.separator + "CriteriaSearchConfiguration.java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 
 		out.println ( "//" + "\n"
@@ -3277,14 +3278,15 @@ public class EntityGenerator<E> {
 			+ "\t\tthis.maximumResultSize = maximumResultSize;" + "\n"
 			+ "\t}" + "\n"
 			+ "}" );
+		out.close();
 	}
 
 	void generateSearchCriteriaProperties() throws FileNotFoundException, UnsupportedEncodingException {
 		File f = new File (generator.getCoreDir() + File.separator + modelDir + File.separator + "criteria" + File.separator + "CriteriaSearchProperties.java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 
 		out.println ( "//" + "\n"
@@ -3419,6 +3421,7 @@ public class EntityGenerator<E> {
 			+ "\t\tprotected Class type;" + "\n"
 			+ "\t}" + "\n"
 			+ "}" );
+		out.close();
 	}
 
 
@@ -3428,9 +3431,9 @@ public class EntityGenerator<E> {
 
 		File f = new File (file+ File.separator + entity.getPackageDir(Translate.DEFAULT) + entity.getName(Translate.DEFAULT)+".hbm.xml");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.print ( "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + "\n"
 				+ "<!-- " + "\n"
@@ -3554,6 +3557,7 @@ public class EntityGenerator<E> {
 		}
 
 		out.println ( "</hibernate-mapping>" );
+		out.close();
 
 	}
 
@@ -3655,7 +3659,7 @@ public class EntityGenerator<E> {
 
 		if (generate)
 		{
-			System.out.println ( "Generating " + f.getPath() );
+//			System.out.println ( "Generating " + f.getPath() );
 			
 			SourceStringReader reader = new SourceStringReader(source.toString());
 			reader.generateImage(new FileOutputStream(f), new FileFormatOption(FileFormat.SVG));
@@ -3824,7 +3828,7 @@ public class EntityGenerator<E> {
 		
 		if (generate)
 		{
-			System.out.println ( "Generating " + f.getPath() );
+//			System.out.println ( "Generating " + f.getPath() );
 	
 			SourceStringReader reader = new SourceStringReader(source.toString());
 			reader.generateImage(new FileOutputStream(f), new FileFormatOption(FileFormat.SVG));

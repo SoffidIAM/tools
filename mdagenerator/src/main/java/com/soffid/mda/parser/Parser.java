@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +25,14 @@ public class Parser {
 	
 	public Collection<ModelElement> getModelElements()
 	{
-		return new LinkedList (elements.values());
+		LinkedList<ModelElement> l = new LinkedList<ModelElement> (elements.values());
+		Collections.sort(l, new Comparator<ModelElement>(){
+
+			public int compare(ModelElement o1, ModelElement o2) {
+				return o1.getId().compareTo(o2.getId());
+			}
+		});
+		return l;
 	}
 	
 	public void parse (File dir) throws ClassNotFoundException, MalformedURLException
@@ -110,6 +118,12 @@ public class Parser {
 				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isService() && ((AbstractModelClass) element).isGenerated())
 					services.add((ModelClass) element);
 			}
+			Collections.sort(services, new Comparator<ModelClass>(){
+				public int compare(ModelClass o1, ModelClass o2) {
+					return o1.getFullName().compareTo(o2.getFullName());
+				}
+				
+			});
 		}
 		return services;
 	}
@@ -125,6 +139,12 @@ public class Parser {
 				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isEntity() && ((AbstractModelClass) element).isGenerated())
 					entities.add((ModelClass) element);
 			}
+			Collections.sort(entities, new Comparator<ModelClass>(){
+				public int compare(ModelClass o1, ModelClass o2) {
+					return o1.getFullName().compareTo(o2.getFullName());
+				}
+				
+			});
 		}
 		return entities;
 	}
@@ -140,6 +160,12 @@ public class Parser {
 				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isIndex() && ((AbstractModelClass) element).isGenerated())
 					indexes.add((ModelClass) element);
 			}
+			Collections.sort(indexes, new Comparator<ModelClass>(){
+				public int compare(ModelClass o1, ModelClass o2) {
+					return o1.getFullName().compareTo(o2.getFullName());
+				}
+				
+			});
 		}
 		return indexes;
 	}
@@ -156,6 +182,12 @@ public class Parser {
 				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isValueObject() && ((AbstractModelClass) element).isGenerated())
 					valueObjects.add((ModelClass) element);
 			}
+			Collections.sort(valueObjects, new Comparator<ModelClass>(){
+				public int compare(ModelClass o1, ModelClass o2) {
+					return o1.getFullName().compareTo(o2.getFullName());
+				}
+				
+			});
 		}
 		return valueObjects;
 	}
@@ -189,6 +221,12 @@ public class Parser {
 				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isRole() && ((AbstractModelClass) element).isGenerated())
 					actors.add((ModelClass) element);
 			}
+			Collections.sort(actors, new Comparator<ModelClass>(){
+				public int compare(ModelClass o1, ModelClass o2) {
+					return o1.getFullName().compareTo(o2.getFullName());
+				}
+				
+			});
 		}
 		return actors;
 	}
@@ -202,6 +240,12 @@ public class Parser {
 				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isCriteria() && ((AbstractModelClass) element).isGenerated())
 					criterias.add((ModelClass) element);
 			}
+			Collections.sort(criterias, new Comparator<ModelClass>(){
+				public int compare(ModelClass o1, ModelClass o2) {
+					return o1.getFullName().compareTo(o2.getFullName());
+				}
+				
+			});
 		}
 		return criterias;
 	}
@@ -215,6 +259,12 @@ public class Parser {
 				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isEnumeration() && ((AbstractModelClass) element).isGenerated())
 					enumerations.add((ModelClass) element);
 			}
+			Collections.sort(enumerations, new Comparator<ModelClass>(){
+				public int compare(ModelClass o1, ModelClass o2) {
+					return o1.getFullName().compareTo(o2.getFullName());
+				}
+				
+			});
 		}
 		return enumerations;
 	}
@@ -228,6 +278,12 @@ public class Parser {
 				if (element instanceof AbstractModelClass && ((AbstractModelClass) element).isException() && ((AbstractModelClass) element).isGenerated())
 					exceptions.add((ModelClass) element);
 			}
+			Collections.sort(exceptions, new Comparator<ModelClass>(){
+				public int compare(ModelClass o1, ModelClass o2) {
+					return o1.getFullName().compareTo(o2.getFullName());
+				}
+				
+			});
 		}
 		return exceptions;
 	}

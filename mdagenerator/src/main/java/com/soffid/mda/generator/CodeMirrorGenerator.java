@@ -8,6 +8,8 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,9 +63,9 @@ public class CodeMirrorGenerator<E> {
 			f = new File (file + File.separator + "web/js/codemirror/java-classes.js");
 
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		PrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.println ( "//" + "\n"
 				+ "// (C) 2017 Soffid" + "\n"
@@ -82,6 +84,11 @@ public class CodeMirrorGenerator<E> {
 		LinkedList<ModelElement> elementList = new LinkedList<ModelElement>( parser.getModelElements());
 		elementList.add(new ModelClass(parser, Date.class));
 		elementList.add(new ModelClass(parser, Calendar.class));
+		Collections.sort(elementList, new Comparator<ModelElement>() {
+			public int compare(ModelElement o1, ModelElement o2) {
+				return o1.getId().compareTo(o2.getId());
+			}
+		});
 		for (ModelElement element: elementList)
 		{
 			if (element instanceof ModelClass)
@@ -197,6 +204,7 @@ public class CodeMirrorGenerator<E> {
 			}
 			out.println ("];"); 
 		}
+		out.close();
 	}
 
 	private void registerPackage(HashMap<String, Set<String>> packages,

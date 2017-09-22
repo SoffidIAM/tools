@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
 import java.util.Set;
 
 import net.sourceforge.plantuml.FileFormat;
@@ -115,9 +115,9 @@ public class ServiceGenerator {
 		file = file + "/" + Util.packageToDir(pkg) + "remote/PublisherInterface.java";
 		File f = new File (file);
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.println ( "//" + endl
 			+ "// (C) 2013 Soffid" + endl
@@ -138,7 +138,7 @@ public class ServiceGenerator {
 
 		f = new File (generator.getSyncDir() + "/" + Util.packageToDir(pkg)+"remote/RemoteServicePublisher.java");
 		f.getParentFile().mkdirs();
-		out = new PrintStream(f, "UTF-8");
+		out = new SmartPrintStream(f, "UTF-8");
 
 		out.println ( "//" + endl
 			+ "// (C) 2013 Soffid" + endl
@@ -196,9 +196,9 @@ public class ServiceGenerator {
 		file = file + "/"+Util.packageToDir (packageName);
 		File f = new File (file + "/RemoteServiceLocator.java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		String commonPkg = translated ? "com.soffid.iam" : "es.caib.seycon.ng";
 		commonPkg = "es.caib.seycon.ng";
@@ -363,9 +363,9 @@ public class ServiceGenerator {
 
 		File f = new File (file+"/"+className+".java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.println ( "//" + endl
 			+ "// (C) 2013 Soffid" + endl
@@ -572,9 +572,9 @@ public class ServiceGenerator {
 
 		File f = new File (file+"/"+className+".java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out.println ( "//" + endl
 			+ "// (C) 2013 Soffid" + endl
@@ -700,7 +700,7 @@ public class ServiceGenerator {
 		String name = "EJBLocator";
 		File f = new File (file+File.separator+ name + ".java");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
 		
 		out.println ( "//" + endl
@@ -755,7 +755,7 @@ public class ServiceGenerator {
 		String file;
 		File f = new File (generator.getCoreResourcesDir() + "/META-INF/ejb-jar.xml");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
 
 		out.println ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + endl
@@ -854,7 +854,7 @@ public class ServiceGenerator {
 
 				for (ModelOperation op: service.getOperations())
 				{
-					Set<AbstractModelClass> actors = op.getActors();
+					Collection<AbstractModelClass> actors = op.getActors();
 					if (!actors.isEmpty())
 					{
 						int scope = Translate.SERVICE_SCOPE;
@@ -943,8 +943,8 @@ public class ServiceGenerator {
 		String file;
 		File f = new File (generator.getCoreResourcesDir() + "/META-INF/jboss.xml");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
-		System.out.println ("Generating "+f.getPath());
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
+//		System.out.println ("Generating "+f.getPath());
 
 
 		out.println ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + endl
@@ -986,8 +986,8 @@ public class ServiceGenerator {
 		String file;
 		File f = new File (generator.getCoreResourcesDir() + "/META-INF/openejb-jar.xml");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
-		System.out.println ("Generating "+f.getPath());
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
+//		System.out.println ("Generating "+f.getPath());
 
 
 		out.println ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + endl
@@ -1035,7 +1035,7 @@ public class ServiceGenerator {
 		File f = new File (file);
 		f.getParentFile().mkdirs();
 		
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
 
 		out.println ( "//" + endl
@@ -1107,7 +1107,7 @@ public class ServiceGenerator {
 		out.close();
 	}
 
-	void generateTransactionAnnotation (ModelOperation op, PrintStream out)
+	void generateTransactionAnnotation (ModelOperation op, SmartPrintStream out)
 	{
 		Transactional trans = op.getTransactional();
 
@@ -1117,7 +1117,7 @@ public class ServiceGenerator {
 		}
 		else 
 		{
-			out.println ( "\t// Trasaction attribute " + trans.toString()  );
+			out.println ( "\t// Trasaction attribute " );
 			Propagation propagation = trans.propagation();
 
 			out.print ("\t@Transactional(isolation=org.springframework.transaction.annotation.Isolation.");
@@ -1197,7 +1197,7 @@ public class ServiceGenerator {
 	}
 
 
-	void generateNullChecks (PrintStream out, ModelOperation op, int scope)
+	void generateNullChecks (SmartPrintStream out, ModelOperation op, int scope)
 	{
 		for (ModelParameter param: op.getParameters())
 		{
@@ -1284,7 +1284,7 @@ public class ServiceGenerator {
 		}
 	}
 
-	void generateOperationBase (AbstractModelClass service, ModelOperation op, int scope, PrintStream out)
+	void generateOperationBase (AbstractModelClass service, ModelOperation op, int scope, SmartPrintStream out)
 	{
 		out.println ( "\t/**" + endl
 				+ "\t * @see " + service.getFullName(scope) + "#"
@@ -1333,7 +1333,7 @@ public class ServiceGenerator {
 		out.println ( "\tprotected abstract " + op.getImplSpec(scope) + " throws Exception;" + endl );
 	}
 
-	void generateBase(AbstractModelClass service, int scope) throws FileNotFoundException {
+	void generateBase(AbstractModelClass service, int scope) throws FileNotFoundException, UnsupportedEncodingException {
 		String className = service.getBaseName(scope);
 		String file;
 		if (service.isServerOnly())
@@ -1350,9 +1350,9 @@ public class ServiceGenerator {
 
 		File f = new File (file);
 		f.getParentFile().mkdirs();
-		System.out.println ( "Generating " + f.getPath() );
+//		System.out.println ( "Generating " + f.getPath() );
 
-		PrintStream out = new PrintStream (f);
+		SmartPrintStream out = new SmartPrintStream (f);
 		
 		out.println ( "//" + endl
 				+ "// (C) 2013 Soffid" + endl
@@ -1461,7 +1461,7 @@ public class ServiceGenerator {
 	}
 
 
-	void generateBaseProxy(AbstractModelClass service, int scope) throws FileNotFoundException {
+	void generateBaseProxy(AbstractModelClass service, int scope) throws FileNotFoundException, UnsupportedEncodingException {
 		String className = service.getBaseName(scope) + "Proxy";
 		String file;
 		if (service.isServerOnly())
@@ -1478,9 +1478,9 @@ public class ServiceGenerator {
 
 		File f = new File (file);
 		f.getParentFile().mkdirs();
-		System.out.println ( "Generating " + f.getPath() );
+//		System.out.println ( "Generating " + f.getPath() );
 
-		PrintStream out = new PrintStream (f);
+		SmartPrintStream out = new SmartPrintStream (f);
 		
 		out.println ( "//" + endl
 				+ "// (C) 2013 Soffid" + endl
@@ -1552,7 +1552,7 @@ public class ServiceGenerator {
 	}
 
 
-	void generateOperationBaseProxy (AbstractModelClass baseClass, AbstractModelClass service, ModelOperation op, int scope, boolean voidHandle, PrintStream out)
+	void generateOperationBaseProxy (AbstractModelClass baseClass, AbstractModelClass service, ModelOperation op, int scope, boolean voidHandle, SmartPrintStream out)
 	{
 		out.println ( "\t/**" + endl
 				+ "\t * @see " + service.getFullName(scope) + "#"
@@ -1644,7 +1644,7 @@ public class ServiceGenerator {
 
 	}
 
-	private void outputDependency(PrintStream out, String fullName,
+	private void outputDependency(SmartPrintStream out, String fullName,
 			String name, String varName) {
 		out.println ( "\t"
 				+ "private " + fullName
@@ -1678,7 +1678,7 @@ public class ServiceGenerator {
 		out.println ( "\t}" + endl );
 	}
 
-	void generateEjbInterface (AbstractModelClass service, int scope) throws FileNotFoundException {
+	void generateEjbInterface (AbstractModelClass service, int scope) throws FileNotFoundException, UnsupportedEncodingException {
 
 		if (service.isInternal() || service.isServerOnly())
 			return;
@@ -1691,9 +1691,9 @@ public class ServiceGenerator {
 
 		File f = new File (file);
 		f.getParentFile().mkdirs();
-		System.out.println ( "Generating " + f.getPath() );
+//		System.out.println ( "Generating " + f.getPath() );
 
-		PrintStream out = new PrintStream (f);
+		SmartPrintStream out = new SmartPrintStream (f);
 
 		out.println ( "//" + endl
 				+ "// (C) 2013 Soffid" + endl
@@ -1724,7 +1724,7 @@ public class ServiceGenerator {
 	}
 
 
-	void generateEjbHome (AbstractModelClass service, int scope) throws FileNotFoundException {
+	void generateEjbHome (AbstractModelClass service, int scope) throws FileNotFoundException, UnsupportedEncodingException {
 
 		if (service.isInternal() || service.isServerOnly())
 			return;
@@ -1736,9 +1736,9 @@ public class ServiceGenerator {
 
 		File f = new File (file);
 		f.getParentFile().mkdirs();
-		System.out.println ( "Generating " + f.getPath() );
+//		System.out.println ( "Generating " + f.getPath() );
 
-		PrintStream out = new PrintStream (f);
+		SmartPrintStream out = new SmartPrintStream (f);
 
 		out.println ( "//" + endl
 				+ "// (C) 2013 Soffid" + endl
@@ -1776,7 +1776,7 @@ public class ServiceGenerator {
 	}
 
 
-	void generateEjbBean(AbstractModelClass service, int scope) throws FileNotFoundException {
+	void generateEjbBean(AbstractModelClass service, int scope) throws FileNotFoundException, UnsupportedEncodingException {
 
 		int inverseScope = scope == Translate.SERVICE_SCOPE ? Translate.ALTSERVICE_SCOPE : Translate.SERVICE_SCOPE;
 		
@@ -1788,9 +1788,9 @@ public class ServiceGenerator {
 
 		File f = new File (file);
 		f.getParentFile().mkdirs();
-		System.out.println ( "Generating " + f.getPath() );
+//		System.out.println ( "Generating " + f.getPath() );
 
-		PrintStream out = new PrintStream (f);
+		SmartPrintStream out = new SmartPrintStream (f);
 
 		out.println ( "//" + endl
 				+ "// (C) 2013 Soffid" + endl
@@ -1839,7 +1839,7 @@ public class ServiceGenerator {
 						+ op.getSpec(scope) + endl
 						+ "\t */" );
 				// Generate authorization tags
-				Set<AbstractModelClass> actors = op.getActors();
+				Collection<AbstractModelClass> actors = op.getActors();
 				if (!actors.isEmpty())
 				{
 					StringBuffer annotation = new StringBuffer ("\t@javax.annotation.security.RolesAllowed({");
@@ -2100,7 +2100,7 @@ public class ServiceGenerator {
 
 		if (generate)
 		{
-			System.out.println ( "Generating " + f.getPath() );
+//			System.out.println ( "Generating " + f.getPath() );
 			SourceStringReader reader = new SourceStringReader(source.toString());
 			reader.generateImage(new FileOutputStream(f), new FileFormatOption(FileFormat.SVG));
 		}
@@ -2121,7 +2121,7 @@ public class ServiceGenerator {
 		{
 			f.getParentFile().mkdirs();
 	
-			System.out.println ( "Generating " + f.getPath() );
+//			System.out.println ( "Generating " + f.getPath() );
 	
 	
 			StringBuffer source = new StringBuffer();
@@ -2141,7 +2141,7 @@ public class ServiceGenerator {
 			
 			source.append ("rectangle "+service.getName()+ " {"+ endl);
 			for (ModelOperation op: service.getOperations()) {
-				Set<AbstractModelClass> actors = op.getActors();
+				Collection<AbstractModelClass> actors = op.getActors();
 				source.append ("usecase ").append(op.getName(scope)).append("\n");
 				for (AbstractModelClass actor: actors)
 				{

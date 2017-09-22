@@ -2,7 +2,6 @@ package com.soffid.mda.generator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,9 +34,9 @@ public class JascutGenerator {
 	private void generateModel(String fileName, List<ModelClass> list) throws FileNotFoundException, UnsupportedEncodingException {
 		File f = new File(generator.getJascutDir()+"/"+fileName+"-config.xml");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 		 
 		out.println ("<?xml version = '1.0' encoding = 'UTF-8' ?>" + endl
 					+"<refactorings xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' "
@@ -173,9 +172,9 @@ public class JascutGenerator {
 	private void generateModelSyncServer(String fileName, List<ModelClass> list) throws FileNotFoundException, UnsupportedEncodingException {
 		File f = new File(generator.getJascutDir()+"/"+fileName+"-syncserver-config.xml");
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 		DateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 		 
 		out.println ("<?xml version = '1.0' encoding = 'UTF-8' ?>" + endl
@@ -220,7 +219,7 @@ public class JascutGenerator {
 		generateModel ("vo", parser.getValueObjects());
 	}
 
-	private void translateClass(AbstractModelClass cl, PrintStream out) {
+	private void translateClass(AbstractModelClass cl, SmartPrintStream out) {
 		String name = cl.getFullName(Translate.DONT_TRANSLATE);
 		String transName = cl.getFullName(Translate.TRANSLATE);
 		if (!name.equals(transName))
@@ -259,7 +258,7 @@ public class JascutGenerator {
 		
 	}
 
-	private void translateMethods(String fileName, AbstractModelClass cl, PrintStream out) {
+	private void translateMethods(String fileName, AbstractModelClass cl, SmartPrintStream out) {
 		if (cl.isService() && cl.isServerOnly())
 			return;
 		// Translates getters & setters

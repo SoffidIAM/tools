@@ -2,7 +2,6 @@ package com.soffid.mda.generator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
 import org.omg.CosNaming.IstringHelper;
@@ -68,12 +67,12 @@ public class SpringGenerator {
 
 		File f = new File (file );
 		f.getParentFile().mkdirs();
-		PrintStream out = new PrintStream(f, "UTF-8");
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
 		String pkg = generator.getBasePackage() != null ? generator.getBasePackage():
 					generator.isTranslatedOnly() ? "com.soffid.iam": "es.caib.seycon.ng";
 			
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		out .println ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + endl
 				+ "<!DOCTYPE beans PUBLIC \"-//SPRING//DTD BEAN//EN\" \"http://www.springframework.org/dtd/spring-beans.dtd\">" + endl
@@ -345,9 +344,11 @@ public class SpringGenerator {
 		out.println ( "\t<!-- ========================= End of SERVICE DEFINITIONS ========================= -->" + endl
 				+ "" + endl
 				+ "</beans>" );
+		
+		out.close();
 	}
 
-	private void generateBeanInjections(PrintStream out,
+	private void generateBeanInjections(SmartPrintStream out,
 			AbstractModelClass service, int serviceScope) {
 		if (service.isTranslatedImpl() ? serviceScope == Translate.SERVICE_SCOPE :
 			serviceScope == Translate.ALTSERVICE_SCOPE)

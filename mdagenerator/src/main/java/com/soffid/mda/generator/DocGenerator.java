@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.Collections;
@@ -42,9 +41,9 @@ public class DocGenerator {
 		File f = new File (generator.getUmlDir()+File.separator+"entities.html");
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 		
 		p.println("<?xml version='1.0' encoding='utf-8'?>");
 		p.println("<html><head><link rel=\"stylesheet\" href=\"style.css\">");
@@ -80,9 +79,9 @@ public class DocGenerator {
 		File f = new File (generator.getUmlDir()+File.separator+"services.html");
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 		
 		p.println("<?xml version='1.0' encoding='utf-8'?>");
 		p.println("<html><head><link rel=\"stylesheet\" href=\"style.css\">");
@@ -117,9 +116,9 @@ public class DocGenerator {
 		File f = new File (generator.getUmlDir()+File.separator+"roles.html");
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 		
 		p.println("<?xml version='1.0' encoding='utf-8'?>");
 		p.println("<html><head><link rel=\"stylesheet\" href=\"style.css\">");
@@ -154,9 +153,9 @@ public class DocGenerator {
 		File f = new File (generator.getUmlDir()+File.separator+"valueobjects.html");
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 
 		generateHeader(f, p);;
 		p.println("<h1>List of value objects</h1>");
@@ -188,11 +187,11 @@ public class DocGenerator {
 	}
 
 
-	private void generateFooter(PrintStream p) {
-		p.print("<p class='genfooter'>"+ DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date())+"</p>");
+	private void generateFooter(SmartPrintStream p) {
+		p.print("<p class='genfooter'>"+ DateFormat.getDateInstance(DateFormat.SHORT).format(new Date())+"</p>");
 	}
 
-	private void generateClassReference(PrintStream p, AbstractModelClass mc, int scope) {
+	private void generateClassReference(SmartPrintStream p, AbstractModelClass mc, int scope) {
 		String pp = mc.getPackage(scope);
 		pp = pp.replaceAll("\\.", "/");
 		if (mc.isRole())
@@ -204,7 +203,7 @@ public class DocGenerator {
 		p.println ("</li>");
 	}
 
-	private void generateClassReference(PrintStream p, AbstractModelClass source, AbstractModelClass mc, int scope) {
+	private void generateClassReference(SmartPrintStream p, AbstractModelClass source, AbstractModelClass mc, int scope) {
 		if (mc.isGenerated())
 		{
 			p.println("<a href='"+generateRef(source, mc, scope)+"'>"+mc.getName(scope)+"</a>");
@@ -217,7 +216,7 @@ public class DocGenerator {
 			p.println(mc.getName(scope));
 	}
 
-	private void generateDaoReference(PrintStream p, AbstractModelClass source, AbstractModelClass mc, int scope) {
+	private void generateDaoReference(SmartPrintStream p, AbstractModelClass source, AbstractModelClass mc, int scope) {
 		if (mc.isGenerated())
 		{
 			if (mc.isEntity())
@@ -229,7 +228,7 @@ public class DocGenerator {
 			p.println(mc.getName(scope));
 	}
 
-	private void generateDaoReference(PrintStream p, AbstractModelClass mc, int scope) {
+	private void generateDaoReference(SmartPrintStream p, AbstractModelClass mc, int scope) {
 		String pp = mc.getPackage(scope);
 		pp = pp.replaceAll("\\.", "/");
 		p.println("<li><a href='"+pp+"/"+mc.getName(scope)+".html'>"+mc.getName(scope)+"</a>");
@@ -266,7 +265,7 @@ public class DocGenerator {
 		File f = new File (getStylePath());
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
 		OutputStream out = new FileOutputStream(f);
 		InputStream in = getClass().getClassLoader().getResourceAsStream("com/soffid/mda/style.css");
@@ -287,9 +286,9 @@ public class DocGenerator {
 		File f = new File (generator.getUmlDir()+File.separator+"index.html");
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
 		if (generator.isPlugin())
@@ -315,9 +314,9 @@ public class DocGenerator {
 		File f = new File (getDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
 		p.println("<h1>Entity "+mc.getFullName(scope));
@@ -390,9 +389,9 @@ public class DocGenerator {
 		File f = new File (getDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
 		p.println("<h1>ValueObject "+mc.getFullName(scope)+"</h1>");
@@ -446,9 +445,9 @@ public class DocGenerator {
 		File f = new File (getDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
 		p.println("<h1>Enumeration "+mc.getFullName(scope)+"</h1>");
@@ -471,11 +470,11 @@ public class DocGenerator {
 		p.close ();
 	}
 
-	private void generateImage(PrintStream p, String file) {
+	private void generateImage(SmartPrintStream p, String file) {
 		p.println ("<div class='uml'><a href='"+file+"' target='_new'><img src='"+file+"'></a></div>");
 	}
 
-	private void generateHeader(File f, PrintStream p) {
+	private void generateHeader(File f, SmartPrintStream p) {
 		p.println("<?xml version='1.0' encoding='utf-8'?>");
 		p.println("<html><head><link rel=\"stylesheet\" href=\""+generateRef(f.getPath(), getStylePath())+"\">");
 		if (generator.isPlugin())
@@ -493,9 +492,9 @@ public class DocGenerator {
 		File f = new File (getDaoDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
 		p.println("<h1>Entity DAO "+mc.getDaoFullName(scope)+" <a href='"+mc.getName(scope)+".html'>[Entity]</a></h1>");
@@ -571,9 +570,9 @@ public class DocGenerator {
 		File f = new File (getDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
 		p.println("<h1>Service "+mc.getFullName(scope)+"<a target='_new' href='"+mc.getName(scope)+"-uc.svg'>[UseCase]</a></h1>");
@@ -652,9 +651,9 @@ public class DocGenerator {
 		File f = new File (getDocFile(mc, scope));
 		f.getParentFile().mkdirs();
 
-		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating "+f.getPath());
 
-		PrintStream p = new PrintStream(f, "UTF-8");
+		SmartPrintStream p = new SmartPrintStream(f, "UTF-8");
 		
 		generateHeader(f, p);
 		p.println("<h1>Role "+mc.getRoleName()+"</h1>");
@@ -692,11 +691,11 @@ public class DocGenerator {
 
 
 	private void generateAttribute(AbstractModelClass mc, int scope,
-			PrintStream p, AbstractModelAttribute att) {
+			SmartPrintStream p, AbstractModelAttribute att) {
 		generateAttribute(mc, scope, p, att, false);
 	}
 	private void generateAttribute(AbstractModelClass mc, int scope,
-			PrintStream p, AbstractModelAttribute att, boolean columnName) {
+			SmartPrintStream p, AbstractModelAttribute att, boolean columnName) {
 		p.println("<li><span class='attribute-name'>");
 		p.print(att.getName(scope));
 		p.print("</span> <span class='attribute-type'>");
@@ -720,7 +719,7 @@ public class DocGenerator {
 	}
 
 	private void generateConstantAttribute(AbstractModelClass mc, int scope,
-			PrintStream p, AbstractModelAttribute att) {
+			SmartPrintStream p, AbstractModelAttribute att) {
 		p.println("<li><span class='attribute-name'>");
 		p.print(att.getName(scope));
 		p.print("</span> <span class='attribute-type'>");
@@ -736,7 +735,7 @@ public class DocGenerator {
 
 
 	private void generateDataType(AbstractModelClass mc, int scope,
-			PrintStream p, AbstractModelClass dataType) {
+			SmartPrintStream p, AbstractModelClass dataType) {
 		if (dataType.isCollection())
 		{
 			AbstractModelClass ch = dataType.getChildClass();
@@ -763,7 +762,7 @@ public class DocGenerator {
 	}
 
 	private void generateMethod(AbstractModelClass referrer, int scope,
-			PrintStream p, ModelOperation op) {
+			SmartPrintStream p, ModelOperation op) {
 		AbstractModelClass mc = op.getModelClass();
 		p.println("<li><div class='operation'><div class='operation-header'><div class='operation-name'>");
 		if (referrer != null)
