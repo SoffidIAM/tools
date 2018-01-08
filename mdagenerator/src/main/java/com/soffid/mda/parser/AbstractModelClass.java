@@ -376,4 +376,9 @@ public abstract class AbstractModelClass extends ModelElement {
 		return null;
 	}
 
+
+	public boolean isSimple() {
+		return false;
+	}
+
 }

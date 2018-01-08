@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 public @interface Service {
 	boolean serverOnly () default false;
 	boolean consoleOnly () default false;
+	boolean simple () default false;
 	boolean internal () default false;
 	String translatedName () default "";
 	String serverPath () default "";

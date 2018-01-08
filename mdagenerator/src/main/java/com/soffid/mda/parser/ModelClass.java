@@ -19,8 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.text.StyledEditorKit.UnderlineAction;
-
 import com.soffid.mda.annotation.ApplicationException;
 import com.soffid.mda.annotation.Criteria;
 import com.soffid.mda.annotation.Depends;
@@ -1168,4 +1166,11 @@ public class ModelClass extends AbstractModelClass {
 			return 0;
 	}
 
+	public boolean isSimple() {
+		Service ann = (Service) getAnnotation(Service.class); 
+		if ( ann != null)
+			return ann.simple();
+		else
+			return false;
+	}
 }

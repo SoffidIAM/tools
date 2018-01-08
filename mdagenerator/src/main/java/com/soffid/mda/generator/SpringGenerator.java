@@ -290,17 +290,20 @@ public class SpringGenerator {
 				
 				out.println ( "\t\t<property name=\"proxyInterfaces\">" + endl
 					+ "\t\t\t<value>" + service.getFullName(scope) + "</value>" + endl
-					+ "\t\t</property>" + endl
-					+ "\t\t<property name=\"interceptorNames\">" + endl
-					+ "\t\t\t<list>" + endl
-					+ "\t\t\t\t<value>serviceTransactionInterceptor</value>" + endl
-					+ "\t\t\t\t<value>hibernateInterceptor</value>" + endl
-					+ "\t\t\t\t<value>serviceInterceptor-*</value>" + endl
-					+ "\t\t\t\t<value>" + service.getSpringBeanName(generator, scope) + "Interceptor-*</value>" + endl
-					+ "\t\t\t</list>" + endl
-					+ "\t\t</property>" + endl
-					+ "\t</bean>" + endl
-					+ "" );
+					+ "\t\t</property>" + endl);
+				if ( ! service.isSimple())
+				{
+					out.println(
+						  "\t\t<property name=\"interceptorNames\">" + endl
+						+ "\t\t\t<list>" + endl
+						+ "\t\t\t\t<value>serviceTransactionInterceptor</value>" + endl
+						+ "\t\t\t\t<value>hibernateInterceptor</value>" + endl
+						+ "\t\t\t\t<value>serviceInterceptor-*</value>" + endl
+						+ "\t\t\t\t<value>" + service.getSpringBeanName(generator, scope) + "Interceptor-*</value>" + endl
+						+ "\t\t\t</list>" + endl
+						+ "\t\t</property>" + endl);
+				}
+				out.println("\t</bean>" + endl);
 				if ( service.isTranslated())
 				{
 					out.println ( "\t<!-- TRANSLATED " + service.getSpringBeanName(generator,Translate.SERVICE_SCOPE) + 
