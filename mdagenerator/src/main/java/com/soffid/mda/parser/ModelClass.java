@@ -442,8 +442,13 @@ public class ModelClass extends AbstractModelClass {
 		else
 		{
 			try {
-				Field f = underlyingClass.getField("serialVersion");
-				return f.get(null).toString();
+				ValueObject vo = (ValueObject) underlyingClass.getAnnotation(ValueObject.class);
+				if (vo != null)
+				{
+					return vo.serialVersion();
+				}
+				else
+					return "1";
 			} catch (Exception e) {
 				return "1";
 			}
