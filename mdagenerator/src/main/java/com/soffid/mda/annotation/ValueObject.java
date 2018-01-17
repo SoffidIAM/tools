@@ -12,4 +12,5 @@ public @interface ValueObject {
 	String translatedPackage() default "";
 	int cache() default 0;
 	int cacheTimeout() default 5000;
+	String serialVersion() default "1";
 }
