@@ -3,8 +3,6 @@ package com.soffid.mda.parser;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import javax.swing.text.StyledEditorKit.UnderlineAction;
-
 import com.soffid.mda.annotation.Attribute;
 import com.soffid.mda.annotation.Column;
 import com.soffid.mda.annotation.CriteriaColumn;
@@ -431,5 +429,10 @@ public class ModelAttribute extends AbstractModelAttribute {
 			}
 		else
 			return null;
+	}
+
+	@Override
+	public boolean isTransient() {
+		return ( field.getModifiers() & Modifier.TRANSIENT ) != 0;
 	}
 }

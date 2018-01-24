@@ -147,4 +147,9 @@ public class ReverseModelAttribute extends AbstractModelAttribute {
 		return null;
 	}
 
+	@Override
+	public boolean isTransient() {
+		return false;
+	}
+
 }

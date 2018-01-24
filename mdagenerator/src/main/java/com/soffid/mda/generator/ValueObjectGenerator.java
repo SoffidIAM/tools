@@ -656,7 +656,7 @@ public class ValueObjectGenerator {
 							+ "\t * Attribute " + att.getName(scope) + endl
 							+ Util.formatComments(att.getComments()) + endl
 							+ "\t */" );
-					out.print( "\tprivate " + dataType
+					out.print( "\tprivate " + (att.isTransient()?"transient ": "")+ dataType
 							+ " " + att.getName(scope)) ;
 					if (att.getDefaultValue() != null)
 						out.print( " = " + att.getDefaultValue());

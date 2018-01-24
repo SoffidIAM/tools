@@ -9,6 +9,8 @@ public abstract class AbstractModelAttribute extends ModelElement {
 		super(parser);
 	}
 
+	public abstract boolean isTransient();
+	
 	public abstract AbstractModelAttribute getReverseAttribute ();
 	
 	public abstract String getConstantValue();
