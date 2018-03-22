@@ -954,6 +954,25 @@ public class ValueObjectGenerator {
 				+ "\t\treturn target;" + endl
 				+ "\t}" + endl );
 
+			// AsyncList transformer
+			
+			if (generator.getAsyncCollectionClass() != null)
+			{
+		    	out.println( "\t/**" + endl
+					+ "\t * Creates a " + vo.getName(scope) + " asynclist on a " + vo.getName(altScope) + " collection." + endl
+					+ "\t */" );
+		
+				out.println( "\tpublic static "+generator.getAsyncCollectionClass()+"<" + vo.getName(scope) + "> to" + 	
+						vo.getName(scope) + "AsyncList ("+generator.getAsyncCollectionClass()+"<" + vo.getFullName(altScope) + "> source)" );
+		
+				out.println ( "\t{" + endl
+					+ "\t\tif (source == null) return null;" + endl + endl
+					+ "\t\telse return new " +vo.getName(scope) +"AsyncList (source);"+endl
+					+ "\t}" + endl );
+
+
+			}
+
 			// Array transformer
 	    	out.println( "\t/**" + endl
 				+ "\t * Creates a " + vo.getName(scope) + " array on a " + vo.getName(altScope) + " array." + endl
@@ -1025,6 +1044,23 @@ public class ValueObjectGenerator {
 	    }
 		out.println ( "}" );
 
+		if (vo.isTranslated() && generator.getAsyncCollectionClass() != null)
+		{
+	    	int altScope = scope == Translate.SERVICE_SCOPE ? Translate.ALTSERVICE_SCOPE : Translate.SERVICE_SCOPE;
+	    	out.println( "\t/**" + endl
+				+ "\t *  "+vo.getName(scope) + " async list ." + endl
+				+ "\t */" );
+	
+			out.println( "class "+vo.getName(scope)+"AsyncList extends "+generator.getAsyncCollectionClass()+"<" + vo.getName(scope) + "> "+endl
+					+ "{" + endl
+					+ "\tpublic "+vo.getName(scope)+"AsyncList ("+generator.getAsyncCollectionClass()+"<?> source) {"+endl
+					+ "\t\tsuper(source);"+endl
+					+ "\t}"+endl
+					+"\tprotected boolean addedOnChild(Object e) {"+endl 
+				+ "\t\treturn add ( "+vo.getName(scope)+".to"+ vo.getName(scope) + "(("+vo.getFullName(altScope)+") e));" + endl
+				+ "\t}" + endl
+				+ "}" + endl );
+		}
 		out.close();
 
 	}

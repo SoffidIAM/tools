@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Set;
 
@@ -1303,33 +1305,84 @@ public class ServiceGenerator {
 		out.println ( "\t{" );
 
 		generateNullChecks (out, op, scope);
-		out.println ( "\t\ttry" + endl
-				+ "\t\t{" );
-		if (op.getReturnParameter().getDataType().isVoid())
-			out.println ( "\t\t\t" + op.getImplCall(scope) + ";" );
-		else
-			out.println ( "\t\t\treturn " + op.getImplCall(scope) + ";" );
-		out.println ( "\t\t}" + endl
-				+ "\t\tcatch ("+generator.getDefaultException()+" __internalException)" + endl
-				+ "\t\t{" + endl
-				+ "\t\t\tthrow __internalException;" );
-		for (AbstractModelClass exception: op.getExceptions())
+		
+		if (generator.isTargetTomee())
 		{
-			if (! exception.getFullName(Translate.SERVICE_SCOPE) .equals (""+generator.getDefaultException()+""))
-				out.println ( "\t\t}" + endl
-						+ "\t\tcatch (" + exception.getFullName(Translate.SERVICE_SCOPE) + " ex)" + endl
-						+ "\t\t{" + endl
-						+ "\t\t\tthrow ex;" );
+			out.println ( "\t\tObject __r = java.security.AccessController.doPrivileged(new java.security.PrivilegedAction<Object>() {"+endl
+					+"\t\t\tpublic Object run() {"+endl
+					+"\t\t\t\ttry {");
+			if (op.getReturnParameter().getDataType().isVoid())
+				out.println ( "\t\t\t\t\t" + op.getImplCall(scope) + ";" +endl+
+						"\t\t\t\t\treturn null;");
+			else
+				out.println ( "\t\t\t\t\treturn " + op.getImplCall(scope) + ";" );
+			out.print ("\t\t\t\t} catch (Throwable th) {"+endl
+					+"\t\t\t\t\treturn th;"+endl
+					+"\t\t\t\t}"+endl
+					+"\t\t\t}"+endl
+					+"\t\t});"+endl);
+			if (op.getReturnParameter().getDataType().isVoid())
+				out.print("\t\tif (__r == null) return;"+endl);
+			else
+			{
+				String x = op.getReturnType(scope);
+				int i = x.indexOf("<");
+				if (i >= 0) x = x.substring(0, i);
+				if (x.equals("boolean"))
+					out.println("\t\tif (__r instanceof Boolean) \n\t\t\treturn ((Boolean) __r).booleanValue();");
+				else if (x.equals("int"))
+					out.println("\t\tif (__r instanceof Integer) \n\t\t\treturn ((Integer) __r).intValue();");
+				else if (x.equals("long"))
+					out.println("\t\tif (__r instanceof Long) \n\t\t\treturn ((Long) __r).longValue();");
+				else
+				{
+					out.println("\t\tif (__r instanceof "+x+") \n\t\t\treturn ("+op.getReturnType(scope)+") __r;");
+					out.print("\t\tif (__r == null) return null;"+endl);
+				}
+			}
+			for (AbstractModelClass exception: op.getExceptions())
+			{
+				if (! exception.getFullName(Translate.SERVICE_SCOPE) .equals (""+generator.getDefaultException()+""))
+					out.println("\t\tif (__r instanceof "+exception.getFullName(Translate.SERVICE_SCOPE) +") "+endl
+							+"\t\t\tthrow ("+exception.getFullName(Translate.SERVICE_SCOPE)+") __r;");
+			}
+			out.println ( "\t\torg.apache.commons.logging.LogFactory.getLog(" + service.getFullName(scope) + ".class)." + endl
+					+ "\t\t\twarn (\"Error on " + service.getName(scope) + "." + op.getName(scope) + "\", (Throwable) __r);" + endl
+					+ "\t\tthrow new "+generator.getDefaultException()+"(" + endl
+					+ "\t\t\t\"Error on " + service.getName(scope) + "." + op.getName(scope) + ": \"+__r.toString(), (Throwable) __r);" + endl
+					+ "\t}" + endl );
+			
 		}
-		out.println ( "\t\t}" + endl
-				+ "\t\tcatch (Throwable th)" + endl
-				+ "\t\t{" + endl
-				+ "\t\t\torg.apache.commons.logging.LogFactory.getLog(" + service.getFullName(scope) + ".class)." + endl
-				+ "\t\t\t\twarn (\"Error on " + service.getName(scope) + "." + op.getName(scope) + "\", th);" + endl
-				+ "\t\t\tthrow new "+generator.getDefaultException()+"(" + endl
-				+ "\t\t\t\t\"Error on " + service.getName(scope) + "." + op.getName(scope) + ": \"+th.toString(), th);" + endl
-				+ "\t\t}" + endl
-				+ "\t}" + endl );
+		else
+		{
+			out.println ( "\t\ttry" + endl
+					+ "\t\t{" );
+			if (op.getReturnParameter().getDataType().isVoid())
+				out.println ( "\t\t\t" + op.getImplCall(scope) + ";" );
+			else
+				out.println ( "\t\t\treturn " + op.getImplCall(scope) + ";" );
+			out.println ( "\t\t}" + endl
+					+ "\t\tcatch ("+generator.getDefaultException()+" __internalException)" + endl
+					+ "\t\t{" + endl
+					+ "\t\t\tthrow __internalException;" );
+			for (AbstractModelClass exception: op.getExceptions())
+			{
+				if (! exception.getFullName(Translate.SERVICE_SCOPE) .equals (""+generator.getDefaultException()+""))
+					out.println ( "\t\t}" + endl
+							+ "\t\tcatch (" + exception.getFullName(Translate.SERVICE_SCOPE) + " ex)" + endl
+							+ "\t\t{" + endl
+							+ "\t\t\tthrow ex;" );
+			}
+			out.println ( "\t\t}" + endl
+					+ "\t\tcatch (Throwable th)" + endl
+					+ "\t\t{" + endl
+					+ "\t\t\torg.apache.commons.logging.LogFactory.getLog(" + service.getFullName(scope) + ".class)." + endl
+					+ "\t\t\t\twarn (\"Error on " + service.getName(scope) + "." + op.getName(scope) + "\", th);" + endl
+					+ "\t\t\tthrow new "+generator.getDefaultException()+"(" + endl
+					+ "\t\t\t\t\"Error on " + service.getName(scope) + "." + op.getName(scope) + ": \"+th.toString(), th);" + endl
+					+ "\t\t}" + endl
+					+ "\t}" + endl );
+		}
 		out.println ( "\tprotected abstract " + op.getImplSpec(scope) + " throws Exception;" + endl );
 	}
 
@@ -1599,7 +1652,14 @@ public class ServiceGenerator {
 						result.getDataType().getChildClass().isTranslated() && result.getDataType().getChildClass().isValueObject())
 				{
 					AbstractModelClass childclass = result.getDataType().getChildClass();
-					out.print ( childclass.getFullName(scope) + ".to" + childclass.getName(scope) + "List (" + endl + "\t\t\t\t" );
+					if (result.getDataType().isFuture() && generator.getAsyncCollectionClass() != null)
+					{
+						out.print ( childclass.getFullName(scope) + ".to" + childclass.getName(scope) + "AsyncList (" + endl + "\t\t\t\t" );						
+					}
+					else
+					{
+						out.print ( childclass.getFullName(scope) + ".to" + childclass.getName(scope) + "List (" + endl + "\t\t\t\t" );
+					}
 					invocationSuffix = ")";
 				}
 				else if (result.getDataType().isTranslated() && result.getDataType().isValueObject())

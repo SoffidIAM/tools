@@ -180,6 +180,8 @@ public abstract class AbstractModelClass extends ModelElement {
 	public abstract AbstractModelClass getChildClass();
 
 	public abstract boolean isArray();
+	
+	public abstract boolean isFuture();
 
 	public abstract boolean isGenerated();
 

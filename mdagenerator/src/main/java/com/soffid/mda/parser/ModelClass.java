@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import com.soffid.mda.annotation.ApplicationException;
 import com.soffid.mda.annotation.Criteria;
@@ -77,6 +78,7 @@ public class ModelClass extends AbstractModelClass {
 	private boolean generated;
 	private boolean _array;
 	private Class _collectionClass;
+	private boolean _future;
 
 	@Override
 	public boolean isArray() {
@@ -88,11 +90,13 @@ public class ModelClass extends AbstractModelClass {
 		objectClass = classFile;
 		underlyingClass = null;
 		_collection = false;
+		_future = false;
 		
 		if (objectClass instanceof Class)
 		{
 			underlyingClass = (Class) objectClass;
 			
+			_future = Future.class.isAssignableFrom( (Class) objectClass);
 			
 			javaType = underlyingClass.getCanonicalName();
 			if (underlyingClass.isArray() )
@@ -107,6 +111,7 @@ public class ModelClass extends AbstractModelClass {
 			javaType = objectClass.toString();
 			if (rawType instanceof Class)
 			{
+				_future = Future.class.isAssignableFrom( (Class) rawType);
 				if (Collection.class.isAssignableFrom((Class) rawType))
 				{
 					_collection = true;
@@ -114,11 +119,8 @@ public class ModelClass extends AbstractModelClass {
 					if (((ParameterizedType) objectClass).getActualTypeArguments().length > 0)
 					{
 						Type pt = ((ParameterizedType) objectClass).getActualTypeArguments()[0];
-						if (pt instanceof Class)
-						{
-							childClass =  (ModelClass) parser.getElement( pt );
-							javaType = ((Class) rawType).getCanonicalName()+"<"+childClass.getJavaType()+">";
-						}
+						childClass =  (ModelClass) parser.getElement( pt );
+						javaType = ((Class) rawType).getCanonicalName()+"<"+childClass.getJavaType()+">";
 					}
 				}
 				else
@@ -1177,5 +1179,11 @@ public class ModelClass extends AbstractModelClass {
 			return ann.simple();
 		else
 			return false;
+	}
+
+
+	@Override
+	public boolean isFuture() {
+		return _future;
 	}
 }

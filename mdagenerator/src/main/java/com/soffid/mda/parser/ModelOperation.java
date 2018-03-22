@@ -118,7 +118,7 @@ public class ModelOperation extends ModelElement {
 			else
 				b.append (", ");
 			if (pretty)
-				b.append ("\n\t\t");
+				b.append ("\n\t\tfinal ");
 			
 			AbstractModelClass dt = param.getDataType();
 			if (dt.isEntity())

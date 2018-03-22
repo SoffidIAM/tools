@@ -99,6 +99,13 @@ public class Mda2Mojo extends AbstractMojo {
 	private String defaultException = "es.caib.seycon.ng.exception.InternalErrorException";
 
 	/**
+	 * Async collection class for VO Generation
+	 * 
+	 * @parameter
+	 */
+	private String asyncCollectionClass = null;
+
+	/**
 	 * Directory where sync server java files are to be generated
 	 * 
 	 * @parameter
@@ -274,6 +281,7 @@ public class Mda2Mojo extends AbstractMojo {
 			
 			Thread.currentThread().setContextClassLoader(cl);
 			Generator g = new Generator ();
+			g.setAsyncCollectionClass(asyncCollectionClass);
 			g.setTranslatedOnly(translate);
 			g.setTranslateEntities(translateEntities);
 			try 

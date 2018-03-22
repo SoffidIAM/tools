@@ -21,7 +21,8 @@ public class Generator {
 	String syncResourcesDir;
 	String xmlModuleDir; 
 	String targetServer = "jboss3"; 
-	
+	String asyncCollectionClass = null;
+			
 	public String getTargetServer() {
 		return targetServer;
 	}
@@ -343,5 +344,13 @@ public class Generator {
 	public void setDefaultException(String defaultException) {
 		this.defaultException  = defaultException;
 		
+	}
+
+	public String getAsyncCollectionClass() {
+		return asyncCollectionClass;
+	}
+
+	public void setAsyncCollectionClass(String asyncCollectionClass) {
+		this.asyncCollectionClass = asyncCollectionClass;
 	}
 }

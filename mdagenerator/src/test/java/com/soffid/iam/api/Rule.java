@@ -5,6 +5,9 @@
 //
 
 package com.soffid.iam.api;
+import java.util.Collection;
+import java.util.concurrent.Future;
+
 import com.soffid.mda.annotation.*;
 
 @ValueObject 
@@ -18,4 +21,6 @@ public abstract class Rule {
 	public java.lang.String bshExpression;
 
 	RuleAssignedRole role;
+	
+	Future<Collection<Rule>> future;
 }

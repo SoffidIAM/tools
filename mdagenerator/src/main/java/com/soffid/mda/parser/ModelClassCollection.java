@@ -448,4 +448,9 @@ public class ModelClassCollection extends AbstractModelClass {
 		return false;
 	}
 
+	@Override
+	public boolean isFuture() {
+		return false;
+	}
+
 }
