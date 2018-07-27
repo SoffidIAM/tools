@@ -1348,7 +1348,7 @@ public class ServiceGenerator {
 			out.println ( "\t\torg.apache.commons.logging.LogFactory.getLog(" + service.getFullName(scope) + ".class)." + endl
 					+ "\t\t\twarn (\"Error on " + service.getName(scope) + "." + op.getName(scope) + "\", (Throwable) __r[1]);" + endl
 					+ "\t\tthrow new "+generator.getDefaultException()+"(" + endl
-					+ "\t\t\t\"Error on " + service.getName(scope) + "." + op.getName(scope) + ": \"+__r.toString(), (Throwable) __r[1]);" + endl
+					+ "\t\t\t\"Error on " + service.getName(scope) + "." + op.getName(scope) + ": \"+__r[1], (Throwable) __r[1]);" + endl
 					+ "\t}" + endl );
 			
 		}
