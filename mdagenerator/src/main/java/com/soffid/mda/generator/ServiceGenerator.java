@@ -2008,9 +2008,24 @@ public class ServiceGenerator {
 					+ "\t * @see org.springframework.ejb.support.AbstractStatelessSessionBean#onEjbCreate()" + endl
 					+ "\t */" + endl);
 			if (! service.isStateful())
+			{
 				out.println("\t@Override" + endl);
-			out.println("\t@javax.annotation.PostConstruct" + endl
-					+ "\tprotected void onEjbCreate()" + endl
+				out.println("\t@javax.annotation.PostConstruct" + endl
+						+ "\tpublic void ejbCreate() throws javax.ejb.CreateException" + endl
+						+ "\t{" + endl
+						+ "\t\tsuper.ejbCreate();" + endl
+						+ "\t}" + endl+endl);
+			}
+			else
+			{
+				out.println("\t@javax.annotation.PostConstruct" + endl
+						+ "\tpublic void ejbCreate() throws javax.ejb.CreateException" + endl
+						+ "\t{" + endl
+						+ "\t\tonEjbCreate();" + endl
+						+ "\t}" + endl+endl);
+			}
+			out.println(
+					"\tprotected void onEjbCreate()" + endl
 					+ "\t{" + endl);
 			if (service.isStateful())
 			{

@@ -3529,20 +3529,31 @@ public class EntityGenerator<E> {
 								+ "\t\t</set>" );
 					}
 				} else {
+					String length = att.getLength();
+					String lazy = "";
+					try {
+						int l = Integer.parseInt(length);
+						if (l > 4000)
+							lazy = " lazy='true'";
+					} catch ( NumberFormatException e ) {
+						
+					}
+
+
 					out.println ( "\t\t<property name='" + att.getName(Translate.DEFAULT)
-							+"' type='"+att.getHibernateType(Translate.DEFAULT)+"'>" );
+							+"' type='"+att.getHibernateType(Translate.DEFAULT)+"'"+lazy+">" );
 					out.print ( "\t\t\t<column name='"+att.getColumn()+"' ");
 					if (att.isRequired())
 						out.print("not-null='true' ");
 					else
 						out.print("not-null='false' ");
-					String length = att.getLength();
 					if (length != null && !length.isEmpty())
 						out.print ( "length='" + length + "' ");
 					else if (att.getHibernateType(Translate.DEFAULT).equals("Blob"))
 						out.print ( "length='128000' ");
 					else if (att.getHibernateType(Translate.DEFAULT).equals( "Clob"))
 						out.print ( "length='128000' ");
+
 					// out.println ( " sql-type='"+att.getSqlType() + "' " ;
 					out.println ( "/>" );
 					out.println (  "\t\t</property>" );
