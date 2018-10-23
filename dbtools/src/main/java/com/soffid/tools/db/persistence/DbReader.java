@@ -8,9 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Vector;
 
 import com.soffid.tools.db.schema.*;
 
@@ -32,6 +30,10 @@ public class DbReader {
 		DatabaseMetaData metadata = conn.getMetaData();
 		try {
 			if (log != null)
+				log.println ("Database model :"+metadata.getDatabaseProductName());
+			if (metadata.getDatabaseProductName().equalsIgnoreCase("PostgreSQL"))
+				schema = "public";
+			if (log != null)
 				log.println("Getting sequences ....");
 			ResultSet rset = conn.prepareStatement("SELECT SEQUENCE_NAME FROM USER_SEQUENCES").executeQuery();
 			while (rset.next())
@@ -47,15 +49,16 @@ public class DbReader {
 			// No sequences available
 		}
 		if (log != null)
-			log.println ("Getting tables ....");
+			log.println ("Getting tables for "+schema+"....");
 		ResultSet tables = getTables(schema, metadata);
 		while (tables.next())
 		{
 			String catalog = tables.getString(1);
+			String tableSchema = tables.getString(2);
 			String tableName =tables.getString(3);
 			String tableType = tables.getString(4);
 //			if (log != null)
-//				log.println ("  > "+tableName);
+//				log.println ("  > "+ tableSchema+"."+tableName);
 			if (tableType.contains ("TABLE"))
 			{
 //				if (log != null)
@@ -70,7 +73,7 @@ public class DbReader {
 						c.name = columns.getString(4);
 						c.length =  columns.getString(7);
 						String decimalDigits = columns.getString(9);
-						if (decimalDigits != null)
+						if (decimalDigits != null && !decimalDigits.equals("0"))
 							c.length = c.length + "." + decimalDigits;
 						int type = columns.getShort(5);
 						switch (type)
@@ -297,13 +300,10 @@ public class DbReader {
 	}
 
 	PreparedStatement indexStmt = null;
+	private PreparedStatement importedKeysStmt;
 	protected ResultSet getIndexes(String schema, DatabaseMetaData metadata,
 			String catalog, String tableName) throws SQLException {
-
 		try {
-//			if (log != null)
-//				log.println ("  > "+tableName+ " indexes start");
-
 			if (indexStmt == null)
 				indexStmt = metadata.getConnection().prepareStatement(
 					"select user, user, I.TABLE_NAME, DECODE(UNIQUENESS,'UNIQUE', 0, 1), I.INDEX_TYPE, I.INDEX_NAME, DECODE(UNIQUENESS,'UNIQUE', 0, 1), C.COLUMN_POSITION, COLUMN_NAME "

@@ -973,7 +973,21 @@ public class EntityGenerator<E> {
 					+ "\t\t{" + "\n"
 					+ "\t\t\torg.hibernate.Query queryObject = super.getSession(false).createQuery(queryString);" );
 			for (ModelParameter param: op.getParameters()) {
-				out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(Translate.DEFAULT)+"\", "+param.getName(Translate.DEFAULT)+ ");" );
+				String javaType = param.getDataType().getJavaType(Translate.DEFAULT);
+				if (javaType.equals("java.lang.String"))
+					out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(Translate.DEFAULT)+"\", "+param.getName(Translate.DEFAULT)+ ", org.hibernate.Hibernate.STRING);" );
+				else if (javaType.equals("java.lang.Long") || javaType.equals("long"))
+					out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(Translate.DEFAULT)+"\", "+param.getName(Translate.DEFAULT)+ ", org.hibernate.Hibernate.LONG);" );
+				else if (javaType.equals("java.lang.Integer")  || javaType.equals("int"))
+					out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(Translate.DEFAULT)+"\", "+param.getName(Translate.DEFAULT)+ ", org.hibernate.Hibernate.INTEGER);" );
+				else if (javaType.equals("java.util.Date") || javaType.equals("java.util.Calendar"))
+					out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(Translate.DEFAULT)+"\", "+param.getName(Translate.DEFAULT)+ ", org.hibernate.Hibernate.TIMESTAMP);" );
+				else if (javaType.equals("java.lang.Double") || javaType.equals("double"))
+					out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(Translate.DEFAULT)+"\", "+param.getName(Translate.DEFAULT)+ ", org.hibernate.Hibernate.DOUBLE);" );
+				else if (javaType.equals("java.lang.Boolean") || javaType.equals("boolean"))
+					out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(Translate.DEFAULT)+"\", "+param.getName(Translate.DEFAULT)+ ", org.hibernate.Hibernate.BOOLEAN);" );
+				else
+					out.println ( "\t\t\tqueryObject.setParameter(\"" + param.getName(Translate.DEFAULT)+"\", "+param.getName(Translate.DEFAULT)+ ");" );
 
 			}
 			if (sqlString.contains(":tenantId"))

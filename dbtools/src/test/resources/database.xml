@@ -10,6 +10,7 @@
 		<column name="tempZ" type="BOOLEAN"  />
 		<column name="nopeta" type="VARCHAR" length="10"/>
 		<column name="tempX" type="INTEGER" notNull="true"  />
+		<column name="b" type="BIT" />
 	</table>
 	
 	<index name="i1" table="t1" unique="true">

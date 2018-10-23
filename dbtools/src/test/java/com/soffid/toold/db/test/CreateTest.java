@@ -10,6 +10,7 @@ import com.soffid.tools.db.schema.Database;
 import com.soffid.tools.db.updater.MsSqlServerUpdater;
 import com.soffid.tools.db.updater.MySqlUpdater;
 import com.soffid.tools.db.updater.OracleUpdater;
+import com.soffid.tools.db.updater.PostgresqlUpdater;
 
 import junit.framework.TestCase;
 
@@ -105,4 +106,26 @@ public class CreateTest extends TestCase {
 	        
 	}
 
+	public void testPostgresql () throws Exception
+	{
+		try {
+	        	Class c = Class.forName("org.postgresql.Driver");
+	        	DriverManager.registerDriver((java.sql.Driver) c.newInstance());
+	        	Connection conn =  DriverManager.getConnection("jdbc:postgresql://localhost/soffid", "soffid", "soffid");
+			try {
+	        	
+				Database db = new XmlReader().parse(CreateTest.class.getResourceAsStream("/database.xml"));
+				new PostgresqlUpdater().update(conn, db);
+		
+				Database db2 = new XmlReader().parse(CreateTest.class.getResourceAsStream("/database2.xml"));
+				new PostgresqlUpdater().update(conn, db2);
+			} catch (Exception e) {
+				e.printStackTrace() ;
+				fail ("Exception producted: "+e.toString());
+			}
+		} catch (Exception e) {
+			System.out.println ("Error connecting to mysql. Cannot test Oracle");
+		}
+	        
+	}
 }

@@ -2,14 +2,10 @@ package com.soffid.tools.db.updater;
 
 import java.io.PrintStream;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import javax.print.attribute.SupportedValuesAttribute;
 
 import com.soffid.tools.db.persistence.DbReader;
 import com.soffid.tools.db.schema.Column;
@@ -32,7 +28,7 @@ public abstract class DBUpdater {
 		this.ignoreFailures = ignoreFailures;
 	}
 
-	PrintStream log;
+	PrintStream log = System.out;
 
 	public PrintStream getLog() {
 		return log;
@@ -48,26 +44,33 @@ public abstract class DBUpdater {
 
 	protected void update(Connection conn, Database db,
 			boolean ignoreForeignKeys) throws Exception {
-		log.println("Retrieving existing database objects");
+		if (log != null)
+			log.println("Retrieving existing database objects");
 		DbReader dbr = new DbReader();
 		dbr.setLog(log);
 		actual = dbr.parse(conn, getCurrentUser(conn));
-		log.println("Got existing database objects");
+		if (log != null)
+			log.println("Got existing database objects");
 		initialFixups(actual);
 		initialFixups(db);
 		// First create / update all tables
-		log.println("Removing no longer needed indexes");
+		if (log != null)
+			log.println("Removing no longer needed indexes");
 		removeForeignKeys(conn, actual, db);
 		removeIndexes(conn, actual, db);
-		log.println("Updating tables");
+		if (log != null)
+			log.println("Updating tables");
 		updateTables(conn, actual, db);
-		log.println("Updating indexes");
+		if (log != null)
+			log.println("Updating indexes");
 		updateIndexes(conn, actual, db);
 		if (!ignoreForeignKeys)
 			updateForeignKeys(conn, actual, db);
-		log.println("Updating sequences");
+		if (log != null)
+			log.println("Updating sequences");
 		updateSequences(conn, actual, db);
-		log.println("Data model verified");
+		if (log != null)
+			log.println("Data model verified");
 	}
 
 	String getIndexHash (Index index)

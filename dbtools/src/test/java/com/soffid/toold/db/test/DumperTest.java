@@ -29,7 +29,7 @@ public class DumperTest extends TestCase {
 
 	}
 
-	public void testSqlServer() throws Exception {
+	private void notestSqlServer() throws Exception {
         	Class c = Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         	DriverManager.registerDriver((java.sql.Driver) c.newInstance());
         	Connection conn = null;
