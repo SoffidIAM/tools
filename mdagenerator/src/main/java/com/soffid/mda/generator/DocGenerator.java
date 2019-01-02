@@ -243,9 +243,7 @@ public class DocGenerator {
 		List<ClassName> cn = new LinkedList<ClassName>();
 		for (AbstractModelClass mc: entities)
 		{
-			cn.add ( new ClassName (mc, Translate.DEFAULT) );
-			if (addTranslated && mc.isTranslated())
-				cn.add ( new ClassName (mc, Translate.DEFAULT) );
+			cn.add ( new ClassName (mc, Translate.TRANSLATE) );
 		}
 		Collections.sort(cn, new Comparator<ClassName> () {
 
