@@ -752,7 +752,7 @@ public class DocGenerator {
 			if (dataType.isValueObject() || dataType.isEntity() || dataType.isEnumeration() || dataType.isService())
 			{
 				p.println ("<a href='"+generateRef (mc, dataType, scope)+"'>"
-						+ dataType.getFullName()+"</a>");
+						+ dataType.getFullName( scope )+"</a>");
 			} else {
 				p.println (dataType.getJavaType(scope));
 			}
