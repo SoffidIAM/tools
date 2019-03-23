@@ -57,6 +57,7 @@ public class Generator {
 	boolean generateDeprecated = false;
 	boolean hqlFullTest = true;
 	boolean generateEjb = true;
+	boolean manualSecurityCheck = true;
 
 	public boolean isGenerateEjb() {
 		return generateEjb;
@@ -352,5 +353,13 @@ public class Generator {
 
 	public void setAsyncCollectionClass(String asyncCollectionClass) {
 		this.asyncCollectionClass = asyncCollectionClass;
+	}
+
+	public boolean isManualSecurityCheck() {
+		return manualSecurityCheck;
+	}
+
+	public void setManualSecurityCheck(boolean manualSecurityCheck) {
+		this.manualSecurityCheck = manualSecurityCheck;
 	}
 }

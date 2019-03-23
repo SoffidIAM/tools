@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 import net.sourceforge.plantuml.FileFormat;
@@ -827,12 +828,25 @@ public class ServiceGenerator {
 						out.println ( "\t\t<method-permission>" + endl
 								+ "\t\t\t<description><![CDATA[Create method security constraint]]></description>" ) ;
 						// Create methods
-						for (AbstractModelClass actor: allActors)
+						if (generator.isManualSecurityCheck())
 						{
-							if (actor.getRoleName().equals( "anonymous"))
+							boolean unchecked = false;
+							for (AbstractModelClass actor: allActors)
+							{
+								if (actor.getRoleName().equals( "anonymous")) unchecked  = true; 
+							}
+							if (unchecked)
 								out.println ( "\t\t\t<unchecked/>" );
 							else
-								out.println ( "\t\t\t<role-name>" + actor.getRoleName() + "</role-name>" );
+								out.println ( "\t\t\t<role-name>*</role-name>" );
+						} else {
+							for (AbstractModelClass actor: allActors)
+							{
+								if (actor.getRoleName().equals( "anonymous"))
+									out.println ( "\t\t\t<unchecked/>" );
+								else
+									out.println ( "\t\t\t<role-name>" + actor.getRoleName() + "</role-name>" );
+							}
 						}
 						out.println ( "\t\t\t<method>" + endl
 								+ "\t\t\t\t<description><![CDATA[Creates the " + service.getName(scope) + " Session EJB]]></description>" + endl
@@ -864,15 +878,25 @@ public class ServiceGenerator {
 						{
 							out.println ( "\t\t<method-permission>" + endl
 									+ "\t\t\t<description><![CDATA[" + op.getSpec(scope) + " security constraint]]></description>" );
-							for (AbstractModelClass actor: actors)
+							if (generator.isManualSecurityCheck())
 							{
-								if (actor.getRoleName().equals ("anonymous"))
+								boolean unchecked = false;
+								for (AbstractModelClass actor: allActors)
 								{
-									out.println ( "\t\t\t<unchecked/>" );
-									break;
+									if (actor.getRoleName().equals( "anonymous")) unchecked  = true; 
 								}
+								if (unchecked)
+									out.println ( "\t\t\t<unchecked/>" );
 								else
-									out.println ( "\t\t\t<role-name>" + Util.hardTrim(actor.getRoleName()) + "</role-name>" );
+									out.println ( "\t\t\t<role-name>*</role-name>" );
+							} else {
+								for (AbstractModelClass actor: allActors)
+								{
+									if (actor.getRoleName().equals( "anonymous"))
+										out.println ( "\t\t\t<unchecked/>" );
+									else
+										out.println ( "\t\t\t<role-name>" + actor.getRoleName() + "</role-name>" );
+								}
 							}
 							out.println ( "\t\t\t<method>" + endl
 									+ "\t\t\t\t<description><![CDATA[" + Util.formatXmlComments(op.getComments(), "\t\t\t\t\t") + "]]></description>" + endl
@@ -1899,29 +1923,36 @@ public class ServiceGenerator {
 						+ "\t */" );
 				// Generate authorization tags
 				Collection<AbstractModelClass> actors = op.getActors();
-				if (!actors.isEmpty())
+				if (! generator.isManualSecurityCheck())
 				{
-					StringBuffer annotation = new StringBuffer ("\t@javax.annotation.security.RolesAllowed({");
-					String closeAnnotation = "})";
-					boolean first = true;
-					for (AbstractModelClass actor: actors)
+					if (!actors.isEmpty())
 					{
-						if (actor.getRoleName().equals ("anonymous") || actor.getRoleName().equals("*"))
+						StringBuffer annotation = new StringBuffer ("\t@javax.annotation.security.RolesAllowed({");
+						String closeAnnotation = "})";
+						boolean first = true;
+						for (AbstractModelClass actor: actors)
 						{
-							annotation = new StringBuffer("\t@javax.annotation.security.PermitAll");
-							closeAnnotation = "";
-							break;
+							if (actor.getRoleName().equals ("anonymous") || actor.getRoleName().equals("*"))
+							{
+								annotation = new StringBuffer("\t@javax.annotation.security.PermitAll");
+								closeAnnotation = "";
+								break;
+							}
+							else
+							{
+								if (first) first = false;
+								else annotation.append(", ");
+								annotation.append ("\"").append(Util.hardTrim(actor.getRoleName())).append("\"");
+								
+							}
 						}
-						else
-						{
-							if (first) first = false;
-							else annotation.append(", ");
-							annotation.append ("\"").append(Util.hardTrim(actor.getRoleName())).append("\"");
-							
-						}
+						annotation.append(closeAnnotation);
+						out.println (annotation);
 					}
-					annotation.append(closeAnnotation);
-					out.println (annotation);
+				}
+				else
+				{
+					out.println("\t@javax.annotation.security.PermitAll");
 				}
 				// Generate method body
 				out.println ( "\tpublic " + op.getPrettySpec (scope) );
@@ -1930,6 +1961,42 @@ public class ServiceGenerator {
 					out.println ( "\t\t" + throwsClause );
 				out.println ( "\t{" );
 				out.println ( "\t\t"+rootPkg+".PrincipalStore.set(super.getSessionContext().getCallerPrincipal());" );
+				// Add role checks
+				if (generator.isManualSecurityCheck())
+				{
+					boolean unchecked = op.getActors().isEmpty();
+					for (AbstractModelClass actor: op.getActors())
+					{
+						if (actor.getRoleName().equals ("anonymous") || actor.getRoleName().equals("*"))
+							unchecked = true;
+					}
+					if ( ! unchecked )
+					{
+//						out.println ("\t\tcom.soffid.iam.common.security.SoffidPrincipal soffidPrincipal =");
+//						out.println ("\t\t\t(com.soffid.iam.common.security.SoffidPrincipal) super.getSessionContext().getCallerPrincipal();");
+						Iterator<AbstractModelClass> it = op.getActors().iterator();
+						AbstractModelClass actor = it.next();
+						out.print ("\t\tif (! com.soffid.iam.utils.Security.isUserInRole(\""+ actor.getRoleName()+ "\")");
+						while (it.hasNext())
+						{
+							actor = it.next();
+							out.print ("&&\n\t\t\t ! com.soffid.iam.utils.Security.isUserInRole(\""+ actor.getRoleName()+ "\")");
+						}
+						out.println (")");
+						out.print ("\t\t\tthrow new SecurityException(\"Unable to execute " + service.getName(scope)+"."+op.getName(scope)+
+								". Required roles: [");
+						it = op.getActors().iterator();
+						actor = it.next();
+						out.print (actor.getRoleName());
+						while (it.hasNext())
+						{
+							actor = it.next();
+							out.print (", "+ actor.getName());
+						}
+						out.println ("]\");");
+					}
+				}
+
 				///////////////////////
 				// Add null checks
 				generateNullChecks(out, op, scope);
