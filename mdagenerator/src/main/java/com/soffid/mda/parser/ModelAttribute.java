@@ -435,4 +435,13 @@ public class ModelAttribute extends AbstractModelAttribute {
 	public boolean isTransient() {
 		return ( field.getModifiers() & Modifier.TRANSIENT ) != 0;
 	}
+
+	@Override
+	public String[] getSynonyms() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		if (att == null || att.synonyms() == null)
+			return new String[0];
+		else
+			return att.synonyms();
+	}
 }

@@ -32,6 +32,8 @@ public abstract class AbstractModelAttribute extends ModelElement {
 	public abstract boolean isIdentifier();
 
 	public abstract String getColumn();
+	
+	public abstract String[] getSynonyms();
 
 	public abstract int getIntegerLength();
 
@@ -85,5 +87,16 @@ public abstract class AbstractModelAttribute extends ModelElement {
 	public abstract boolean isStatic ();
 	
 	public abstract Object getStaticValue();
+
+	public String setterName(String synonym) {
+		return "set"+Util.firstUpper(synonym);
+	}
+
+	public String getterName(String synonym) {
+		if (getDataType().getJavaType().equals("boolean"))
+			return "is"+Util.firstUpper(synonym);
+		else
+			return "get"+Util.firstUpper(synonym);
+	} 
 
 }

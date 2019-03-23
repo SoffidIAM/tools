@@ -2,6 +2,8 @@ package com.soffid.mda.parser;
 
 import java.lang.reflect.Field;
 
+import com.soffid.mda.annotation.Attribute;
+
 public class ReverseModelAttribute extends AbstractModelAttribute {
 
 	AbstractModelClass dataType;
@@ -152,4 +154,8 @@ public class ReverseModelAttribute extends AbstractModelAttribute {
 		return false;
 	}
 
+	@Override
+	public String[] getSynonyms() {
+		return new String[0];
+	}
 }

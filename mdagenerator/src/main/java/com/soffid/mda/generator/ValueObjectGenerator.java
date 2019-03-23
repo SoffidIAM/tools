@@ -809,6 +809,25 @@ public class ValueObjectGenerator {
 						+ "\t\tthis." + att.getName(scope)
 						+ " = " + att.getName(scope) + ";" + endl
 						+ "\t}" + endl );
+				for (String synonym: att.getSynonyms())
+				{
+					out.println( "\t/**" + endl
+							+ "\t * Gets value for attribute " + att.getName(scope) + endl
+							+ "\t */" );
+					out.println( "\tpublic " + att.getDataType().getJavaType(scope)
+							+ " " + att.getterName(synonym) + "() {" + endl
+							+ "\t\treturn this." + att.getName(scope) + ";" + endl
+							+ "\t}" + endl + endl
+							+ "\t/**" + endl
+							+ "\t * Sets value for attribute " + att.getName(scope) + endl
+							+ "\t */" + endl
+							+ "\tpublic void " + att.setterName(synonym) + "("
+							+ att.getDataType().getJavaType(scope) + " "
+							+ att.getName(scope) + ") {" + endl
+							+ "\t\tthis." + att.getName(scope)
+							+ " = " + att.getName(scope) + ";" + endl
+							+ "\t}" + endl );
+				}
 			}
 		}
 

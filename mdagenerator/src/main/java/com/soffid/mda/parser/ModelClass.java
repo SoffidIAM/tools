@@ -1014,7 +1014,7 @@ public class ModelClass extends AbstractModelClass {
 		if (r == null)
 			return null;
 		else
-			return r.name();
+			return r.name().replaceAll("\n", "").trim();
 	}
 
 	@Override

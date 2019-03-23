@@ -11,4 +11,5 @@ public @interface Attribute {
 	String defaultValue () default ""; 
 	String translated() default "";
 	String entityAttribute() default "";
+	String[] synonyms() default {}; 
 }
