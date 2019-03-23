@@ -151,7 +151,7 @@ public class ModelClass extends AbstractModelClass {
 		}
 		else if  (t instanceof Class){
 			Class cl = (Class) t;
-			return cl.getSimpleName();
+			return cl.getCanonicalName();
 		} else {
 			return t.toString();
 		}
