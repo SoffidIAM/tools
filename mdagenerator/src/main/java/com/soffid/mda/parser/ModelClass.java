@@ -92,13 +92,13 @@ public class ModelClass extends AbstractModelClass {
 		_collection = false;
 		_future = false;
 		
+		javaType = typeToString (classFile);
 		if (objectClass instanceof Class)
 		{
 			underlyingClass = (Class) objectClass;
 			
 			_future = Future.class.isAssignableFrom( (Class) objectClass);
 			
-			javaType = underlyingClass.getCanonicalName();
 			if (underlyingClass.isArray() )
 			{
 				_array = true;
@@ -108,7 +108,6 @@ public class ModelClass extends AbstractModelClass {
 		else if (objectClass instanceof ParameterizedType)
 		{
 			Type rawType = ((ParameterizedType) objectClass).getRawType();
-			javaType = objectClass.toString();
 			if (rawType instanceof Class)
 			{
 				_future = Future.class.isAssignableFrom( (Class) rawType);
@@ -129,9 +128,32 @@ public class ModelClass extends AbstractModelClass {
 		}
 		else if (objectClass instanceof GenericArrayType)
 		{
-			javaType = objectClass.toString();
 			_array = true;
 			childClass = (ModelClass) parser.getElement(((GenericArrayType) objectClass).getGenericComponentType()); 
+		}
+	}
+
+	private String typeToString ( Type t )
+	{
+		if (t instanceof ParameterizedType)
+		{
+			ParameterizedType pt = (ParameterizedType) t;
+			String s = typeToString(((ParameterizedType) t).getRawType()) + "<";
+			Type[] params = pt.getActualTypeArguments() ;
+			for (int i = 0; i < params.length; i++)
+			{
+				if (i > 0) s = s + ",";
+				s = s + typeToString(params[i]);
+			}
+			s = s +">";
+						
+			return s;
+		}
+		else if  (t instanceof Class){
+			Class cl = (Class) t;
+			return cl.getSimpleName();
+		} else {
+			return t.toString();
 		}
 	}
 
