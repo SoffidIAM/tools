@@ -1369,10 +1369,13 @@ public class ServiceGenerator {
 					out.println("\t\tif (__r[1] instanceof "+exception.getFullName(Translate.SERVICE_SCOPE) +") "+endl
 							+"\t\t\tthrow ("+exception.getFullName(Translate.SERVICE_SCOPE)+") __r[1];");
 			}
-			out.println ( "\t\torg.apache.commons.logging.LogFactory.getLog(" + service.getFullName(scope) + ".class)." + endl
+			out.println ( 
+					"\t\tif (__r[1] instanceof "+ generator.getDefaultException()  +") "+endl
+					+ "\t\t\tthrow ("+generator.getDefaultException()+") __r[1];" + endl
+					+ "\t\torg.apache.commons.logging.LogFactory.getLog(" + service.getFullName(scope) + ".class)." + endl
 					+ "\t\t\twarn (\"Error on " + service.getName(scope) + "." + op.getName(scope) + "\", (Throwable) __r[1]);" + endl
 					+ "\t\tthrow new "+generator.getDefaultException()+"(" + endl
-					+ "\t\t\t\"Error on " + service.getName(scope) + "." + op.getName(scope) + ": \"+__r[1], (Throwable) __r[1]);" + endl
+					+ "\t\t\t\"Unexpected error on " + service.getName(scope) + "." + op.getName(scope) + "\", (Throwable) __r[1]);" + endl
 					+ "\t}" + endl );
 			
 		}
@@ -1976,11 +1979,14 @@ public class ServiceGenerator {
 //						out.println ("\t\t\t(com.soffid.iam.common.security.SoffidPrincipal) super.getSessionContext().getCallerPrincipal();");
 						Iterator<AbstractModelClass> it = op.getActors().iterator();
 						AbstractModelClass actor = it.next();
-						out.print ("\t\tif (! com.soffid.iam.utils.Security.isUserInRole(\""+ actor.getRoleName()+ "\")");
+						String securityPackage  = generator.getBasePackage() == null ? 
+								"com.soffid.iam":
+								generator.getBasePackage();
+						out.print ("\t\tif (! "+ securityPackage+".utils.Security.isUserInRole(\""+ actor.getRoleName()+ "\")");
 						while (it.hasNext())
 						{
 							actor = it.next();
-							out.print ("&&\n\t\t\t ! com.soffid.iam.utils.Security.isUserInRole(\""+ actor.getRoleName()+ "\")");
+							out.print ("&&\n\t\t\t ! "+ securityPackage +".utils.Security.isUserInRole(\""+ actor.getRoleName()+ "\")");
 						}
 						out.println (")");
 						out.print ("\t\t\tthrow new SecurityException(\"Unable to execute " + service.getName(scope)+"."+op.getName(scope)+
