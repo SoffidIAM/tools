@@ -1096,11 +1096,6 @@ public class ValueObjectGenerator {
 			f.getParentFile().mkdirs();
 			SmartPrintStream out = new SmartPrintStream (f);
 	
-			out.println( "/*" + endl
-					+ "// (C) 2015 Soffid" + endl
-					+ "//" + endl
-					+ "*/" + endl
-					);
 			out.println( "{" );
 			AbstractModelClass entity = null;
 			if (jsonObject.hibernateClass() != null)
