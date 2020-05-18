@@ -221,12 +221,10 @@ public class ValueObjectGenerator {
 				+ "\t/**" + endl
 				+ "\t * This method allows the deserialization of an instance of this enumeration type to return the actual instance" + endl
 				+ "\t * that will be the singleton for the JVM in which the current thread is running." + endl
-				+ "\t * " + endl
 				+ "\t * Doing this will allow users to safely use the equality operator <code>==</code> for enumerations because" + endl
 				+ "\t * a regular deserialized object is always a newly constructed instance and will therefore never be" + endl
 				+ "\t * an existing reference; it is this <code>readResolve()</code> method which will intercept the deserialization" + endl
 				+ "\t * process in order to return the proper singleton reference." + endl
-				+ "\t * " + endl
 				+ "\t * This method is documented here:" + endl
 				+ "\t * <a href=\"http://java.sun.com/j2se/1.3/docs/guide/serialization/spec/input.doc6.html\">Java" + endl
 				+ "\t * Object Serialization Specification</a>" + endl
