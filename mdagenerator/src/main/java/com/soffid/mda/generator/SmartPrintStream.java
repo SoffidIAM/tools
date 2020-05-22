@@ -3,6 +3,7 @@ package com.soffid.mda.generator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -35,7 +36,11 @@ public class SmartPrintStream extends PrintStream {
 			if (! originalFile.exists() ||
 				differs (originalFile, tempFile))
 			{
-				copy (tempFile, originalFile);
+				try {
+					copy (tempFile, originalFile);
+				} catch (IOException e) {
+					throw new RuntimeException("Error copying "+tempFile+" to "+originalFile, e);
+				}
 			}
 			else
 			{
@@ -78,11 +83,21 @@ public class SmartPrintStream extends PrintStream {
 	}
 	
 	
-	private void copy(File tempFile2, File originalFile2) {
+	private void copy(File tempFile2, File originalFile2) throws IOException {
 		if (originalFile2.exists())
 			originalFile2.delete();
 		System.out.println("Generating "+originalFile2.toString());
-		tempFile2.renameTo(originalFile2);
+		if ( File.separatorChar == '\\') {
+			FileInputStream in = new FileInputStream(tempFile2);
+			FileOutputStream out = new FileOutputStream(originalFile2);
+			for (int read = in.read(); read >= 0; read = in.read())
+				out.write(read);
+			in.close();
+			out.close();
+			tempFile2.delete();
+			tempFile2.deleteOnExit();
+		} else
+			tempFile2.renameTo(originalFile2);
 	}
 	
 
