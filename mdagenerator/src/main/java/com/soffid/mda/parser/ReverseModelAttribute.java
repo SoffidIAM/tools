@@ -158,4 +158,64 @@ public class ReverseModelAttribute extends AbstractModelAttribute {
 	public String[] getSynonyms() {
 		return new String[0];
 	}
+
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
+
+	@Override
+	public String getUiType() {
+		return null;
+	}
+
+	@Override
+	public String getCase() {
+		return null;
+	}
+
+	@Override
+	public String getFilterExpression() {
+		return null;
+	}
+
+	@Override
+	public boolean isReadonly() {
+		return false;
+	}
+
+	@Override
+	public String getSeparator() {
+		return null;
+	}
+
+	@Override
+	public String getValidator() {
+		return null;
+	}
+
+	@Override
+	public boolean isMultiline() {
+		return false;
+	}
+
+	@Override
+	public boolean isSearchCriteria() {
+		return false;
+	}
+
+	@Override
+	public String getCustomUiHandler() {
+		return null;
+	}
+
+	@Override
+	public boolean isMultivalue() {
+		return true;
+	}
+
+	@Override
+	public String[] getListOfValues() {
+		return null;
+	}
 }
