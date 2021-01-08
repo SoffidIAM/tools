@@ -1,0 +1,16 @@
+<project>
+  <build>
+    <plugins>
+      <plugin>
+      	<groupId>com.soffid.tools</groupId>
+        <artifactId>mda-maven-plugin</artifactId>
+        <configuration>
+           <project implementation="org.apache.maven.plugin.testing.stubs.MavenProjectStub">
+             <groupId implementation="java.lang.String">foo</groupId>
+             <artifactId implementation="java.lang.String">bar</artifactId>
+           </project>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
