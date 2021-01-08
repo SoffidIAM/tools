@@ -4,7 +4,7 @@
 	<groupId>com.soffid.tools</groupId>
 	<artifactId>mdagenerator</artifactId>
 	<name>Soffid MDA Generator</name>
-	<version>2.1.0</version>
+	<version>2.1.1-SNAPSHOT</version>
 	<parent>
 		<groupId>com.soffid</groupId>
 		<artifactId>template</artifactId>
@@ -15,7 +15,7 @@
 	</prerequisites>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/SoffidIAM/tools.git</connection>
-    <tag>mdagenerator-2.1.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
 
