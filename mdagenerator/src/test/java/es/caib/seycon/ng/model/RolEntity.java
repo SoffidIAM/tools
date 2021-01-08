@@ -161,4 +161,10 @@ public abstract class RolEntity {
 		java.lang.String codiDispatcher) {
 	 return null;
 	}
+
+	@DaoFinder("select rolEntity \nfrom es.caib.seycon.ng.model.RolEntity rolEntity \nwhere \nrolEntity.nom = :shortName")
+	public es.caib.seycon.ng.model.RolEntity findByShortName(
+		java.lang.String shortName) {
+	 return null;
+	}
 }

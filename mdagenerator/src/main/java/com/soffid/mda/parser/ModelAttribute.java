@@ -444,4 +444,87 @@ public class ModelAttribute extends AbstractModelAttribute {
 		else
 			return att.synonyms();
 	}
+
+	@Override
+	public boolean isHidden() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null ? false: att.hidden();
+	}
+
+	@Override
+	public String getUiType() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		if (att != null && att.type() != null && ! att.type().isEmpty())
+			return att.type();
+		String type = getJavaType(Translate.DEFAULT);
+		if ("java.util.Calendar".equals(type) ||
+			"java.util.Date".equals(type))
+			return "DATE_TIME";
+		else if ("java.lang.Boolean".equals(type) ||
+				"boolean".equals(type))
+				return "BOOLEAN";
+		else
+			return "STRING";
+	}
+
+	@Override
+	public String getCase() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null || att.lettercase() == null || att.lettercase().isEmpty()? "MIXEDCASE": att.lettercase();
+	}
+
+	@Override
+	public String getFilterExpression() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null ? null : att.filterExpression();
+	}
+
+	@Override
+	public String getSeparator() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null ? null : att.separator();
+	}
+
+	@Override
+	public boolean isReadonly() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null ? false: att.readonly();
+	}
+
+	@Override
+	public String getValidator() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null ? null : att.validatorClass();
+	}
+
+	@Override
+	public boolean isMultiline() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null ? false: att.multiline();
+	}
+
+	@Override
+	public boolean isMultivalue() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null ? false: att.multivalue();
+	}
+
+	@Override
+	public boolean isSearchCriteria() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null ? false: att.searchCriteria();
+	}
+
+	@Override
+	public String getCustomUiHandler() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null ? null: att.customUiHandler();
+	}
+
+	@Override
+	public String[] getListOfValues() {
+		Attribute att = field.getAnnotation(Attribute.class);
+		return att == null ? null: att.listOfValues();
+	}
+
 }

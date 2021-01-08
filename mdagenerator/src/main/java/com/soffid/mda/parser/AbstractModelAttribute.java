@@ -97,6 +97,30 @@ public abstract class AbstractModelAttribute extends ModelElement {
 			return "is"+Util.firstUpper(synonym);
 		else
 			return "get"+Util.firstUpper(synonym);
-	} 
+	}
+
+	public abstract boolean isHidden() ;
+
+	public abstract String getUiType();
+
+	public abstract String getCase();
+
+	public abstract String getFilterExpression();
+
+	public abstract boolean isReadonly();
+
+	public abstract String getSeparator();
+
+	public abstract String getValidator();
+
+	public abstract boolean isMultiline();
+
+	public abstract boolean isSearchCriteria();
+
+	public abstract String getCustomUiHandler();
+
+	public abstract boolean isMultivalue();
+
+	public abstract String[] getListOfValues();
 
 }

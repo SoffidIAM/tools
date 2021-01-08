@@ -2,6 +2,7 @@ package com.soffid.mda.parser;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.TypeVariable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -98,6 +99,22 @@ public class ModelOperation extends ModelElement {
 
 	private String getSpec(boolean full, boolean pretty, int scope) {
 		StringBuffer b = new StringBuffer ();
+		if (!full) {
+			TypeVariable<?>[] typeparms = method.getTypeParameters();
+			if (typeparms.length > 0) {
+				boolean first = true;
+				b.append('<');
+				for(TypeVariable<?> typeparm: typeparms) {
+					if (!first)
+						b.append(',');
+					// Class objects can't occur here; no need to test
+					// and call Class.getName().
+					b.append(typeparm.toString());
+					first = false;
+				}
+				b.append("> ");
+			}
+		}
 		if (getReturnParameter().getDataType().isEntity())
 			b.append(getReturnType());
 		else
@@ -244,6 +261,22 @@ public class ModelOperation extends ModelElement {
 
 	public String getImplSpec(int scope) {
 		StringBuffer spec = new StringBuffer();
+
+		TypeVariable<?>[] typeparms = method.getTypeParameters();
+		if (typeparms.length > 0) {
+			boolean first = true;
+			spec.append('<');
+			for(TypeVariable<?> typeparm: typeparms) {
+				if (!first)
+					spec.append(',');
+				// Class objects can't occur here; no need to test
+				// and call Class.getName().
+				spec.append(typeparm.toString());
+				first = false;
+			}
+			spec.append("> ");
+		}
+
 		spec.append (getReturnType(scope));
 		spec.append( " handle" );
 		spec.append (Util.firstUpper(getName(scope))) .append ( "(" );

@@ -23,10 +23,10 @@ public class Util {
 			int newline = comments.indexOf('\n', i);
 			if (newline < 0)
 			{
-				b.append (comments.substring(i));
+				b.append (comments.substring(i).replace("&", "&amp;"));
 				break;
 			}
-			b.append (comments.substring(i, newline));
+			b.append (comments.substring(i, newline).replace("&", "&amp;"));
 			b.append ('\n');
 			i = newline + 1;
 		}

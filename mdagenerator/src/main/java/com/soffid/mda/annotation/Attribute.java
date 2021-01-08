@@ -12,4 +12,16 @@ public @interface Attribute {
 	String translated() default "";
 	String entityAttribute() default "";
 	String[] synonyms() default {}; 
+	String validatorClass() default "";
+	String lettercase() default "MIXEDCASE";
+	boolean hidden() default false;
+	boolean readonly() default false;
+	String type() default "";
+	String filterExpression() default "";
+	String separator() default "";
+	boolean multivalue() default false;
+	boolean multiline() default false;
+	boolean searchCriteria() default false;
+	String customUiHandler() default "";
+	String[] listOfValues() default {};
 }
