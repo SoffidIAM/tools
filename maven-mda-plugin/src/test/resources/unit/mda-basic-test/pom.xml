@@ -2,7 +2,7 @@
   <build>
     <plugins>
       <plugin>
-      	<gropuId>com.soffid.tools</gropuId>
+      	<groupId>com.soffid.tools</groupId>
         <artifactId>mda-maven-plugin</artifactId>
         <configuration>
            <project implementation="org.apache.maven.plugin.testing.stubs.MavenProjectStub">
