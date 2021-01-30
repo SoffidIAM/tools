@@ -993,6 +993,22 @@ public class ValueObjectGenerator {
 				+ "\t\treturn target;" + endl
 				+ "\t}" + endl );
 
+			
+			if (generator.getPagedCollectionClass() != null) {
+		    	out.println( "\t/**" + endl
+					+ "\t * Creates a " + actualClassName + " pagedResult on a " + altActualClassName + " collection." + endl
+					+ "\t */" );
+		
+				out.println( "\tpublic static "+generator.getPagedCollectionClass()+"<" + actualClassName + "> to" + 	
+						actualClassName + "List ("+generator.getPagedCollectionClass()+"<" + vo.getFullName(altScope) + "> source)" );
+
+				out.println ( "\t{" + endl
+					+ "\t\tif (source == null) return null;" + endl + endl
+					+ "\t\treturn new "+generator.getPagedCollectionClass()+"<" + actualClassName + "> (source, to"+actualClassName+"List(source.getResources()));" + endl
+					+ "\t}" + endl );
+
+
+			}
 			// AsyncList transformer
 			
 			if (generator.getAsyncCollectionClass() != null)

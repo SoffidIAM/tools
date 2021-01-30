@@ -106,6 +106,13 @@ public class Mda2Mojo extends AbstractMojo {
 	private String asyncCollectionClass = null;
 
 	/**
+	 * PagedResult class class for VO Generation
+	 * 
+	 * @parameter
+	 */
+	private String pagedResultClass = null;
+	
+	/**
 	 * Directory where sync server java files are to be generated
 	 * 
 	 * @parameter
@@ -282,6 +289,7 @@ public class Mda2Mojo extends AbstractMojo {
 			Thread.currentThread().setContextClassLoader(cl);
 			Generator g = new Generator ();
 			g.setAsyncCollectionClass(asyncCollectionClass);
+			g.setPagedCollectionClass(pagedResultClass);
 			g.setTranslatedOnly(translate);
 			g.setTranslateEntities(translateEntities);
 			try 
@@ -358,6 +366,14 @@ public class Mda2Mojo extends AbstractMojo {
 			project.addAttachedArtifact(artifact);
 			
 		}
+	}
+
+	public String getPagedResultClass() {
+		return pagedResultClass;
+	}
+
+	public void setPagedResultClass(String pagedResultClass) {
+		this.pagedResultClass = pagedResultClass;
 	}
 
 }

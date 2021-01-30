@@ -22,7 +22,8 @@ public class Generator {
 	String xmlModuleDir; 
 	String targetServer = "jboss3"; 
 	String asyncCollectionClass = null;
-			
+	String pagedCollectionClass = null;
+	
 	public String getTargetServer() {
 		return targetServer;
 	}
@@ -362,4 +363,13 @@ public class Generator {
 	public void setManualSecurityCheck(boolean manualSecurityCheck) {
 		this.manualSecurityCheck = manualSecurityCheck;
 	}
+
+	public String getPagedCollectionClass() {
+		return pagedCollectionClass;
+	}
+
+	public void setPagedCollectionClass(String pagedCollectionClass) {
+		this.pagedCollectionClass = pagedCollectionClass;
+	}
+
 }
