@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
-import org.omg.CosNaming.IstringHelper;
-
 import com.soffid.mda.parser.AbstractModelClass;
 import com.soffid.mda.parser.Parser;
 
