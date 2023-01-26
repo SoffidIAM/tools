@@ -2033,8 +2033,8 @@ public class ServiceGenerator {
 					out.println ( "\t\t\tif (cause instanceof " + ex.getFullName(Translate.SERVICE_SCOPE) + ")" + endl
 							+ "\t\t\t\tthrow (" + ex.getFullName(Translate.SERVICE_SCOPE) + ") cause;" );
 				}
-				out.println ( "\t\t\tif (cause instanceof Exception)" + endl
-					+ "\t\t\t\tthrow new javax.ejb.EJBException ((Exception)cause);" + endl
+				out.println ( "\t\t\tif (exception instanceof RuntimeException)" + endl
+					+ "\t\t\t\tthrow (RuntimeException)exception;" + endl
 					+ "\t\t\tthrow new javax.ejb.EJBException (exception);" + endl
 					+ "\t\t}" + endl
 					+ "\t}" );
