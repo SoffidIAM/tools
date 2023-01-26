@@ -13,7 +13,7 @@ package com.soffid.maven.plugin.mda;
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY@parameter
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
@@ -61,7 +61,7 @@ public class SqlMojo extends AbstractMojo {
 	/**
 	 * The Maven project.
 	 * 
-	 * @parameter expression="${project}"
+	 * @parameter expression="${project}" description="Internal project" name="project"
 	 * @required
 	 * @readonly
 	 */
@@ -70,11 +70,7 @@ public class SqlMojo extends AbstractMojo {
 	/**
 	 * The archive configuration to use.
 	 * 
-	 * See <a
-	 * href="http://maven.apache.org/shared/maven-archiver/index.html">the
-	 * documentation for Maven Archiver</a>.
-	 * 
-	 * @parameter
+	 * @parameter description="Maven archiver" name="archive"
 	 */
 	private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
@@ -84,10 +80,16 @@ public class SqlMojo extends AbstractMojo {
 	/** @component */
 	private org.apache.maven.artifact.resolver.ArtifactResolver resolver;
 
-	/** @parameter default-value="${localRepository}" */
+	/**
+	 * Local repository
+	 *  
+	 * @parameter default-value="${localRepository}" description="local repository" */
 	private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
 
-	/** @parameter default-value="${project.remoteArtifactRepositories}" */
+	/**
+	 * Remote repository
+	 *  
+	 * @parameter default-value="${project.remoteArtifactRepositories}" description="remote repositories"*/
 	private java.util.List remoteRepositories;
 
 	/** @component */
@@ -103,7 +105,9 @@ public class SqlMojo extends AbstractMojo {
 	}
 
 	/**
-	 * @parameter default-value="${plugin.artifacts}"
+	 * Artifacts
+	 * 
+	 * @parameter default-value="${plugin.artifacts}" description="plugin artifacts"
 	 */
 	private java.util.List pluginArtifacts;
 

@@ -52,77 +52,77 @@ public class Mda2Mojo extends AbstractMojo {
 	/**
 	 * Generate Documentation
 	 * 
-	 * @parameter
+	 * @parameter description="Generate UML files"
 	 */
 	private boolean generateDoc = false;
 	/**
 	 * Generate sync server remote service locator
 	 * 
-	 * @parameter
+	 * @parameter description="Generate sync server files"
 	 */
 	private boolean generateSync = true;
 	/**
 	 * Generate EJB stub
 	 * 
-	 * @parameter
+	 * @parameter description="Generate EJB Stub"
 	 */
 	private boolean generateEjb = true;
 	/**
 	 * Use translated versions
 	 * 
-	 * @parameter
+	 * @parameter description="Translate names"
 	 */
 	private boolean translate = true;
 	/**
 	 * Check HQL Parameters
 	 * 
-	 * @parameter
+	 * @parameter description="Generate HQL Tests"
 	 */
 	private boolean hqlFullTest = true;
 	/**
 	 * Use translated versions for Entities
 	 * 
-	 * @parameter
+	 * @parameter description="Translate entities"
 	 */
 	private boolean translateEntities = true;
 	/**
 	 * Generate deprecated (translated) methods
 	 * 
-	 * @parameter
+	 * @parameter description="Generate deprecated methods"
 	 */
 	private boolean generateDeprecated = false;
 	/**
 	 * Generate default internal exception error
 	 * 
-	 * @parameter
+	 * @parameter description="Exception class name"
 	 */
 	private String defaultException = "es.caib.seycon.ng.exception.InternalErrorException";
 
 	/**
 	 * Async collection class for VO Generation
 	 * 
-	 * @parameter
+	 * @parameter description="Async class name"
 	 */
 	private String asyncCollectionClass = null;
 
 	/**
 	 * PagedResult class class for VO Generation
 	 * 
-	 * @parameter
+	 * @parameter description="Paged result class name"
 	 */
 	private String pagedResultClass = null;
 	
 	/**
 	 * Directory where sync server java files are to be generated
 	 * 
-	 * @parameter
+	 * @parameter description="Directory to store sync server files"
 	 */
 	private String syncDir;
 
 	/**
 	 * Directory where sync server resources to be generated
 	 * 
-	 * @parameter
+	 * @parameter description="Directory to place sync server resources"
 	 */
 	private String syncResourcesDir;
 
@@ -130,14 +130,14 @@ public class Mda2Mojo extends AbstractMojo {
 	/**
 	 * Directory where core java files will be generated
 	 * 
-	 * @parameter
+	 * @parameter description="Directory te store java core files"
 	 */
 	private String coredir;
 
 	/**
 	 * Directory where core java source files will be generated
 	 * 
-	 * @parameter
+	 * @parameter description="Directory to store java core sample files"
 	 */
 	private String coreSrcDir;
 
@@ -145,7 +145,7 @@ public class Mda2Mojo extends AbstractMojo {
 	/**
 	 * Directory where core resource files will be generated
 	 * 
-	 * @parameter
+	 * @parameter description="Core source directory"
 	 */
 	private String coreResourceDir;
 
@@ -153,56 +153,56 @@ public class Mda2Mojo extends AbstractMojo {
 	/**
 	 * Directory where core java files will be generated
 	 * 
-	 * @parameter
+	 * @parameter description="Core test directory"
 	 */
 	private String coreTestDir;
 
 	/**
 	 * Directory where core test resources will be generated
 	 * 
-	 * @parameter
+	 * @parameter description="Core test resources directory"
 	 */
 	private String coreTestResourcesDir;
 
 	/**
 	 * Directory where xmi files will be generated
 	 * 
-	 * @parameter
+	 * @parameter directory="xmi target directory"
 	 */
 	private String xmiDir;
 
 	/**
 	 * Directory where common java files will be generated
 	 * 
-	 * @parameter
+	 * @parameter description="Commons directory"
 	 */
 	private String commonsDir;
 
 	/**
 	 * Base package name for classes
 	 * 
-	 * @parameter
+	 * @parameter description="Base java packange name"
 	 */
 	private String basePackage;
 
 	/**
 	 * Directory where documentation files will be generated
 	 * 
-	 * @parameter
+	 * @parameter description="UML target directory"
 	 */
 	private String docDir;
 
 	/**
 	 * Generate plugin files
 	 * 
-	 * @parameter
+	 * @parameter description="Optional plugin name"
 	 */
 	private String pluginName = null;
 
 	/**
 	 * Target application server
 	 * 
-	 * @parameter
+	 * @parameter description="Target application server"
 	 */
 	private String targetServer = null;
 
@@ -210,7 +210,7 @@ public class Mda2Mojo extends AbstractMojo {
 	/**
 	 * The Maven project.
 	 * 
-	 * @parameter expression="${project}"
+	 * @parameter property="project" description="Internal project"
 	 * @required
 	 * @readonly
 	 */
@@ -223,7 +223,7 @@ public class Mda2Mojo extends AbstractMojo {
 	 * href="http://maven.apache.org/shared/maven-archiver/index.html">the
 	 * documentation for Maven Archiver</a>.
 	 * 
-	 * @parameter
+	 * @parameter name="maven archiver" description="Maven archiver"
 	 */
 	private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
@@ -233,10 +233,10 @@ public class Mda2Mojo extends AbstractMojo {
 	/** @component */
 	private org.apache.maven.artifact.resolver.ArtifactResolver resolver;
 
-	/** @parameter default-value="${localRepository}" */
+	/** @parameter description="Maven local repository" default-value="${localRepository}" */
 	private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
 
-	/** @parameter default-value="${project.remoteArtifactRepositories}" */
+	/** @parameter description="maven remote repositories" default-value="${project.remoteArtifactRepositories}" */
 	private java.util.List remoteRepositories;
 
 	/** @component */
@@ -252,7 +252,7 @@ public class Mda2Mojo extends AbstractMojo {
 	}
 
 	/**
-	 * @parameter default-value="${plugin.artifacts}"
+	 * @parameter default-value="${plugin.artifacts}" description="Plugin artifacts"
 	 */
 	private java.util.List pluginArtifacts;
     /**

@@ -1,5 +1,13 @@
 package com.soffid.maven.plugin.mda;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,32 +28,15 @@ package com.soffid.maven.plugin.mda;
  */
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
-import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
-import org.apache.maven.artifact.resolver.filter.TypeArtifactFilter;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import org.codehaus.plexus.archiver.jar.JarArchiver;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Base source code from MDZIP file.
@@ -60,7 +51,7 @@ public class MdaMojo extends AbstractMojo {
 	/**
 	 * Generate sync files
 	 * 
-	 * @parameter
+	 * @parameter description="Generate meta files"
 	 */
 	private boolean generateMeta = false;
 
@@ -68,35 +59,35 @@ public class MdaMojo extends AbstractMojo {
 	/**
 	 * Generate sync files
 	 * 
-	 * @parameter
+	 * @parameter description="Generate sync files"
 	 */
 	private boolean generateSync = false;
 
 	/**
 	 * Generate common files
 	 * 
-	 * @parameter
+	 * @parameter description="Generate common files"
 	 */
 	private boolean generateCommon = false;
 
 	/**
 	 * Generate plugin files
 	 * 
-	 * @parameter
+	 * @parameter description="Generat plugin files"
 	 */
 	private String pluginName = null;
 
 	/**
 	 * Generate core files
 	 * 
-	 * @parameter
+	 * @parameter description="Plugin name"
 	 */
 	private boolean generateCore = false;
 
 	/**
 	 * The Maven project.
 	 * 
-	 * @parameter expression="${project}"
+	 * @parameter expression="${project}" description="Maven project"
 	 * @required
 	 * @readonly
 	 */
@@ -109,7 +100,7 @@ public class MdaMojo extends AbstractMojo {
 	 * href="http://maven.apache.org/shared/maven-archiver/index.html">the
 	 * documentation for Maven Archiver</a>.
 	 * 
-	 * @parameter
+	 * @parameter description="Maven archiver"
 	 */
 	private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
@@ -119,10 +110,10 @@ public class MdaMojo extends AbstractMojo {
 	/** @component */
 	private org.apache.maven.artifact.resolver.ArtifactResolver resolver;
 
-	/** @parameter default-value="${localRepository}" */
+	/** @parameter default-value="${localRepository}" description="Artifact repository" */
 	private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
 
-	/** @parameter default-value="${project.remoteArtifactRepositories}" */
+	/** @parameter default-value="${project.remoteArtifactRepositories}" description="Remote repository" */
 	private java.util.List remoteRepositories;
 
 	/** @component */
@@ -138,7 +129,7 @@ public class MdaMojo extends AbstractMojo {
 	}
 
 	/**
-	 * @parameter default-value="${plugin.artifacts}"
+	 * @parameter default-value="${plugin.artifacts}" description="Plugin artifacts"
 	 */
 	private java.util.List pluginArtifacts;
 
