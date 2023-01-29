@@ -26,14 +26,18 @@ import java.net.URLClassLoader;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 
 import com.soffid.mda.generator.Generator;
@@ -42,209 +46,198 @@ import com.soffid.mda.parser.Parser;
 /**
  * Base source code from MDZIP file.
  * 
- * @author <a href="gbuades@soffid.com">Gabriel Buades</a>
- * @goal mda2
- * @phase package
- * @requiresProject
- * @requiresDependencyResolution runtime
  */
+@Mojo(name = "mda2", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class Mda2Mojo extends AbstractMojo {
 	/**
 	 * Generate Documentation
 	 * 
-	 * @parameter description="Generate UML files"
 	 */
+	@Parameter
 	private boolean generateDoc = false;
 	/**
 	 * Generate sync server remote service locator
 	 * 
-	 * @parameter description="Generate sync server files"
 	 */
+	@Parameter
 	private boolean generateSync = true;
 	/**
 	 * Generate EJB stub
 	 * 
-	 * @parameter description="Generate EJB Stub"
 	 */
+	@Parameter
 	private boolean generateEjb = true;
 	/**
 	 * Use translated versions
 	 * 
-	 * @parameter description="Translate names"
 	 */
+	@Parameter
 	private boolean translate = true;
 	/**
 	 * Check HQL Parameters
 	 * 
-	 * @parameter description="Generate HQL Tests"
 	 */
+	@Parameter
 	private boolean hqlFullTest = true;
 	/**
 	 * Use translated versions for Entities
 	 * 
-	 * @parameter description="Translate entities"
 	 */
+	@Parameter
 	private boolean translateEntities = true;
 	/**
 	 * Generate deprecated (translated) methods
 	 * 
 	 * @parameter description="Generate deprecated methods"
 	 */
+	@Parameter
 	private boolean generateDeprecated = false;
 	/**
 	 * Generate default internal exception error
 	 * 
 	 * @parameter description="Exception class name"
 	 */
+	@Parameter(defaultValue = "es.caib.seycon.ng.exception.InternalErrorException")
 	private String defaultException = "es.caib.seycon.ng.exception.InternalErrorException";
 
 	/**
 	 * Async collection class for VO Generation
 	 * 
-	 * @parameter description="Async class name"
 	 */
+	@Parameter
 	private String asyncCollectionClass = null;
 
 	/**
 	 * PagedResult class class for VO Generation
 	 * 
-	 * @parameter description="Paged result class name"
 	 */
+	@Parameter
 	private String pagedResultClass = null;
 	
 	/**
 	 * Directory where sync server java files are to be generated
 	 * 
-	 * @parameter description="Directory to store sync server files"
 	 */
+	@Parameter
 	private String syncDir;
 
 	/**
 	 * Directory where sync server resources to be generated
 	 * 
-	 * @parameter description="Directory to place sync server resources"
 	 */
+	@Parameter
 	private String syncResourcesDir;
 
 
 	/**
 	 * Directory where core java files will be generated
 	 * 
-	 * @parameter description="Directory te store java core files"
 	 */
+	@Parameter
 	private String coredir;
 
 	/**
 	 * Directory where core java source files will be generated
 	 * 
-	 * @parameter description="Directory to store java core sample files"
 	 */
+	@Parameter
 	private String coreSrcDir;
 
 
 	/**
 	 * Directory where core resource files will be generated
 	 * 
-	 * @parameter description="Core source directory"
 	 */
+	@Parameter
 	private String coreResourceDir;
 
 
 	/**
 	 * Directory where core java files will be generated
 	 * 
-	 * @parameter description="Core test directory"
 	 */
+	@Parameter
 	private String coreTestDir;
 
 	/**
 	 * Directory where core test resources will be generated
 	 * 
-	 * @parameter description="Core test resources directory"
 	 */
+	@Parameter
 	private String coreTestResourcesDir;
 
 	/**
 	 * Directory where xmi files will be generated
 	 * 
-	 * @parameter directory="xmi target directory"
 	 */
+	@Parameter
 	private String xmiDir;
 
 	/**
 	 * Directory where common java files will be generated
 	 * 
-	 * @parameter description="Commons directory"
 	 */
+	@Parameter
 	private String commonsDir;
 
 	/**
 	 * Base package name for classes
 	 * 
-	 * @parameter description="Base java packange name"
 	 */
+	@Parameter
 	private String basePackage;
 
 	/**
 	 * Directory where documentation files will be generated
 	 * 
-	 * @parameter description="UML target directory"
 	 */
+	@Parameter
 	private String docDir;
 
 	/**
 	 * Generate plugin files
 	 * 
-	 * @parameter description="Optional plugin name"
 	 */
+	@Parameter
 	private String pluginName = null;
 
 	/**
 	 * Target application server
 	 * 
-	 * @parameter description="Target application server"
 	 */
+	@Parameter
 	private String targetServer = null;
 
 
 	/**
-	 * The Maven project.
+	 * Target application server
 	 * 
-	 * @parameter property="project" description="Internal project"
-	 * @required
-	 * @readonly
 	 */
+	@Parameter(defaultValue = "${project}", required = true, readonly = true)
 	private MavenProject project;
 
-	/**
-	 * The archive configuration to use.
-	 * 
-	 * See <a
-	 * href="http://maven.apache.org/shared/maven-archiver/index.html">the
-	 * documentation for Maven Archiver</a>.
-	 * 
-	 * @parameter name="maven archiver" description="Maven archiver"
-	 */
-	private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
-
 	/** @component */
+	@Component
 	private org.apache.maven.artifact.factory.ArtifactFactory artifactFactory;
 
 	/** @component */
+	@Component
 	private org.apache.maven.artifact.resolver.ArtifactResolver resolver;
 
-	/** @parameter description="Maven local repository" default-value="${localRepository}" */
+	@Parameter(defaultValue = "${localRepository}")
 	private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
 
-	/** @parameter description="maven remote repositories" default-value="${project.remoteArtifactRepositories}" */
+	@Parameter(defaultValue = "${project.remoteArtifactRepositories}")
 	private java.util.List remoteRepositories;
 
 	/** @component */
+	@Component
 	private ArtifactMetadataSource source;
 
 	/**
 	 * @component
 	 */
+	@Component
 	private MavenProjectHelper projectHelper;
 
 	protected final MavenProject getProject() {
@@ -252,14 +245,15 @@ public class Mda2Mojo extends AbstractMojo {
 	}
 
 	/**
-	 * @parameter default-value="${plugin.artifacts}" description="Plugin artifacts"
 	 */
+	@Parameter(defaultValue = "${plugin.artifacts}")
 	private java.util.List pluginArtifacts;
     /**
      * @component role="org.codehaus.plexus.archiver.Archiver" roleHint="zip"
      * @required
      * @readonly
      */
+	@Component(hint = "zip",role = Archiver.class)
     private ZipArchiver zipArchiver;
    
 	/**
@@ -347,7 +341,7 @@ public class Mda2Mojo extends AbstractMojo {
 		}
 	}
 
-	private void attachArtifact(String directory, String classifier) throws ArchiverException, IOException {
+	private void attachArtifact(String directory, String classifier) throws IOException {
 		File dirFile = new File(directory);
 		getLog().info("Attaching "+dirFile.getPath());
 		if (dirFile.isDirectory())
