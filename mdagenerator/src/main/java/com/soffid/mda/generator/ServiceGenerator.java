@@ -103,6 +103,8 @@ public class ServiceGenerator {
 		}
 		if (generator.isGenerateSync())
 		{
+			generateRemoteServiceLocatorProxy(false);
+			generateRemoteServiceLocatorProxy(true);
 			generateRemoteServiceLocator(false);
 			generateRemoteServiceLocator(true);
 			generateRemoteServicePublisher();
@@ -180,12 +182,71 @@ public class ServiceGenerator {
 		out.close ();
 	}
 
+	void generateRemoteServiceLocatorProxy (boolean translated) throws FileNotFoundException, UnsupportedEncodingException
+	{
+		String file;
+		file = generator.getCommonsDir();
+		
+		String packageName = (translated ? "com.soffid.iam": "es.caib.seycon.ng");
+		String basePackage = packageName;
+		
+		if (generator.getBasePackage () != null)
+		{
+			packageName = generator.getBasePackage();
+		}
+
+		if (generator.isPlugin())
+		{
+			packageName = packageName + ".addons."+generator.getPluginName();
+		}
+		packageName =  packageName + ".remote";
+		file = file + "/"+Util.packageToDir (packageName);
+		File f = new File (file + "/RemoteServiceLocatorProxy.java");
+		f.getParentFile().mkdirs();
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
+
+//		System.out.println ("Generating "+f.getPath());
+
+		String commonPkg = translated ? "com.soffid.iam" : "es.caib.seycon.ng";
+		commonPkg = "es.caib.seycon.ng";
+		
+		out.println ( "//" + endl
+			+ "// (C) 2013 Soffid" + endl
+			+ "//" + endl
+			+ "//" + endl
+			+ endl
+				+ "package " + packageName + ";" + endl
+				+ "" + endl
+				+ "import java.io.FileNotFoundException;" + endl
+				+ "import java.io.IOException;" + endl
+				+ "import java.util.Arrays;" + endl
+				+ "" + endl
+				+ "" + endl
+				+ "import "+commonPkg+".config.Config;" + endl
+				+ "import "+generator.getDefaultException()+";" + endl
+				+ "import "+commonPkg+".remote.RemoteInvokerFactory;" + endl
+				+ "import "+commonPkg+".remote.URLManager;" + endl
+				+ "" + endl
+				+ "/**" + endl
+				+ " * Locates and provides all available application services." + endl
+				+ " */" + endl
+				+ "public interface RemoteServiceLocatorProxy" + endl
+				+ "{" + endl
+				+ "" + endl
+				+ "\tObject getService(String name);" + endl
+				+ "}" );
+		out.close ();
+	}
+
+
 	void generateRemoteServiceLocator (boolean translated) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		String file;
 		file = generator.getCommonsDir();
 		
 		String packageName = (translated ? "com.soffid.iam": "es.caib.seycon.ng");
+		String basePackage = packageName;
+		
 		if (generator.getBasePackage () != null)
 		{
 			packageName = generator.getBasePackage();
@@ -233,6 +294,7 @@ public class ServiceGenerator {
 				+ "\tString server = null;" + endl
 				+ "\tString authToken = null;" + endl
 				+ "\tString tenant = null;" + endl
+				+ "\tpublic static RemoteServiceLocatorProxy serviceLocatorProxy = null;" + endl
 				+ "\t" + endl
 				+ "\tpublic RemoteServiceLocator()" + endl
 				+ "\t{" + endl
@@ -316,7 +378,10 @@ public class ServiceGenerator {
 				+ "	 * @return Remote object" + endl
 				+ "	 **/" + endl
 				+ "\tpublic " + service.getFullName(scope) + " get" + service.getName(scope) + "( ) throws IOException, "+generator.getDefaultException()+" {" + endl
-				+ "\t\treturn ( " + service.getFullName(scope) + " ) getRemoteService (\"" + path + (translated ? "-en": "")+ "\");" + endl
+				+ "\t\tif (serviceLocatorProxy != null && server == null)\n"
+				+ "\t\t\treturn ("+service.getFullName(scope)+") serviceLocatorProxy.getService(\""+ service.getSpringBeanName(generator,scope)+"\");\n"
+				+ "\t\telse\n"
+				+ "\t\t\treturn ( " + service.getFullName(scope) + " ) getRemoteService (\"" + path + (translated ? "-en": "")+ "\");" + endl
 				+ "\t}" + endl
 				+ "\t" );
 			}
