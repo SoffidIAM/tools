@@ -371,7 +371,7 @@ public class ServiceGenerator {
 		for (AbstractModelClass service: parser.getServices()) {
 			String path = service.getServerPath();
 			if (! service.isInternal() && ! path.isEmpty()) {
-				int scope = translated ? Translate.TRANSLATE : Translate.DONT_TRANSLATE;
+				int scope = translated ? Translate.SERVICE_SCOPE : Translate.ALTSERVICE_SCOPE;
 				out.println ( "	/**" + endl
 				+ "	 * Gets the remote service " + service.getName(scope) + "." + endl
 				+ "	 *" + endl
@@ -379,7 +379,7 @@ public class ServiceGenerator {
 				+ "	 **/" + endl
 				+ "\tpublic " + service.getFullName(scope) + " get" + service.getName(scope) + "( ) throws IOException, "+generator.getDefaultException()+" {" + endl
 				+ "\t\tif (serviceLocatorProxy != null && server == null)\n"
-				+ "\t\t\treturn ("+service.getFullName(scope)+") serviceLocatorProxy.getService(\""+ service.getSpringBeanName(generator,scope)+"\");\n"
+				+ "\t\t\treturn ("+service.getFullName(scope)+") serviceLocatorProxy.getService(\""+ service.getSpringBeanName(generator, scope)+"\");\n"
 				+ "\t\telse\n"
 				+ "\t\t\treturn ( " + service.getFullName(scope) + " ) getRemoteService (\"" + path + (translated ? "-en": "")+ "\");" + endl
 				+ "\t}" + endl
