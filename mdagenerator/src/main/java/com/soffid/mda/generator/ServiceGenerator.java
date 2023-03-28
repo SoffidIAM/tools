@@ -2070,7 +2070,7 @@ public class ServiceGenerator {
 
 				///////////////////////
 				// Add null checks
-				generateNullChecks(out, op, scope);
+//				generateNullChecks(out, op, scope);
 				out.print ( "\t\ttry" + endl
 						+ "\t\t{" + endl
 						+ "\t\t\t" );
