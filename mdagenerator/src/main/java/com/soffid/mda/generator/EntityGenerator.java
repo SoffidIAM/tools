@@ -59,8 +59,8 @@ public class EntityGenerator<E> {
 			}
 		}
 		generateSearchCriteria();
-		if ( modelPackage.equals("com.soffid.iam.model"))
-			generateSearchCriteriaConfiguration();
+//		if ( modelPackage.equals("com.soffid.iam.model"))
+		generateSearchCriteriaConfiguration();
 		generateSearchCriteriaParameter();
 		generateSearchCriteriaProperties();
 		generateTestBase();
@@ -364,7 +364,7 @@ public class EntityGenerator<E> {
 					out.println ("\t * CriteriaSearchConfiguration finder");
 					out.println ("\t " + endComment);
 					out.print ("\tpublic " + op.getReturnType(Translate.DEFAULT) + " " + op.getName (Translate.DEFAULT) + "(final " +
-							"com.soffid.iam.model.criteria.CriteriaSearchConfiguration criteria");
+							generator.getBasePackage()+".model.criteria.CriteriaSearchConfiguration criteria");
 					for (ModelParameter param: op.getParameters())
 					{
 						out.print( ", " + param.getDataType().getJavaType(Translate.DEFAULT) + " " + param.getName(Translate.DEFAULT));
@@ -586,7 +586,8 @@ public class EntityGenerator<E> {
 					+ "\t * parameter maxResults max number of rows to return" + "\n"
 					+ "\t " + endComment );
 			out.println ( "\tpublic java.util.List<" + entity.getFullName(Translate.DEFAULT)
-					+ "> query (String query, "+generator.getSharedModelPackage(Translate.ENTITY_SCOPE)+".Parameter[] parameters, com.soffid.iam.model.criteria.CriteriaSearchConfiguration criteria);"
+					+ "> query (String query, "+generator.getSharedModelPackage(Translate.ENTITY_SCOPE)+".Parameter[] parameters, "+
+					  generator.getBasePackage()+".model.criteria.CriteriaSearchConfiguration criteria);"
 					+ "\n" );
 			out.println ( "}" );
 		}
@@ -929,7 +930,7 @@ public class EntityGenerator<E> {
 			}
 			out.print ( ")" + "\n" + "\t"+op.getThrowsClause(Translate.DEFAULT) + "\n");
 			out.print ( "\t{" + "\n"
-				+ "\t\treturn " + op.getName(Translate.DEFAULT) + "((" + "com.soffid.iam.model.criteria.CriteriaSearchConfiguration) null"
+				+ "\t\treturn " + op.getName(Translate.DEFAULT) + "((" +  generator.getBasePackage()+".model.criteria.CriteriaSearchConfiguration) null"
 				+ "\t\t\t" );
 			for (ModelParameter param: op.getParameters()) {
 				out.print ( ", " + param.getName(Translate.DEFAULT) );
@@ -943,7 +944,8 @@ public class EntityGenerator<E> {
 					+ "\t * CriteriaSearchConfiguration implementation" + "\n"
 					+ "\t " + endComment );
 
-			out.print ( "\tpublic " + op.getReturnType(Translate.DEFAULT) + " " + op.getName (Translate.DEFAULT) + "(final com.soffid.iam.model.criteria.CriteriaSearchConfiguration criteria" );
+			out.print ( "\tpublic " + op.getReturnType(Translate.DEFAULT) + " " + op.getName (Translate.DEFAULT) + "(final "+
+					generator.getBasePackage()+".model.criteria.CriteriaSearchConfiguration criteria" );
 			for (ModelParameter param: op.getParameters()) {
 				out.print ( ", " + param.getDataType().getJavaType(Translate.DEFAULT)+" " + param.getName(Translate.DEFAULT) );
 
@@ -963,7 +965,8 @@ public class EntityGenerator<E> {
 					+ "\t * Internal implementation" + "\n"
 					+ "\t " + endComment );
 
-			out.print ( "\tpublic " + op.getReturnType(Translate.DEFAULT) + " " + op.getName (Translate.DEFAULT) + "(final java.lang.String queryString, com.soffid.iam.model.criteria.CriteriaSearchConfiguration criteria");
+			out.print ( "\tpublic " + op.getReturnType(Translate.DEFAULT) + " " + op.getName (Translate.DEFAULT) + "(final java.lang.String queryString, "+
+					generator.getBasePackage()+".model.criteria.CriteriaSearchConfiguration criteria");
 			for (ModelParameter param: op.getParameters()) {
 				out.print ( ", " + param.getDataType().getJavaType(Translate.DEFAULT)+" " + param.getName(Translate.DEFAULT));
 
@@ -1981,7 +1984,8 @@ public class EntityGenerator<E> {
 					+ "\t * parameter maxResults max number of rows to return" + "\n"
 					+ "\t " + endComment );
 			out.println ( "\tpublic java.util.List<" + entity.getFullName(Translate.DEFAULT)
-					+ "> query (String queryString, "+generator.getSharedModelPackage(Translate.ENTITY_SCOPE)+".Parameter[] parameters, com.soffid.iam.model.criteria.CriteriaSearchConfiguration criteria)" + "\n"
+					+ "> query (String queryString, "+generator.getSharedModelPackage(Translate.ENTITY_SCOPE)+".Parameter[] parameters, "+
+						generator.getBasePackage()+".model.criteria.CriteriaSearchConfiguration criteria)" + "\n"
 					+ "\t{" + "\n"
 					+ "\t\ttry {" + "\n"
 					+ "\t\t\tjava.util.List results = new "+generator.getSharedModelPackage(Translate.ENTITY_SCOPE)+".QueryBuilder().query(this," + "\n"
@@ -2063,7 +2067,7 @@ public class EntityGenerator<E> {
 		out.println("@SuppressWarnings({\"unchecked\"})" );
 		out.println("public class CriteriaSearch" );
 		out.println("{" );
-		out.println("\tprivate com.soffid.iam.model.criteria.CriteriaSearchConfiguration configuration;" );
+		out.println("\tprivate "+generator.getBasePackage()+".model.criteria.CriteriaSearchConfiguration configuration;" );
 		out.println("\tprivate org.hibernate.Criteria rootCriteria;" );
 		out.println("\tprivate java.util.Map childCriteriaMap;" );
 		out.println("\tprivate java.util.List orderList;" );
@@ -2102,7 +2106,7 @@ public class EntityGenerator<E> {
 		out.println("\t " + endComment );
 		out.println("\tpublic CriteriaSearch(org.hibernate.Session session, Class resultType)" );
 		out.println("\t{" );
-		out.println("\t\tthis.configuration = new com.soffid.iam.model.criteria.CriteriaSearchConfiguration();" );
+		out.println("\t\tthis.configuration = new "+generator.getBasePackage()+".model.criteria.CriteriaSearchConfiguration();" );
 		out.println("\t\tthis.resultType = resultType;" );
 		out.println("\t\tthis.rootCriteria = session.createCriteria(this.resultType);" );
 		out.println("\t\tthis.childCriteriaMap = new java.util.HashMap();" );
@@ -2655,7 +2659,7 @@ public class EntityGenerator<E> {
 		out.println("\t *" );
 		out.println("\t * @return configuration" );
 		out.println("\t " + endComment );
-		out.println("\tpublic com.soffid.iam.model.criteria.CriteriaSearchConfiguration getConfiguration()" );
+		out.println("\tpublic "+generator.getBasePackage()+".model.criteria.CriteriaSearchConfiguration getConfiguration()" );
 		out.println("\t{" );
 		out.println("\t\treturn this.configuration;" );
 		out.println("\t}" );

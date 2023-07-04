@@ -340,7 +340,7 @@ public class Generator {
 	}
 
 	public String getBasePackage() {
-		return basePackage;
+		return basePackage == null ? "com.soffid.iam": basePackage;
 	}
 
 	public void setDefaultException(String defaultException) {
