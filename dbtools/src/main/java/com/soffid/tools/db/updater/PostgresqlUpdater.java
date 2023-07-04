@@ -22,13 +22,9 @@ public class PostgresqlUpdater extends DBUpdater{
 		{
 			return "text";
 		}
-		else if (c.type.equals("DATE") || c.type.equals("DATETIME"))
+		else if (c.type.equals("DATE") || c.type.equals("DATETIME")  || c.type.equals("TIMESTAMP"))
 		{
-			return "datetime";
-		}
-		else if (c.type.equals("TIMESTAMP"))
-		{
-			return "date";
+			return "timestamp";
 		}
 		else if (c.type.equals("LONG") || c.type.equals("BIGINT"))
 		{
