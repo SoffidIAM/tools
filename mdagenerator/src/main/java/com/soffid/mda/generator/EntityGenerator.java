@@ -1550,7 +1550,7 @@ public class EntityGenerator<E> {
 					+ "\t\t"+cl.getName(Translate.DEFAULT)+"CacheEntry entry = new "+cl.getName(Translate.DEFAULT)+"CacheEntry ();\n"
 					+ "\t\tentry."+cl.getVarName()+" = new "+cl.getFullName(Translate.DEFAULT)+"("+cl.getVarName()+");\n"
 					+ "\t\tentry.timeStamp = System.currentTimeMillis();\n"
-					+ "\t\tmap"+cl.getName(Translate.DEFAULT)+".put(id, entry);\n"
+					+ "\t\tmap"+cl.getName(Translate.DEFAULT)+".put(com.soffid.iam.utils.Security.getCurrentTenantName()+\":\"+id, entry);\n"
 					+ "\t}" + "\n" );
 
 			out.println ( "\t/**" + "\n"
@@ -1559,11 +1559,12 @@ public class EntityGenerator<E> {
 			out.println ( "\tprotected synchronized "+cl.getFullName(Translate.DEFAULT)+" get" +cl.getName(Translate.DEFAULT)+"CacheEntry (" +
 						entity.getIdentifier().getJavaType(Translate.DEFAULT)+" "+entity.getIdentifier().getName(Translate.DEFAULT)+")\n"
 					+ "\t{" + "\n"
-					+ "\t\t"+cl.getName(Translate.DEFAULT)+"CacheEntry entry = ("+cl.getName(Translate.DEFAULT)+"CacheEntry) map"+cl.getName(Translate.DEFAULT)+".get ("+entity.getIdentifier().getName(Translate.DEFAULT)+");\n"
+					+ "\t\t"+cl.getName(Translate.DEFAULT)+"CacheEntry entry = ("+cl.getName(Translate.DEFAULT)+"CacheEntry) map"
+						+cl.getName(Translate.DEFAULT)+".get (com.soffid.iam.utils.Security.getCurrentTenantName()+\":\"+"+entity.getIdentifier().getName(Translate.DEFAULT)+");\n"
 					+ "\t\tif (entry == null) return null;\n"
 					+ "\t\tif (entry.timeStamp + map"+cl.getName(Translate.DEFAULT)+"Timeout < System.currentTimeMillis())\n"
 					+ "\t\t{\n"
-					+ "\t\t\tmap"+cl.getName(Translate.DEFAULT)+".remove ("+entity.getIdentifier().getName(Translate.DEFAULT)+");\n"
+					+ "\t\t\tmap"+cl.getName(Translate.DEFAULT)+".remove (com.soffid.iam.utils.Security.getCurrentTenantName()+\":\"+"+entity.getIdentifier().getName(Translate.DEFAULT)+");\n"
 					+ "\t\t\treturn null;\n"
 					+ "\t\t}\n"
 					+ "\t\treturn new "+cl.getFullName(Translate.DEFAULT)+"(entry."+cl.getVarName()+");\n"
@@ -1574,7 +1575,7 @@ public class EntityGenerator<E> {
 			out.println ( "\tprotected synchronized void remove" +cl.getName(Translate.DEFAULT)+"CacheEntry (" +
 						entity.getIdentifier().getJavaType(Translate.DEFAULT)+" "+entity.getIdentifier().getName(Translate.DEFAULT)+")\n"
 					+ "\t{" + "\n"
-					+ "\t\tmap"+cl.getName(Translate.DEFAULT)+".remove ("+entity.getIdentifier().getName(Translate.DEFAULT)+");\n"
+					+ "\t\tmap"+cl.getName(Translate.DEFAULT)+".remove (com.soffid.iam.utils.Security.getCurrentTenantName()+\":\"+"+entity.getIdentifier().getName(Translate.DEFAULT)+");\n"
 					+ "\t}" + "\n" );
 
 			

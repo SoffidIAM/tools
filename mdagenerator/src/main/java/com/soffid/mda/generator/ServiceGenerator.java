@@ -190,7 +190,7 @@ public class ServiceGenerator {
 		String packageName = (translated ? "com.soffid.iam": "es.caib.seycon.ng");
 		String basePackage = packageName;
 		
-		if (generator.getBasePackage () != null)
+		if (!"com.soffid.iam".equals(generator.getBasePackage()))
 		{
 			packageName = generator.getBasePackage();
 		}
@@ -247,7 +247,7 @@ public class ServiceGenerator {
 		String packageName = (translated ? "com.soffid.iam": "es.caib.seycon.ng");
 		String basePackage = packageName;
 		
-		if (generator.getBasePackage () != null)
+		if (!"com.soffid.iam".equals(generator.getBasePackage()))
 		{
 			packageName = generator.getBasePackage();
 		}
@@ -618,7 +618,7 @@ public class ServiceGenerator {
 			return;
 		
 		String altClassName;
-		if (generator.getBasePackage() != null)
+		if (!"com.soffid.iam".equals(generator.getBasePackage()))
 		{
 			return;
 		}
@@ -642,7 +642,7 @@ public class ServiceGenerator {
 		f.getParentFile().mkdirs();
 		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
-//		System.out.println ("Generating "+f.getPath());
+//		System.out.println ("Generating ALT SERVICE LOCATOR "+f.getPath());
 
 		out.println ( "//" + endl
 			+ "// (C) 2013 Soffid" + endl
@@ -747,7 +747,7 @@ public class ServiceGenerator {
 		}
 		else
 		{
-			if (generator.getBasePackage() != null)
+			if (!"com.soffid.iam".equals(generator.getBasePackage()))
 			{
 				packageName = generator.getBasePackage();
 				file = file + "/" + packageName.replace('.', '/');
