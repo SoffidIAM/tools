@@ -7,8 +7,12 @@
 package es.caib.seycon.ng.comu;
 import com.soffid.mda.annotation.*;
 
+import es.caib.seycon.ng.model.GrupEntity;
+import es.caib.seycon.ng.model.UsuariEntity;
+
 @ValueObject ( translatedName="Group",
 	 translatedPackage="com.soffid.iam.api")
+@JsonObject(hibernateClass=GrupEntity.class)
 public abstract class Grup {
 
 	@Attribute(translated = "name" )

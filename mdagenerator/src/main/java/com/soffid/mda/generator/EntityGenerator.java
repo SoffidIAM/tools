@@ -15,6 +15,7 @@ import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
 
+import com.soffid.mda.annotation.JsonObject;
 import com.soffid.mda.parser.AbstractModelAttribute;
 import com.soffid.mda.parser.AbstractModelClass;
 import com.soffid.mda.parser.ModelAttribute;
@@ -57,6 +58,7 @@ public class EntityGenerator<E> {
 			{
 				generateUml (element);
 			}
+			generateJoinsDescriptor((AbstractModelClass) element);
 		}
 		generateSearchCriteria();
 //		if ( modelPackage.equals("com.soffid.iam.model"))
@@ -3868,4 +3870,78 @@ public class EntityGenerator<E> {
 			reader.generateImage(new FileOutputStream(f), new FileFormatOption(FileFormat.SVG));
 		}
 	}
+	
+	void generateJoinsDescriptor(AbstractModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
+		int scope = Translate.DEFAULT;
+		String modelPackage = generator.getModelPackage(scope);
+		String file = generator.getCoreResourcesDir()+ "/" + entity.getPackageDir(scope)+ entity.getName(scope) + ".query.json";
+//			System.out.println( "Generating " + file );
+		File f = new File(file);
+		f.getParentFile().mkdirs();
+		SmartPrintStream out = new SmartPrintStream (f);
+
+		out.println( "{" );
+		out.println ("  \"joins\": [");
+		boolean firstJoin = true;
+		for (AbstractModelAttribute att: entity.getAllAttributes()) {
+			if (att.getDataType().isEntity()) {
+				if (!firstJoin) 
+					out.println(",");
+				firstJoin = false;
+				out.print("    {\"name\":\"");
+				out.print(att.getName());
+				out.print("\",\"targetClass\":\"");
+				out.print(att.getDataType().getFullName(scope));
+				out.print("\",\"multiple\":false");
+				AbstractModelAttribute reverse = att.getReverseAttribute();
+				if (reverse == null)
+					reverse = findByForeign(att.getDataType(), att.getColumn());
+				if (reverse != null) 
+					out.print(",\"reverse\":\""+reverse.getName()+"\"");
+				out.print("}");
+			}
+			else if (att.getDataType().isCollection() && att.getDataType().getChildClass().isEntity()) {
+				if (!firstJoin) 
+					out.println(",");
+				firstJoin = false;
+				out.print("    {\"name\":\"");
+				out.print(att.getName());
+				out.print("\",\"targetClass\":\"");
+				out.print(att.getDataType().getChildClass().getFullName(scope));
+				out.print("\",\"multiple\":true");
+				AbstractModelAttribute reverse = null;
+				if (att.getForeignKey() != null)
+					reverse = findByColumn(att.getDataType().getChildClass(), att.getForeignKey());
+				if (reverse != null) {
+					out.print(",\"reverse\":\""+reverse.getName()+"\"");
+				}
+				out.print("}");
+			}
+		}
+		if (!firstJoin)
+			out.println();
+		out.println ("  ]");
+		out.println ("}");
+
+		out.close();
+	}
+
+	private AbstractModelAttribute findByColumn(AbstractModelClass dataType, String column) {
+		for (AbstractModelAttribute att: dataType.getAttributes()) {
+			if (att.getColumn() != null &&
+					att.getColumn().equals(column))
+				return att;
+		}
+		return null;
+	}
+
+	private AbstractModelAttribute findByForeign(AbstractModelClass dataType, String foreignKey) {
+		for (AbstractModelAttribute att: dataType.getAttributes()) {
+			if (att.getForeignKey() != null &&
+					att.getForeignKey().equals(foreignKey))
+				return att;
+		}
+		return null;
+	}
+
 }

@@ -48,7 +48,7 @@ public abstract class GrupEntity {
 	@ForeignKey (foreignColumn="UGR_IDGRU")
 	public java.util.Collection<es.caib.seycon.ng.model.UsuariGrupEntity> usuarisGrupSecundari;
 
-	@Column (name="GRU_IDMAQ")
+	@Column (name="GRU_IDMAQ", reverseAttribute = "grups")
 	@Nullable
 	public es.caib.seycon.ng.model.MaquinaEntity servidorOfimatic;
 
@@ -62,7 +62,7 @@ public abstract class GrupEntity {
 	@ForeignKey (foreignColumn="GRU_PARE")
 	public java.util.Collection<es.caib.seycon.ng.model.GrupEntity> fills;
 
-	@Column (name="GRU_PARE")
+	@Column (name="GRU_PARE", reverseAttribute = "fills")
 	@Nullable
 	public es.caib.seycon.ng.model.GrupEntity pare;
 
