@@ -362,7 +362,7 @@ public class JascutGenerator {
 
 		for (AbstractModelClass dep: cl.getDepends())
 		{
-			if (dep.isEntity()  ?  fileName.equals("entity") && generator.isTranslateEntities() && ! generator.isTranslatedOnly() : 
+			if (dep.isEntity()  ?  fileName.equals("entity") && generator.isTranslateEntities() && ! generator.isTranslated() : 
 				dep.isService() ? fileName.equals ("service") :
 				false)
 			{

@@ -40,7 +40,7 @@ public class ServiceGenerator {
 		this.parser = parser;
 		if (generator.getBasePackage() != null)
 			rootPkg = generator.getBasePackage();
-		else if (generator.isTranslatedOnly())
+		else if (generator.isTranslated())
 		{
 			rootPkg = "com.soffid.iam";
 		}
@@ -58,9 +58,11 @@ public class ServiceGenerator {
 			pkg = rootPkg;
 		}
 		for (AbstractModelClass service: parser.getServices()) {
-			generateInterface (service, Translate.SERVICE_SCOPE);
-			generateBase(service, Translate.SERVICE_SCOPE);
-			if (service.isTranslated())
+			if (! parser.isTranslateOnly()) {
+				generateInterface (service, Translate.SERVICE_SCOPE);
+				generateBase(service, Translate.SERVICE_SCOPE);
+			}
+			if (service.isTranslated() || parser.isTranslateOnly())
 			{
 				generateInterface (service, Translate.ALTSERVICE_SCOPE);
 				generateBase(service, Translate.ALTSERVICE_SCOPE);
@@ -73,10 +75,12 @@ public class ServiceGenerator {
 			}
 			if (generator.isGenerateEjb() && ! service.isInternal() && !service.isServerOnly())
 			{
-				generateEjbHome(service, Translate.SERVICE_SCOPE);
-				generateEjbInterface (service, Translate.SERVICE_SCOPE);
-				generateEjbBean(service, Translate.SERVICE_SCOPE);
-				if (service.isTranslated())
+				if (!parser.isTranslateOnly()) {
+					generateEjbHome(service, Translate.SERVICE_SCOPE);
+					generateEjbInterface (service, Translate.SERVICE_SCOPE);
+					generateEjbBean(service, Translate.SERVICE_SCOPE);
+				}
+				if (service.isTranslated() || parser.isTranslateOnly())
 				{
 					generateEjbHome(service, Translate.ALTSERVICE_SCOPE);
 					generateEjbInterface (service, Translate.ALTSERVICE_SCOPE);
@@ -168,12 +172,12 @@ public class ServiceGenerator {
 			if (! service.isInternal() && ! path.isEmpty()) {
 				out.println ( "\t\tbean = locator.getService(\"" + service.getSpringBeanName(generator, Translate.SERVICE_SCOPE) + "\");" + endl
 					+ "\t\tif (bean != null)" + endl
-					+ "\t\t\tpublisher.publish(bean, \"" + path + (generator.isTranslatedOnly() ? "-en": "") + "\", \"" + role + "\");" + endl );
+					+ "\t\t\tpublisher.publish(bean, \"" + path + (generator.isTranslated() ? "-en": "") + "\", \"" + role + "\");" + endl );
 				if (service.isTranslated())
 				{
 					out.println ( "\t\tbean = locator.getService(\"" + service.getSpringBeanName(generator, Translate.ALTSERVICE_SCOPE) + "\");" + endl
 							+ "\t\tif (bean != null)" + endl
-							+ "\t\t\tpublisher.publish(bean, \"" + path + (generator.isTranslatedOnly() ? "": "-en") + "\", \"" + role + "\");" + endl );
+							+ "\t\t\tpublisher.publish(bean, \"" + path + (generator.isTranslated() ? "": "-en") + "\", \"" + role + "\");" + endl );
 				}
 			}
 		}
@@ -413,7 +417,7 @@ public class ServiceGenerator {
 		}
 		else
 		{
-			if (generator.isTranslatedOnly())
+			if (generator.isTranslated())
 			{
 				file = file + "/com/soffid/iam";
 				packageName = "com.soffid.iam";
@@ -425,7 +429,7 @@ public class ServiceGenerator {
 			}
 			className = "ServiceLocator";
 		}
-		String commonPkg = generator.isTranslatedOnly() ? "com.soffid.iam" : "es.caib.seycon.ng";
+		String commonPkg = generator.isTranslated() ? "com.soffid.iam" : "es.caib.seycon.ng";
 		if (generator.getBasePackage() != null)
 			commonPkg = generator.getBasePackage();
 
@@ -623,7 +627,7 @@ public class ServiceGenerator {
 			return;
 		}
 		
-		if (generator.isTranslatedOnly())
+		if (generator.isTranslated())
 		{
 			file = file + "/es/caib/seycon/ng";
 			packageName = "es.caib.seycon.ng";
@@ -636,7 +640,7 @@ public class ServiceGenerator {
 			altClassName = "es.caib.seycon.ng.ServiceLocator";
 		}
 		className = "ServiceLocator";
-		String commonPkg = generator.isTranslatedOnly() ? "com.soffid.iam" : "es.caib.seycon.ng";
+		String commonPkg = generator.isTranslated() ? "com.soffid.iam" : "es.caib.seycon.ng";
 
 		File f = new File (file+"/"+className+".java");
 		f.getParentFile().mkdirs();
@@ -1088,17 +1092,27 @@ public class ServiceGenerator {
 		for (AbstractModelClass service: parser.getServices()) {
 			if (!service.isInternal() && ! service.isServerOnly())
 			{
-				int scope = Translate.SERVICE_SCOPE;
-				do
-				{
+				if (parser.isTranslateOnly() ) {
+					int scope = Translate.ALTSERVICE_SCOPE;
 					out.println ( "\t<ejb-deployment ejb-name=\"" + service.getEjbName(scope) + "\">" + endl
-						+ "\t\t<jndi name=\"soffid.ejb." + service.getFullName(scope) + "\"/>" + endl
-						+ "\t</ejb-deployment>" + endl
-						+ "" );
-					if (scope == Translate.ALTSERVICE_SCOPE || ! service.isTranslated())
-						break;
-					scope = Translate.ALTSERVICE_SCOPE;
-				} while (true);
+							+ "\t\t<jndi name=\"soffid.ejb." + service.getFullName(scope) + "\"/>" + endl
+							+ "\t</ejb-deployment>" + endl
+							+ "" );
+					
+				} else {
+					int scope = Translate.SERVICE_SCOPE;
+					do
+					{
+						out.println ( "\t<ejb-deployment ejb-name=\"" + service.getEjbName(scope) + "\">" + endl
+								+ "\t\t<jndi name=\"soffid.ejb." + service.getFullName(scope) + "\"/>" + endl
+								+ "\t</ejb-deployment>" + endl
+								+ "" );
+						if (scope == Translate.ALTSERVICE_SCOPE || ! service.isTranslated())
+							break;
+						scope = Translate.ALTSERVICE_SCOPE;
+					} while (true);
+					
+				}
 			}
 		}
 		out.println ( "" + endl

@@ -384,10 +384,16 @@ public class ModelClass extends AbstractModelClass {
 
 	@Override
 	public String getName() {
+		String cl;
 		if (underlyingClass != null)
-			return underlyingClass.getSimpleName();
+			cl = underlyingClass.getSimpleName();
 		else
-			return objectClass.toString();
+			cl = objectClass.toString();
+		if (cl.startsWith("Meta"))
+			cl = cl.substring(4);
+		if (cl.endsWith("Meta"))
+			cl = cl.substring(0, cl.length()-4);
+		return cl;
 	}
 
 	@Override
@@ -489,7 +495,8 @@ public class ModelClass extends AbstractModelClass {
 	@Override
 	public String getJavaType() {
 		Entity entity = (Entity) getAnnotation(Entity.class);
-		if (parser.isTranslateEntities() && isEntity()  &&  !entity.translatedName().isEmpty())
+		if ((parser.isTranslateEntities() && isEntity() || parser.isTranslate()) &&  
+			!entity.translatedName().isEmpty())
 		{
 			if (entity.translatedPackage().isEmpty())
 				return getPackage()+"."+entity.translatedName();
@@ -549,9 +556,9 @@ public class ModelClass extends AbstractModelClass {
 				return vo.translatedPackage()+"."+vo.translatedName();
 			else if (parser.isTranslateEntities() && entity != null && ! entity.translatedName().isEmpty())
 				return entity.translatedPackage()+"."+entity.translatedName();
-			else if (parser.isTranslateOnly() && en != null && ! en.translatedName().isEmpty())
+			else if (parser.isTranslate() && en != null && ! en.translatedName().isEmpty())
 				return en.translatedPackage()+"."+en.translatedName();
-			else if (parser.isTranslateOnly() && tc != null && ! tc.name().isEmpty())
+			else if (parser.isTranslate() && tc != null && ! tc.name().isEmpty())
 				return tc.pkg()+"."+tc.name();
 			else
 				return getJavaType(); 
@@ -1003,7 +1010,7 @@ public class ModelClass extends AbstractModelClass {
 			name = generator.getPluginName() + "-";
 		} 
 		else if (isService() &&
-				scope == (generator.isTranslatedOnly() ? Translate.SERVICE_SCOPE: Translate.ALTSERVICE_SCOPE))
+				scope == (generator.isTranslated() ? Translate.SERVICE_SCOPE: Translate.ALTSERVICE_SCOPE))
 		{
 			suffix = "-v2";
 		}
@@ -1207,5 +1214,19 @@ public class ModelClass extends AbstractModelClass {
 	@Override
 	public boolean isFuture() {
 		return _future;
+	}
+
+
+	@Override
+	public String getSinceAttribute() {
+		Entity e = (Entity)getAnnotation(Entity.class);
+		return e != null && !e.since().isEmpty() ? e.since(): null;
+	}
+
+
+	@Override
+	public String getUntilAttribute() {
+		Entity e = (Entity)getAnnotation(Entity.class);
+		return e != null && !e.until().isEmpty() ? e.until(): null;
 	}
 }

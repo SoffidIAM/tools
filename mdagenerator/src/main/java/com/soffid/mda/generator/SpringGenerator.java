@@ -68,7 +68,7 @@ public class SpringGenerator {
 		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
 
 		String pkg = generator.getBasePackage() != null ? generator.getBasePackage():
-					generator.isTranslatedOnly() ? "com.soffid.iam": "es.caib.seycon.ng";
+					generator.isTranslated() ? "com.soffid.iam": "es.caib.seycon.ng";
 			
 //		System.out.println ("Generating "+f.getPath());
 

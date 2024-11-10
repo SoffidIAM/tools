@@ -74,6 +74,12 @@ public class Mda2Mojo extends AbstractMojo {
 	@Parameter
 	private boolean translate = true;
 	/**
+	 * Dismiss non translated versions
+	 * 
+	 */
+	@Parameter
+	private boolean onlyTranslate = true;
+	/**
 	 * Check HQL Parameters
 	 * 
 	 */
@@ -265,7 +271,8 @@ public class Mda2Mojo extends AbstractMojo {
 		try 
 		{
 			Parser p = new Parser ();
-			p.setTranslateOnly (translate);
+			p.setTranslate (translate);
+			p.setTranslateOnly(onlyTranslate);
 			p.setDefaultException(defaultException);
 			p.setTranslateEntities(translateEntities);
 			File classesDir = new File(project.getBuild().getOutputDirectory());
@@ -284,7 +291,8 @@ public class Mda2Mojo extends AbstractMojo {
 			Generator g = new Generator ();
 			g.setAsyncCollectionClass(asyncCollectionClass);
 			g.setPagedCollectionClass(pagedResultClass);
-			g.setTranslatedOnly(translate);
+			g.setTranslated(translate);
+			g.setTransaltedOnly(onlyTranslate);
 			g.setTranslateEntities(translateEntities);
 			try 
 			{
@@ -317,7 +325,7 @@ public class Mda2Mojo extends AbstractMojo {
 					g.setTargetServer(targetServer);
 				g.setDefaultException(defaultException);
 				g.setGenerateUml(generateDoc);
-				g.setTranslatedOnly(translate);
+				g.setTranslated(translate);
 				g.setTranslateEntities(translateEntities);
 				g.setGenerateDeprecated(generateDeprecated);
 				g.setHqlFullTest(hqlFullTest);

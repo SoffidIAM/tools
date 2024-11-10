@@ -3,6 +3,7 @@ package com.soffid.mda.generator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.sql.Date;
 import java.util.List;
 
 import com.soffid.mda.annotation.JsonObject;
@@ -1213,6 +1214,11 @@ public class ValueObjectGenerator {
 			out.print ("  \"class\": \"");
 			out.print(vo.getFullName(scope));
 			out.println("\",");
+			if (vo.isJsonObject()) {
+				JsonObject j = vo.getJsonObject();
+				addAttribute(out, j.startAttribute(), "start");
+				addAttribute(out, j.endAttribute(), "end");
+			}
 			out.println ("  \"attributes\": [");
 			//
 			// Attributes
@@ -1307,6 +1313,12 @@ public class ValueObjectGenerator {
 
 	}
 
+	private void addAttribute(SmartPrintStream out, String startAttribute, String tag) {
+		if (startAttribute != null && !startAttribute.isEmpty()) {
+			out.println ("  \""+tag+"\": \""+startAttribute+"\",");
+		}
+	}
+
 	private AbstractModelAttribute findHibernateAttribute(AbstractModelClass entity, AbstractModelAttribute att, SmartPrintStream out) {
 		if (entity == null)
 			return null;
@@ -1322,4 +1334,50 @@ public class ValueObjectGenerator {
 		}
 		return null;
 	}
+	
+	public void generateCustomAttributes(Generator generator, Parser parser) throws FileNotFoundException, UnsupportedEncodingException {
+		this.generator = generator;
+		this.parser = parser;
+		this.scope = Translate.SERVICE_SCOPE; 
+		
+		for (AbstractModelClass vo: parser.getValueObjects()) {
+			if (vo.isJsonObject()) {
+				JsonObject jsonObject = vo.getJsonObject();
+				createAttribute(vo, jsonObject.createdOnAttribute(), null, Date.class);
+				createAttribute(vo, jsonObject.createdByAttribute(), null, String.class);
+				createAttribute(vo, jsonObject.updatedOnAttribute(), null, Date.class);
+				createAttribute(vo, jsonObject.updatedByAttribute(), null, String.class);
+				createAttribute(vo, jsonObject.deletedOnAttribute(), null, Date.class);
+				createAttribute(vo, jsonObject.deletedByAttribute(), null, String.class);
+				createAttribute(vo, jsonObject.startAttribute(), null, Date.class);
+				createAttribute(vo, jsonObject.endAttribute(), null, Date.class);
+				AbstractModelClass entity = (AbstractModelClass) parser.getElement(jsonObject.hibernateClass());
+				if (entity != null) {
+					createAttribute(entity, jsonObject.createdOnAttribute(), "CREDAT", Date.class);
+					createAttribute(entity, jsonObject.createdByAttribute(), "CREUSE", String.class);
+					createAttribute(entity, jsonObject.updatedOnAttribute(), "UPDDAT", Date.class);
+					createAttribute(entity, jsonObject.updatedByAttribute(), "UPDUSE", String.class);
+					createAttribute(entity, jsonObject.deletedOnAttribute(), "DELDAT", Date.class);
+					createAttribute(entity, jsonObject.deletedByAttribute(), "DELUSE", String.class);
+					createAttribute(entity, jsonObject.startAttribute(), "START", Date.class);
+					createAttribute(entity, jsonObject.endAttribute(), "END", Date.class);
+				}
+			}
+		}
+	}
+
+	private AbstractModelAttribute createAttribute(AbstractModelClass entity, String attName, String columnName, Class class1) {
+		if (attName == null || attName.isBlank()) return null;
+		String prefix = "";
+		for (AbstractModelAttribute att: entity.getAttributes()) {
+			if (att.getName().equals(attName))
+				return att;
+			if (prefix.isEmpty() && att.getColumn() != null && att.getColumn().contains("_"))
+				prefix = att.getColumn().substring(0, att.getColumn().indexOf("_") + 1);
+		}
+		CustomModelAttribute m = new CustomModelAttribute(parser, entity, class1, attName, prefix + columnName);
+		entity.getAttributes().add(m);
+		return m;
+	}
+
 }

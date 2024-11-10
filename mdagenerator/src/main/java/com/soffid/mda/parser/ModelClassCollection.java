@@ -453,4 +453,14 @@ public class ModelClassCollection extends AbstractModelClass {
 		return false;
 	}
 
+	@Override
+	public String getSinceAttribute() {
+		return null;
+	}
+
+	@Override
+	public String getUntilAttribute() {
+		return null;
+	}
+
 }

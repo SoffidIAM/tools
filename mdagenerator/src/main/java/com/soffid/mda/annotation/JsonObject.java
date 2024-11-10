@@ -10,4 +10,12 @@ import java.lang.annotation.Target;
 public @interface JsonObject {
 	boolean serializerDelegate() default false;
 	Class<?> hibernateClass() ;
+	String createdOnAttribute() default "createdOn";
+	String createdByAttribute() default "createdBy";
+	String updatedOnAttribute() default "updatedOn";
+	String updatedByAttribute() default "updatedBy";
+	String deletedOnAttribute() default "deletedOn";
+	String deletedByAttribute() default "deletedBy";
+	String startAttribute() default "createdOn";
+	String endAttribute() default "";
 }

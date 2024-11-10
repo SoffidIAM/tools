@@ -23,7 +23,16 @@ public class Generator {
 	String targetServer = "jboss3"; 
 	String asyncCollectionClass = null;
 	String pagedCollectionClass = null;
+	boolean transaltedOnly;
 	
+	public boolean isTransaltedOnly() {
+		return transaltedOnly;
+	}
+
+	public void setTransaltedOnly(boolean transaltedOnly) {
+		this.transaltedOnly = transaltedOnly;
+	}
+
 	public String getTargetServer() {
 		return targetServer;
 	}
@@ -127,15 +136,15 @@ public class Generator {
 		this.jascutDir = jascutDir;
 	}
 
-	public boolean isTranslatedOnly() {
-		return translatedOnly;
+	public boolean isTranslated() {
+		return translated;
 	}
 
-	public void setTranslatedOnly(boolean translatedOnly) {
-		this.translatedOnly = translatedOnly;
+	public void setTranslated(boolean translatedOnly) {
+		this.translated = translatedOnly;
 	}
 
-	boolean translatedOnly;
+	boolean translated;
 
 	public void configure (File dir)
 	{
@@ -229,8 +238,9 @@ public class Generator {
 	public void generate (Parser parser) throws IOException
 	{
 		parser.setDefaultException(getDefaultException());
-		parser.setTranslateOnly (this.isTranslatedOnly());
+		parser.setTranslate (this.isTranslated());
 		parser.setTranslateEntities(translateEntities);
+		new ValueObjectGenerator().generateCustomAttributes(this, parser);
 		new EntityGenerator().generate (this, parser);
 		new ServiceGenerator().generate(this, parser);
 		new ValueObjectGenerator().generate (this, parser);
@@ -271,7 +281,7 @@ public class Generator {
 	}
 
 	public String getRootPkg() {
-		if (translatedOnly)
+		if (translated)
 			return "com.soffid.iam";
 		else
 			return "es.caib.seycon.ng";
@@ -298,9 +308,9 @@ public class Generator {
 			return basePackage+".model";
 		}
 		else if (scope == Translate.SERVICE_SCOPE &&
-				isTranslatedOnly() ||
+				isTranslated() ||
 			scope == Translate.ALTSERVICE_SCOPE &&
-				! isTranslatedOnly() ||
+				! isTranslated() ||
 			scope == Translate.ENTITY_SCOPE &&
 				isTranslateEntities() ||
 			scope == Translate.TRANSLATE)
@@ -324,7 +334,7 @@ public class Generator {
 		}
 		else
 		{
-			if (isTranslateEntities() || isTranslatedOnly())
+			if (isTranslateEntities() || isTranslated())
 			{
 				return  "com/soffid/iam/model";
 			}

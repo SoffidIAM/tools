@@ -14,4 +14,6 @@ public @interface Entity  {
 	String discriminatorColumn() default "";
 	String discriminatorValue () default "";
 	String tenantFilter() default "";
+	String since() default "";
+	String until() default "";
 }

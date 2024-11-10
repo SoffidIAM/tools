@@ -196,7 +196,17 @@ public class Parser {
 	private LinkedList<ModelClass> criterias;
 	private LinkedList<ModelClass> enumerations;
 	private LinkedList<ModelClass> exceptions;
+	private boolean translate;
 	private boolean translateOnly;
+
+	public boolean isTranslateOnly() {
+		return translateOnly;
+	}
+
+	public void setTranslateOnly(boolean translateOnly) {
+		this.translateOnly = translateOnly;
+	}
+
 	private boolean translateEntities;
 	private String defaultException;
 	public boolean isTranslateEntities() {
@@ -207,8 +217,8 @@ public class Parser {
 		this.translateEntities = translateEntities;
 	}
 
-	public boolean isTranslateOnly() {
-		return translateOnly;
+	public boolean isTranslate() {
+		return translate;
 	}
 
 	public List<ModelClass> getActors ()
@@ -288,8 +298,8 @@ public class Parser {
 		return exceptions;
 	}
 
-	public void setTranslateOnly(boolean translatedOnly) {
-		this.translateOnly = translatedOnly;
+	public void setTranslate(boolean translatedOnly) {
+		this.translate = translatedOnly;
 		
 	}
 

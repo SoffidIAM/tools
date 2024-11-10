@@ -46,6 +46,7 @@ public class EntityGenerator<E> {
 
 		modelPackage = generator.getModelPackage(Translate.ENTITY_SCOPE); 
 		modelDir = generator.getModelDir ();
+		
 		for (ModelClass element: parser.getEntities())
 		{
 			generateEntity ((AbstractModelClass) element);
@@ -386,7 +387,7 @@ public class EntityGenerator<E> {
 		{
 			if (cl.isValueObject())
 			{
-				if (cl.isTranslated() && generator.isTranslatedOnly())
+				if (cl.isTranslated() && generator.isTranslated())
 				{
 					generateVoHandlers(out, subClass, cl, Translate.TRANSLATE);
 					if (! cl.getName(Translate.DONT_TRANSLATE).equals (cl.getName(Translate.TRANSLATE)))
@@ -1313,7 +1314,7 @@ public class EntityGenerator<E> {
 		{
 			if (cl != null && cl . isValueObject()) {
 				generateVOTransformers(out, entity, subClass, cl);
-				if (generator.isTranslatedOnly() && cl.isTranslated() && !
+				if (generator.isTranslated() && cl.isTranslated() && !
 						cl.getName(Translate.DONT_TRANSLATE).equals(cl.getName(Translate.TRANSLATE)))
 					generateAltVOCopiers(out, entity, subClass, cl);
 			}
@@ -3874,13 +3875,17 @@ public class EntityGenerator<E> {
 	void generateJoinsDescriptor(AbstractModelClass entity) throws FileNotFoundException, UnsupportedEncodingException {
 		int scope = Translate.DEFAULT;
 		String modelPackage = generator.getModelPackage(scope);
-		String file = generator.getCoreResourcesDir()+ "/" + entity.getPackageDir(scope)+ entity.getName(scope) + ".query.json";
+		String file = generator.getCoreResourcesDir()+ "/" + entity.getPackageDir(scope)+ entity.getName(scope) + ".entity.json";
 //			System.out.println( "Generating " + file );
 		File f = new File(file);
 		f.getParentFile().mkdirs();
 		SmartPrintStream out = new SmartPrintStream (f);
 
 		out.println( "{" );
+		if (entity.getSinceAttribute() != null)
+			out.println("  \"since\": \""+entity.getSinceAttribute()+"\",");
+		if (entity.getUntilAttribute() != null)
+			out.println("  \"until\": \""+entity.getUntilAttribute()+"\",");
 		out.println ("  \"joins\": [");
 		boolean firstJoin = true;
 		for (AbstractModelAttribute att: entity.getAllAttributes()) {
