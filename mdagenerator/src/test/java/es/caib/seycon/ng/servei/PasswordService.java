@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 	es.caib.seycon.ng.model.DominiContrasenyaEntity.class,
 	es.caib.seycon.ng.model.PoliticaContrasenyaEntity.class,
 	es.caib.seycon.ng.model.DispatcherEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class,
+	com.soffid.iam.model.MetaAccountEntity.class,
 	es.caib.seycon.ng.model.AuditoriaEntity.class})
 public abstract class PasswordService {
 

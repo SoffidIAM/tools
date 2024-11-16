@@ -10,7 +10,7 @@ import com.soffid.mda.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service ( grantees={Roles.Tothom.class})
-@Depends ({es.caib.seycon.ng.model.AccountEntity.class})
+@Depends ({com.soffid.iam.model.MetaAccountEntity.class})
 public abstract class SelfService {
 
 	@Transactional(rollbackFor={java.lang.Exception.class})

@@ -9,7 +9,7 @@ import com.soffid.mda.annotation.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Service @Depends ({es.caib.seycon.ng.model.AccountEntity.class,
+@Service @Depends ({com.soffid.iam.model.MetaAccountEntity.class,
 	es.caib.seycon.ng.model.UserAccountEntity.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	es.caib.seycon.ng.model.AccountAccessEntity.class,

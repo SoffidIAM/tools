@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	es.caib.seycon.ng.model.SecretEntity.class,
 	es.caib.seycon.ng.sync.servei.SecretConfigurationService.class,
-	es.caib.seycon.ng.model.AccountEntity.class,
+	com.soffid.iam.model.MetaAccountEntity.class,
 	es.caib.seycon.ng.model.DominiContrasenyaEntity.class})
 public abstract class SecretStoreService {
 

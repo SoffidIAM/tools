@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 	es.caib.seycon.ng.model.RolAssociacioRolEntity.class,
 	es.caib.seycon.ng.model.TasqueEntity.class,
 	es.caib.seycon.ng.model.DispatcherEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class,
+	com.soffid.iam.model.MetaAccountEntity.class,
 	es.caib.seycon.ng.model.RolsGrupEntity.class,
 	es.caib.seycon.ng.model.AutoritzacioPUERolEntity.class,
 	es.caib.seycon.ng.model.XarxaACEntity.class,

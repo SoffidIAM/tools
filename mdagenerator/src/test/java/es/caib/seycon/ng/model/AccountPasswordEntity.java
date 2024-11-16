@@ -9,7 +9,7 @@ import com.soffid.mda.annotation.*;
 
 @Entity (table="SC_ACCPWD" )
 @Depends ({es.caib.seycon.ng.comu.EstatContrasenya.class,
-	es.caib.seycon.ng.model.AccountEntity.class})
+	com.soffid.iam.model.MetaAccountEntity.class})
 public abstract class AccountPasswordEntity {
 
 	@Column (name="APW_ID")
@@ -32,7 +32,7 @@ public abstract class AccountPasswordEntity {
 	public java.lang.String active;
 
 	@Column (name="APW_ACC_ID")
-	public es.caib.seycon.ng.model.AccountEntity account;
+	public com.soffid.iam.model.MetaAccountEntity account;
 
 	@DaoFinder("select pwd\nfrom es.caib.seycon.ng.model.AccountPasswordEntity as pwd\nwhere pwd.account.id = :accountId\nand pwd.order=0")
 	public es.caib.seycon.ng.model.AccountPasswordEntity findLastByAccount(

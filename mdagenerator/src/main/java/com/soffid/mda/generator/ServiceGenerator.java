@@ -107,9 +107,11 @@ public class ServiceGenerator {
 		}
 		if (generator.isGenerateSync())
 		{
-			generateRemoteServiceLocatorProxy(false);
+			if (!generator.isTransaltedOnly()) {
+				generateRemoteServiceLocator(false);
+				generateRemoteServiceLocatorProxy(false);
+			}
 			generateRemoteServiceLocatorProxy(true);
-			generateRemoteServiceLocator(false);
 			generateRemoteServiceLocator(true);
 			generateRemoteServicePublisher();
 		}
@@ -226,11 +228,6 @@ public class ServiceGenerator {
 				+ "import java.util.Arrays;" + endl
 				+ "" + endl
 				+ "" + endl
-				+ "import "+commonPkg+".config.Config;" + endl
-				+ "import "+generator.getDefaultException()+";" + endl
-				+ "import "+commonPkg+".remote.RemoteInvokerFactory;" + endl
-				+ "import "+commonPkg+".remote.URLManager;" + endl
-				+ "" + endl
 				+ "/**" + endl
 				+ " * Locates and provides all available application services." + endl
 				+ " */" + endl
@@ -269,7 +266,7 @@ public class ServiceGenerator {
 //		System.out.println ("Generating "+f.getPath());
 
 		String commonPkg = translated ? "com.soffid.iam" : "es.caib.seycon.ng";
-		commonPkg = "es.caib.seycon.ng";
+//		commonPkg = "es.caib.seycon.ng";
 		
 		out.println ( "//" + endl
 			+ "// (C) 2013 Soffid" + endl

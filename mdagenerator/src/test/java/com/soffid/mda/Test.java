@@ -39,6 +39,7 @@ public class Test extends TestCase {
 		gen.configure (new File("target"));
 		gen.setGenerateUml(false);
 		gen.generate(parser);
+		gen.setTransaltedOnly(true);
 	}
 	
 	public Map<String,int[]>method () {

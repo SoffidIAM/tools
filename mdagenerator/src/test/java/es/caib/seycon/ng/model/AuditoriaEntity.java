@@ -19,7 +19,7 @@ import com.soffid.mda.annotation.*;
 	es.caib.seycon.ng.model.MaquinaEntity.class,
 	es.caib.seycon.ng.model.DispatcherEntity.class,
 	es.caib.seycon.ng.model.DominiCorreuEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class})
+	com.soffid.iam.model.MetaAccountEntity.class})
 public abstract class AuditoriaEntity {
 
 	@Column (name="AUD_ID")
@@ -114,7 +114,7 @@ public abstract class AuditoriaEntity {
 
 	@Column (name="AUD_ACC_ID")
 	@Nullable
-	public es.caib.seycon.ng.model.AccountEntity accountAssoc;
+	public com.soffid.iam.model.MetaAccountEntity accountAssoc;
 
 	@Column (name="AUD_MESSAG", length=1024)
 	@Nullable

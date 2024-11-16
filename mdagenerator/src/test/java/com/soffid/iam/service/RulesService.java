@@ -5,7 +5,10 @@
 //
 
 package com.soffid.iam.service;
+import com.soffid.iam.model.MetaAccountEntity;
 import com.soffid.mda.annotation.*;
+
+import java.util.Collection;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,4 +80,6 @@ public abstract class RulesService {
 		com.soffid.iam.api.Rule rule)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	}
+	
+	public void test(Collection<MetaAccountEntity> acc ) { }	
 }

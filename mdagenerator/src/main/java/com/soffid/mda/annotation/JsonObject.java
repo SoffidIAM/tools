@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 public @interface JsonObject {
 	boolean serializerDelegate() default false;
 	Class<?> hibernateClass() ;
+	String tenantFilter() default "tenant.id";
 	String createdOnAttribute() default "createdOn";
 	String createdByAttribute() default "createdBy";
 	String updatedOnAttribute() default "updatedOn";
@@ -18,4 +19,5 @@ public @interface JsonObject {
 	String deletedByAttribute() default "deletedBy";
 	String startAttribute() default "createdOn";
 	String endAttribute() default "";
+	String deletedAttribute() default "";
 }

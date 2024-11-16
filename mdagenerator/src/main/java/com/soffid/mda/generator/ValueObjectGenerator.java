@@ -1218,6 +1218,7 @@ public class ValueObjectGenerator {
 				JsonObject j = vo.getJsonObject();
 				addAttribute(out, j.startAttribute(), "start");
 				addAttribute(out, j.endAttribute(), "end");
+				addAttribute(out, j.deletedAttribute(), "deleted");
 			}
 			out.println ("  \"attributes\": [");
 			//
@@ -1351,8 +1352,10 @@ public class ValueObjectGenerator {
 				createAttribute(vo, jsonObject.deletedByAttribute(), null, String.class);
 				createAttribute(vo, jsonObject.startAttribute(), null, Date.class);
 				createAttribute(vo, jsonObject.endAttribute(), null, Date.class);
+				createAttribute(vo, jsonObject.deletedAttribute(), null, Boolean.class);
 				AbstractModelClass entity = (AbstractModelClass) parser.getElement(jsonObject.hibernateClass());
 				if (entity != null) {
+					entity.setJsonObject(jsonObject);
 					createAttribute(entity, jsonObject.createdOnAttribute(), "CREDAT", Date.class);
 					createAttribute(entity, jsonObject.createdByAttribute(), "CREUSE", String.class);
 					createAttribute(entity, jsonObject.updatedOnAttribute(), "UPDDAT", Date.class);
@@ -1361,6 +1364,7 @@ public class ValueObjectGenerator {
 					createAttribute(entity, jsonObject.deletedByAttribute(), "DELUSE", String.class);
 					createAttribute(entity, jsonObject.startAttribute(), "START", Date.class);
 					createAttribute(entity, jsonObject.endAttribute(), "END", Date.class);
+					createAttribute(entity, jsonObject.deletedAttribute(), "DELETED", Boolean.class);
 				}
 			}
 		}

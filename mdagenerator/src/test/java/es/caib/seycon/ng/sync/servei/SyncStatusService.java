@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 	es.caib.seycon.ng.sync.servei.SecretStoreService.class,
 	es.caib.seycon.ng.model.DispatcherEntity.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class,
+	com.soffid.iam.model.MetaAccountEntity.class,
 	es.caib.seycon.ng.sync.servei.ServerService.class})
 public abstract class SyncStatusService {
 

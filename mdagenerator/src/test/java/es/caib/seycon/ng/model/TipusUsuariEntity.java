@@ -12,7 +12,7 @@ import com.soffid.mda.annotation.*;
 	es.caib.seycon.ng.model.AuditoriaEntity.class,
 	es.caib.seycon.ng.comu.TipusUsuari.class,
 	es.caib.seycon.ng.model.PoliticaContrasenyaEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class})
+	com.soffid.iam.model.MetaAccountEntity.class})
 public abstract class TipusUsuariEntity {
 
 	@Column (name="TUS_ID")
@@ -30,7 +30,7 @@ public abstract class TipusUsuariEntity {
 	public java.util.Collection<es.caib.seycon.ng.model.PoliticaContrasenyaEntity> politiques;
 
 	@ForeignKey (foreignColumn="ACC_TUS_ID")
-	public java.util.Collection<es.caib.seycon.ng.model.AccountEntity> accounts;
+	public java.util.Collection<com.soffid.iam.model.MetaAccountEntity> accounts;
 
 	@DaoFinder
 	public es.caib.seycon.ng.model.TipusUsuariEntity findByCodi(

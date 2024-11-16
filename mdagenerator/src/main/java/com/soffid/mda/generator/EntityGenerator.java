@@ -306,7 +306,7 @@ public class EntityGenerator<E> {
 	
 	private String getSpec(ModelOperation op, boolean full, boolean pretty) {
 		StringBuffer b = new StringBuffer ();
-		b.append(op.getReturnType(Translate.DEFAULT));
+		b.append( op.getReturnType(Translate.DEFAULT));
 		b.append (" ");
 		if (full)
 		{
@@ -1839,6 +1839,17 @@ public class EntityGenerator<E> {
 					{
 						out.println("\t\tentity.setTenant  ( getTenantEntityDao().load (com.soffid.iam.utils.Security.getCurrentTenantId()) );");
 					}
+					JsonObject j = entity.getJsonObject();
+					if (j != null) {
+						if (j.createdOnAttribute() != null && !j.createdOnAttribute().isBlank())
+							out.println("\t\tentity."+j.createdOnAttribute()+" = new java.util.Date();");
+						if (j.createdByAttribute() != null && !j.createdByAttribute().isBlank())
+							out.println("\t\tentity."+j.createdByAttribute()+" = com.soffid.iam.util.Security.getCurrentAccount();");
+						if (j.updatedOnAttribute() != null && !j.updatedOnAttribute().isBlank())
+							out.println("\t\tentity."+j.updatedOnAttribute()+" = new java.util.Date();");
+						if (j.updatedByAttribute() != null && !j.updatedByAttribute().isBlank())
+							out.println("\t\tentity."+j.updatedByAttribute()+" = com.soffid.iam.util.Security.getCurrentAccount();");
+					}
 					out.println ( "\t\tthis.getHibernateTemplate().save(entity);" + "\n"
 						+ "\t\tthis.getHibernateTemplate().flush();" );
 					generateCleanCache (entity, out);
@@ -1864,6 +1875,13 @@ public class EntityGenerator<E> {
 						+ "\t\t}" + "\n"
 						+ "\t\tthis.getHibernateTemplate().update(entity);" + "\n"
 						+ "\t\tthis.getHibernateTemplate().flush();" );
+					JsonObject j = entity.getJsonObject();
+					if (j != null) {
+						if (j.updatedOnAttribute() != null && !j.updatedOnAttribute().isBlank())
+							out.println("\t\tentity."+j.updatedOnAttribute()+" = new java.util.Date();");
+						if (j.updatedByAttribute() != null && !j.updatedByAttribute().isBlank())
+							out.println("\t\tentity."+j.updatedByAttribute()+" = com.soffid.iam.util.Security.getCurrentAccount();");
+					}
 //					generateHibernateListenerMethods(rep, "updated", out);
 					generateCleanCache (entity, out);
 					out.println ( "\t}" + "\n" );

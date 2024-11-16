@@ -12,7 +12,7 @@ import com.soffid.mda.annotation.*;
 	es.caib.seycon.ng.model.RolEntity.class,
 	es.caib.seycon.ng.model.GrupEntity.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class})
+	com.soffid.iam.model.MetaAccountEntity.class})
 public abstract class AccountAccessEntity {
 
 	@Column (name="AAC_ROL_ID")
@@ -28,7 +28,7 @@ public abstract class AccountAccessEntity {
 	public es.caib.seycon.ng.model.UsuariEntity user;
 
 	@Column (name="AAC_ACC_ID")
-	public es.caib.seycon.ng.model.AccountEntity account;
+	public com.soffid.iam.model.MetaAccountEntity account;
 
 	@Column (name="AAC_ID")
 	@Nullable

@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 	es.caib.seycon.ng.model.MaquinaEntity.class,
 	es.caib.seycon.ng.model.ServeiEntity.class,
 	es.caib.seycon.ng.model.DispatcherEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class})
+	com.soffid.iam.model.MetaAccountEntity.class})
 public abstract class LogCollectorService {
 
 	@Transactional(rollbackFor={java.lang.Exception.class})

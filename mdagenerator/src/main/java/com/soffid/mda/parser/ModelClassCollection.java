@@ -463,4 +463,8 @@ public class ModelClassCollection extends AbstractModelClass {
 		return null;
 	}
 
+	@Override
+	public void setJsonObject(JsonObject jsonObject) {
+	}
+
 }

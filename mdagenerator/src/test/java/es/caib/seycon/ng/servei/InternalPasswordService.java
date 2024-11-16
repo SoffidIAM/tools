@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 	es.caib.seycon.ng.model.TasqueEntity.class,
 	es.caib.seycon.ng.model.DispatcherEntity.class,
 	es.caib.seycon.ng.model.AccountPasswordEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class})
+	com.soffid.iam.model.MetaAccountEntity.class})
 public abstract class InternalPasswordService {
 
 	@Transactional(rollbackFor={java.lang.Exception.class})
@@ -33,7 +33,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public es.caib.seycon.ng.comu.PolicyCheckResult checkAccountPolicy(
-		es.caib.seycon.ng.model.AccountEntity account, 
+		com.soffid.iam.model.MetaAccountEntity account, 
 		es.caib.seycon.ng.comu.Password password)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	 return null;
@@ -65,7 +65,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public void storeAccountPassword(
-		es.caib.seycon.ng.model.AccountEntity account, 
+		com.soffid.iam.model.MetaAccountEntity account, 
 		es.caib.seycon.ng.comu.Password password, 
 		boolean mustChange, 
 		@Nullable java.util.Date expirationDate)
@@ -91,7 +91,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public es.caib.seycon.ng.comu.PasswordValidation checkAccountPassword(
-		es.caib.seycon.ng.model.AccountEntity account, 
+		com.soffid.iam.model.MetaAccountEntity account, 
 		es.caib.seycon.ng.comu.Password password, 
 		boolean checkTrusted, 
 		boolean checkExpired)
@@ -107,7 +107,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public void confirmAccountPassword(
-		es.caib.seycon.ng.model.AccountEntity account, 
+		com.soffid.iam.model.MetaAccountEntity account, 
 		es.caib.seycon.ng.comu.Password password)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	}
@@ -128,7 +128,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public boolean isOldAccountPassword(
-		es.caib.seycon.ng.model.AccountEntity account, 
+		com.soffid.iam.model.MetaAccountEntity account, 
 		es.caib.seycon.ng.comu.Password password)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	 return false;
@@ -143,7 +143,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public es.caib.seycon.ng.comu.Password generateNewAccountPassword(
-		es.caib.seycon.ng.model.AccountEntity account, 
+		com.soffid.iam.model.MetaAccountEntity account, 
 		boolean mustBeChanged)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	 return null;
@@ -157,7 +157,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public es.caib.seycon.ng.comu.EstatContrasenya getAccountPasswordsStatus(
-		es.caib.seycon.ng.model.AccountEntity account)
+		com.soffid.iam.model.MetaAccountEntity account)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	 return null;
 	}
@@ -178,7 +178,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public es.caib.seycon.ng.comu.Password generateFakeAccountPassword(
-		@Nullable es.caib.seycon.ng.model.AccountEntity account)
+		@Nullable com.soffid.iam.model.MetaAccountEntity account)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	 return null;
 	}
@@ -192,7 +192,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public void storeAndForwardAccountPassword(
-		es.caib.seycon.ng.model.AccountEntity account, 
+		com.soffid.iam.model.MetaAccountEntity account, 
 		es.caib.seycon.ng.comu.Password password, 
 		boolean mustChange, 
 		@Nullable java.util.Date expirationDate)
@@ -200,7 +200,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public boolean isAccountPasswordExpired(
-		es.caib.seycon.ng.model.AccountEntity account)
+		com.soffid.iam.model.MetaAccountEntity account)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	 return false;
 	}
@@ -220,7 +220,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public boolean existsAccountPassword(
-		es.caib.seycon.ng.model.AccountEntity account)
+		com.soffid.iam.model.MetaAccountEntity account)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	 return false;
 	}
@@ -273,7 +273,7 @@ public abstract class InternalPasswordService {
 	}
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public void storeAndSynchronizeAccountPassword(
-		es.caib.seycon.ng.model.AccountEntity account, 
+		com.soffid.iam.model.MetaAccountEntity account, 
 		es.caib.seycon.ng.comu.Password password, 
 		boolean mustChange, 
 		@Nullable java.util.Date expirationDate)

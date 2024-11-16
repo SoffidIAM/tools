@@ -5,9 +5,9 @@
 //
 
 package com.soffid.iam.reconcile.service;
+import com.soffid.iam.model.MetaAccountEntity;
 import com.soffid.mda.annotation.*;
 
-import es.caib.seycon.ng.model.AccountEntity;
 import es.caib.seycon.ng.servei.LlistesDeCorreuService;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 	com.soffid.iam.reconcile.model.ReconcileRoleEntity.class,
 	com.soffid.iam.reconcile.model.ReconcileAccountEntity.class,
 	es.caib.seycon.ng.model.TasqueEntity.class,
-	AccountEntity.class, LlistesDeCorreuService.class,
+	MetaAccountEntity.class, LlistesDeCorreuService.class,
 	es.caib.seycon.ng.model.UsuariEntity.class})
 public abstract class ReconcileService {
 

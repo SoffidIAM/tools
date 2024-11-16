@@ -8,7 +8,7 @@ package es.caib.seycon.ng.model.index;
 import com.soffid.mda.annotation.*;
 
 @Index (name="SC_ACCOUN_NAME",	unique=true,
-	entity=es.caib.seycon.ng.model.AccountEntity.class,
+	entity=com.soffid.iam.model.MetaAccountEntity.class,
 	columns={"ACC_NAME", "ACC_DIS_ID"})
 public abstract class AccountIndex {
 }

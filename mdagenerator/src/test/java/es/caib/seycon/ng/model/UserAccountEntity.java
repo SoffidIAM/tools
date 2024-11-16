@@ -11,14 +11,14 @@ import com.soffid.mda.annotation.*;
 @Depends ({es.caib.seycon.ng.comu.UserAccount.class,
 	es.caib.seycon.ng.model.TasqueEntity.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class})
+	com.soffid.iam.model.MetaAccountEntity.class})
 public abstract class UserAccountEntity {
 
 	@Column (name="UAC_USU_ID")
 	public es.caib.seycon.ng.model.UsuariEntity user;
 
 	@Column (name="UAC_ACC_ID")
-	public es.caib.seycon.ng.model.AccountEntity account;
+	public com.soffid.iam.model.MetaAccountEntity account;
 
 	@Column (name="UAC_ID")
 	@Identifier

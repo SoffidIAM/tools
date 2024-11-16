@@ -386,4 +386,7 @@ public abstract class AbstractModelClass extends ModelElement {
 		return false;
 	}
 
+
+	public abstract void setJsonObject(JsonObject jsonObject);
+
 }

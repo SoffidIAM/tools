@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 	es.caib.seycon.ng.sync.servei.ServerService.class,
 	es.caib.seycon.ng.model.XarxaEntity.class,
 	es.caib.seycon.ng.model.TasqueEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class,
+	com.soffid.iam.model.MetaAccountEntity.class,
 	es.caib.seycon.ng.model.AuditoriaEntity.class})
 public abstract class LogonService {
 

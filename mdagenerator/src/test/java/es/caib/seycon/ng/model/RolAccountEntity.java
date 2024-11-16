@@ -20,7 +20,7 @@ import com.soffid.mda.annotation.*;
 	es.caib.seycon.ng.model.ValorDominiAplicacioEntity.class,
 	es.caib.seycon.ng.comu.AdministracioAplicacio.class,
 	es.caib.seycon.ng.model.AuditoriaEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class,
+	com.soffid.iam.model.MetaAccountEntity.class,
 	es.caib.seycon.ng.model.DispatcherEntity.class,
 	com.soffid.iam.model.RuleEntity.class})
 public abstract class RolAccountEntity {
@@ -49,7 +49,7 @@ public abstract class RolAccountEntity {
 	public es.caib.seycon.ng.model.AplicacioEntity aplicacioAdministrada;
 
 	@Column (name="RLU_ACC_ID")
-	public es.caib.seycon.ng.model.AccountEntity account;
+	public com.soffid.iam.model.MetaAccountEntity account;
 
 	@Column (name="RLU_RUL_ID")
 	@Nullable

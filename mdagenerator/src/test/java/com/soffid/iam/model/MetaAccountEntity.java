@@ -4,8 +4,20 @@
 // This file is licensed by Soffid under GPL v3 license
 //
 
-package es.caib.seycon.ng.model;
+package com.soffid.iam.model;
 import com.soffid.mda.annotation.*;
+
+import es.caib.seycon.ng.model.AccountAccessEntity;
+import es.caib.seycon.ng.model.AccountPasswordEntity;
+import es.caib.seycon.ng.model.AuditoriaEntity;
+import es.caib.seycon.ng.model.DispatcherEntity;
+import es.caib.seycon.ng.model.GrupEntity;
+import es.caib.seycon.ng.model.RolAccountEntity;
+import es.caib.seycon.ng.model.RolEntity;
+import es.caib.seycon.ng.model.TasqueEntity;
+import es.caib.seycon.ng.model.TipusUsuariEntity;
+import es.caib.seycon.ng.model.UserAccountEntity;
+import es.caib.seycon.ng.model.UsuariEntity;
 
 @Entity (table="SC_ACCOUN" )
 @Depends ({es.caib.seycon.ng.model.DispatcherEntity.class,
@@ -20,7 +32,7 @@ import com.soffid.mda.annotation.*;
 	es.caib.seycon.ng.model.AccountAccessEntity.class,
 	es.caib.seycon.ng.model.AccountPasswordEntity.class,
 	es.caib.seycon.ng.model.TipusUsuariEntity.class})
-public abstract class AccountEntity {
+public abstract class MetaAccountEntity {
 
 	@Column (name="ACC_ID")
 	@Identifier
@@ -76,36 +88,36 @@ public abstract class AccountEntity {
 	public es.caib.seycon.ng.model.TipusUsuariEntity passwordPolicy;
 
 	@DaoFinder("from es.caib.seycon.ng.model.AccountEntity acc\nwhere acc.name = :name and acc.dispatcher.codi=:dispatcher")
-	public es.caib.seycon.ng.model.AccountEntity findByNameAndDispatcher(
+	public com.soffid.iam.model.MetaAccountEntity findByNameAndDispatcher(
 		java.lang.String name, 
 		java.lang.String dispatcher) {
 	 return null;
 	}
 	@DaoFinder("select acc\nfrom   es.caib.seycon.ng.model.AccountEntity acc\nleft join     acc.users as users\nleft join     users.user as user\nleft join     acc.dispatcher as dispatcher\nwhere acc.type='U' and user.codi = :user and dispatcher.codi = :dispatcher")
-	public java.util.List<es.caib.seycon.ng.model.AccountEntity> findByUsuariAndDispatcher(
+	public java.util.List<com.soffid.iam.model.MetaAccountEntity> findByUsuariAndDispatcher(
 		java.lang.String user, 
 		java.lang.String dispatcher) {
 	 return null;
 	}
 	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.AccountEntity> findSharedAccounts(
+	public java.util.List<com.soffid.iam.model.MetaAccountEntity> findSharedAccounts(
 		@Nullable java.lang.String name, 
 		@Nullable java.lang.String dispatcher) {
 	 return null;
 	}
 	@DaoOperation
 	public void propagateChanges(
-		es.caib.seycon.ng.model.AccountEntity account)
+		com.soffid.iam.model.MetaAccountEntity account)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	}
 	@DaoFinder("select acc\nfrom es.caib.seycon.ng.model.AccountEntity acc\njoin acc.users as users\njoin users.user as user with user.codi=:user\nwhere acc.dispatcher.domini.codi=:domain and acc.type='U'")
-	public java.util.List<es.caib.seycon.ng.model.AccountEntity> findByUserAndDomain(
+	public java.util.List<com.soffid.iam.model.MetaAccountEntity> findByUserAndDomain(
 		java.lang.String user, 
 		java.lang.String domain) {
 	 return null;
 	}
 	@DaoFinder
-	public java.util.List<es.caib.seycon.ng.model.AccountEntity> findByCriteria(
+	public java.util.List<com.soffid.iam.model.MetaAccountEntity> findByCriteria(
 		es.caib.seycon.ng.comu.AccountCriteria criteria) {
 	 return null;
 	}

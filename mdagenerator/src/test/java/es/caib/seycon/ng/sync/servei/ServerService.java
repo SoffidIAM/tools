@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 	es.caib.seycon.ng.model.ControlAccessEntity.class,
 	es.caib.seycon.ng.model.PuntEntradaEntity.class,
 	es.caib.seycon.ng.model.PoliticaContrasenyaEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class,
+	com.soffid.iam.model.MetaAccountEntity.class,
 	es.caib.seycon.ng.model.UserAccountEntity.class})
 public abstract class ServerService {
 

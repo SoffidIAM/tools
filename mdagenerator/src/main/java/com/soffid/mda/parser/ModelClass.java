@@ -67,7 +67,7 @@ public class ModelClass extends AbstractModelClass {
 
 	private Class underlyingClass;
 	private boolean _collection;
-	ModelClass childClass = null;
+	ModelClass childCparseObjectClasslass = null;
 	private String javaType;
 
 	@Override
@@ -79,7 +79,9 @@ public class ModelClass extends AbstractModelClass {
 	private boolean _array;
 	private Class _collectionClass;
 	private boolean _future;
-
+	private ModelClass childClass;
+	private ModelClass childrenClasses[];
+	
 	@Override
 	public boolean isArray() {
 		return _array;
@@ -92,7 +94,12 @@ public class ModelClass extends AbstractModelClass {
 		_collection = false;
 		_future = false;
 		
-		javaType = typeToString (classFile);
+		parseObjectClass(parser);
+	}
+
+
+	public void parseObjectClass(Parser parser) {
+		javaType = typeToString (objectClass);
 		if (objectClass instanceof Class)
 		{
 			underlyingClass = (Class) objectClass;
@@ -115,15 +122,26 @@ public class ModelClass extends AbstractModelClass {
 				{
 					_collection = true;
 					_collectionClass = (Class) rawType;
-					if (((ParameterizedType) objectClass).getActualTypeArguments().length > 0)
-					{
-						Type pt = ((ParameterizedType) objectClass).getActualTypeArguments()[0];
-						childClass =  (ModelClass) parser.getElement( pt );
-						javaType = ((Class) rawType).getCanonicalName()+"<"+childClass.getJavaType()+">";
-					}
 				}
 				else
 					underlyingClass = (Class) rawType;
+				Type[] actualTypeArguments = ((ParameterizedType) objectClass).getActualTypeArguments();
+				if (actualTypeArguments.length > 0)
+				{
+					childrenClasses = new ModelClass[actualTypeArguments.length];
+					javaType = ((Class) rawType).getCanonicalName();
+					for (int i = 0; i < actualTypeArguments.length; i++) {
+						Type pt = actualTypeArguments[i];
+						childrenClasses[i] = (ModelClass) parser.getElement( pt );
+						if (i == 0)
+							javaType += "<";
+						else
+							javaType += ",";
+						javaType += childrenClasses[i].getJavaType();
+					}
+					javaType += ">";
+					childClass =  childrenClasses[0];
+				}
 			}
 		}
 		else if (objectClass instanceof GenericArrayType)
@@ -369,8 +387,23 @@ public class ModelClass extends AbstractModelClass {
 		if (underlyingClass == null)
 			return null;
 		else
-			return  underlyingClass.getName().replace('.', java.io.File.separatorChar)+".java";
+			return  removeMeta(underlyingClass.getName()).replace('.', java.io.File.separatorChar)+".java";
 	}
+
+	private String removeMeta(String name) {
+		String s = name;
+		if (isGenerated()) {
+			if (name.endsWith("Meta"))
+				name = name.substring(0, name.length() - 4);
+			if (name.startsWith("Meta"))
+				name = name.substring(4);
+			int i = name.indexOf(".Meta");
+			if (i >= 0)
+				name = name.substring(0, i+1)+name.substring(i+5);
+		}
+		return name;
+	}
+
 
 	@Override
 	public String getPackage() {
@@ -389,10 +422,7 @@ public class ModelClass extends AbstractModelClass {
 			cl = underlyingClass.getSimpleName();
 		else
 			cl = objectClass.toString();
-		if (cl.startsWith("Meta"))
-			cl = cl.substring(4);
-		if (cl.endsWith("Meta"))
-			cl = cl.substring(0, cl.length()-4);
+		cl = removeMeta(cl);
 		return cl;
 	}
 
@@ -504,7 +534,7 @@ public class ModelClass extends AbstractModelClass {
 				return entity.translatedPackage()+"."+entity.translatedName();
 		}
 		else
-			return javaType;
+			return removeMeta(javaType);
 	}
 
 	@Override
@@ -542,7 +572,7 @@ public class ModelClass extends AbstractModelClass {
 			return childClass.getJavaType(scope)+"[]";
 		}
 		else if (! Translate.mustTranslate(this, scope) || underlyingClass == null)
-			return javaType;
+			return getJavaType();
 		else 
 		{
 			Service service = (Service) underlyingClass.getAnnotation(Service.class);
@@ -652,11 +682,7 @@ public class ModelClass extends AbstractModelClass {
 
 	@Override
 	public void fixup() {
-		
-//		if (childClass != null && childClass.isEntity() && parser.isTranslateEntities() || parser.isTranslateOnly())
-//		{
-//			javaType = ((ParameterizedType) objectClass).getCanonicalName()+"<"+childClass.getJavaType()+">";
-//		}
+		parseObjectClass(parser);		
 
 		AbstractModelClass mc = getSuperClass();
 		if (mc != null && ! mc.getSpecializations().contains(this))
@@ -1158,7 +1184,9 @@ public class ModelClass extends AbstractModelClass {
 
 	@Override
 	public JsonObject getJsonObject() {
-		if (underlyingClass == null)
+		if (jsonObject != null)
+			return jsonObject;
+		else if (underlyingClass == null)
 			return null;
 		else
 			return (JsonObject) underlyingClass.getAnnotation(JsonObject.class);
@@ -1178,6 +1206,7 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	Boolean hasTenant = null;
+	private JsonObject jsonObject;
 	@Override
 	public boolean hasTenantAttribute() {
 		if (hasTenant != null)
@@ -1228,5 +1257,11 @@ public class ModelClass extends AbstractModelClass {
 	public String getUntilAttribute() {
 		Entity e = (Entity)getAnnotation(Entity.class);
 		return e != null && !e.until().isEmpty() ? e.until(): null;
+	}
+
+
+	@Override
+	public void setJsonObject(JsonObject jsonObject) {
+		this.jsonObject = jsonObject;
 	}
 }

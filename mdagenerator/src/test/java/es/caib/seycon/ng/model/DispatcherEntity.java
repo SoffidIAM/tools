@@ -20,7 +20,7 @@ import com.soffid.mda.annotation.*;
 	es.caib.seycon.ng.model.RolEntity.class,
 	es.caib.seycon.ng.model.ControlAccessEntity.class,
 	es.caib.seycon.ng.model.DominiUsuariEntity.class,
-	es.caib.seycon.ng.model.AccountEntity.class,
+	com.soffid.iam.model.MetaAccountEntity.class,
 	es.caib.seycon.ng.model.ReplicaDatabaseEntity.class,
 	es.caib.seycon.ng.model.ObjectMappingEntity.class})
 public abstract class DispatcherEntity {
@@ -113,7 +113,7 @@ public abstract class DispatcherEntity {
 	public es.caib.seycon.ng.model.DominiUsuariEntity dominiUsuari;
 
 	@ForeignKey (foreignColumn="ACC_DIS_ID")
-	public java.util.Collection<es.caib.seycon.ng.model.AccountEntity> accounts;
+	public java.util.Collection<com.soffid.iam.model.MetaAccountEntity> accounts;
 
 	@Column (name="DIS_MAIN",
 		defaultValue="false")
