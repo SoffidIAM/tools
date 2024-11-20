@@ -7,7 +7,7 @@
 package es.caib.seycon.ng.model;
 import com.soffid.mda.annotation.*;
 
-@Entity (table="SC_USUARI", translatedName="UserEntity", translatedPackage="com.soffid.iam.model"  )
+@Entity (table="SC_USUARI",  )
 @Depends ({es.caib.seycon.ng.model.ScTarget.class,
 	es.caib.seycon.ng.model.RolsGrupEntity.class,
 	es.caib.seycon.ng.model.UsuariSEUEntity.class,

@@ -7,8 +7,8 @@
 package es.caib.seycon.ng.comu;
 import com.soffid.mda.annotation.*;
 
-@ValueObject ( translatedName="AgentStatusInfo",
-	 translatedPackage="com.soffid.iam.api")
+@ValueObject ( 
+	 )
 public abstract class AgentStatusInfo {
 
 	@Attribute(translated = "agentName" )

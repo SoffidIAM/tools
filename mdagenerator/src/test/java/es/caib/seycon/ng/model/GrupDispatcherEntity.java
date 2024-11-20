@@ -7,7 +7,7 @@
 package es.caib.seycon.ng.model;
 import com.soffid.mda.annotation.*;
 
-@Entity (table="SC_GRUDIS", translatedName="SystemGroupEntity", translatedPackage="com.soffid.iam.model" )
+@Entity (table="SC_GRUDIS",  )
 @Depends ({es.caib.seycon.ng.comu.GrupDispatcher.class,
 	es.caib.seycon.ng.model.DispatcherEntity.class,
 	es.caib.seycon.ng.model.GrupEntity.class})

@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service ( serverOnly=true,
 	 serverPath="/seycon/SecretStoreService",
 	 serverRole="agent",
-	 translatedName="SecretStoreService",
-	 translatedPackage="es.caib.seycon.ng.sync.servei")
+	 
+	 )
 @Depends ({es.caib.seycon.ng.model.ServerEntity.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	es.caib.seycon.ng.model.SecretEntity.class,

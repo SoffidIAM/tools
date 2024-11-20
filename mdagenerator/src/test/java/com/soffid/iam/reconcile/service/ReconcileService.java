@@ -12,8 +12,8 @@ import es.caib.seycon.ng.servei.LlistesDeCorreuService;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Service ( translatedName="ReconcileService",
-	 translatedPackage="com.soffid.iam.reconcile.service")
+@Service ( 
+	 )
 @Depends ({com.soffid.iam.reconcile.model.ReconcileAssignmentEntity.class,
 	com.soffid.iam.reconcile.model.ReconcileRoleEntity.class,
 	com.soffid.iam.reconcile.model.ReconcileAccountEntity.class,

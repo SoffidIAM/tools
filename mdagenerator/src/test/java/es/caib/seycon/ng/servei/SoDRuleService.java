@@ -9,8 +9,8 @@ import com.soffid.mda.annotation.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Service ( translatedName="SoDRuleService",
-	 translatedPackage="es.caib.seycon.ng.servei")
+@Service ( 
+	 )
 @Depends ({es.caib.seycon.ng.model.SoDRuleEntity.class,
 	es.caib.seycon.ng.model.SoDRoleEntity.class,
 	es.caib.seycon.ng.model.AplicacioEntity.class,

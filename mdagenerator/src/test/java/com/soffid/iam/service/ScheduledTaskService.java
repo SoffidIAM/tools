@@ -9,8 +9,8 @@ import com.soffid.mda.annotation.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Service ( translatedName="ScheduledTaskService",
-	 translatedPackage="com.soffid.iam.service")
+@Service ( 
+	 )
 @Depends ({com.soffid.iam.model.ScheduledTaskHandlerEntity.class,
 	com.soffid.iam.model.ScheduledTaskEntity.class,
 	es.caib.seycon.ng.model.TasqueEntity.class,

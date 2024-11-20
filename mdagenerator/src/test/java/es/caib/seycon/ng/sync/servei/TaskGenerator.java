@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service ( internal=true,
 	 serverOnly=true,
-	 translatedName="TaskGenerator",
-	 translatedPackage="es.caib.seycon.ng.sync.servei")
+	 
+	 )
 @Depends ({es.caib.seycon.ng.sync.servei.TaskQueue.class,
 	es.caib.seycon.ng.sync.servei.ChangePasswordNotificationQueue.class,
 	es.caib.seycon.ng.sync.servei.SecretStoreService.class,

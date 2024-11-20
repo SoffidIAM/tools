@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service ( internal=true,
 	 serverOnly=true,
 	 serverRole="agent",
-	 translatedName="LogCollectorService",
-	 translatedPackage="es.caib.seycon.ng.sync.servei")
+	 
+	 )
 @Depends ({es.caib.seycon.ng.model.RegistreAccesEntity.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	es.caib.seycon.ng.model.MaquinaEntity.class,

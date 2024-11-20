@@ -9,7 +9,7 @@ import com.soffid.mda.annotation.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Service (translatedName="InformationSystemService", translatedPackage="com.soffid.iam.service") 
+@Service ( ) 
 @Depends ({es.caib.seycon.ng.model.NotificacioEntity.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	es.caib.seycon.ng.model.RolAccountEntity.class,

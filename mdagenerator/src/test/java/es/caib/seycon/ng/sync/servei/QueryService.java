@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service ( internal=true,
 	 serverOnly=true,
-	 translatedName="QueryService",
-	 translatedPackage="es.caib.seycon.ng.sync.servei")
+	 
+	 )
 public abstract class QueryService {
 
 	@Transactional(rollbackFor={java.lang.Exception.class})

@@ -10,8 +10,8 @@ import com.soffid.mda.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service ( internal=true,
-	 translatedName="RuleEvaluatorService",
-	 translatedPackage="com.soffid.iam.service")
+	 
+	 )
 @Depends ({es.caib.seycon.ng.model.RolAccountEntity.class,
 	com.soffid.iam.model.RuleAssignedRoleEntity.class,
 	com.soffid.iam.model.RuleEntity.class,

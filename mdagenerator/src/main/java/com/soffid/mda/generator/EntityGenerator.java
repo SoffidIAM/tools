@@ -1842,13 +1842,13 @@ public class EntityGenerator<E> {
 					JsonObject j = entity.getJsonObject();
 					if (j != null) {
 						if (j.createdOnAttribute() != null && !j.createdOnAttribute().isBlank())
-							out.println("\t\tentity."+j.createdOnAttribute()+" = new java.util.Date();");
+							out.println("\t\tentity."+generateSetter(j.createdOnAttribute())+"(new java.util.Date());");
 						if (j.createdByAttribute() != null && !j.createdByAttribute().isBlank())
-							out.println("\t\tentity."+j.createdByAttribute()+" = com.soffid.iam.util.Security.getCurrentAccount();");
+							out.println("\t\tentity."+generateSetter(j.createdByAttribute())+"(com.soffid.iam.utils.Security.getCurrentAccount());");
 						if (j.updatedOnAttribute() != null && !j.updatedOnAttribute().isBlank())
-							out.println("\t\tentity."+j.updatedOnAttribute()+" = new java.util.Date();");
+							out.println("\t\tentity."+generateSetter(j.updatedOnAttribute())+"(new java.util.Date());");
 						if (j.updatedByAttribute() != null && !j.updatedByAttribute().isBlank())
-							out.println("\t\tentity."+j.updatedByAttribute()+" = com.soffid.iam.util.Security.getCurrentAccount();");
+							out.println("\t\tentity."+generateSetter(j.updatedByAttribute())+"(com.soffid.iam.utils.Security.getCurrentAccount());");
 					}
 					out.println ( "\t\tthis.getHibernateTemplate().save(entity);" + "\n"
 						+ "\t\tthis.getHibernateTemplate().flush();" );
@@ -1878,9 +1878,9 @@ public class EntityGenerator<E> {
 					JsonObject j = entity.getJsonObject();
 					if (j != null) {
 						if (j.updatedOnAttribute() != null && !j.updatedOnAttribute().isBlank())
-							out.println("\t\tentity."+j.updatedOnAttribute()+" = new java.util.Date();");
+							out.println("\t\tentity."+generateSetter(j.updatedOnAttribute())+"(new java.util.Date());");
 						if (j.updatedByAttribute() != null && !j.updatedByAttribute().isBlank())
-							out.println("\t\tentity."+j.updatedByAttribute()+" = com.soffid.iam.util.Security.getCurrentAccount();");
+							out.println("\t\tentity."+generateSetter(j.updatedByAttribute())+"(com.soffid.iam.utils.Security.getCurrentAccount());");
 					}
 //					generateHibernateListenerMethods(rep, "updated", out);
 					generateCleanCache (entity, out);
@@ -2023,6 +2023,10 @@ public class EntityGenerator<E> {
 		generateCacheClass(entity, out);
 		
 		out.close();
+	}
+
+	private String generateSetter(String updatedOnAttribute) {
+		return "set"+updatedOnAttribute.substring(0, 1).toUpperCase()+updatedOnAttribute.substring(1);
 	}
 
 	private void generateCache(AbstractModelClass entity, SmartPrintStream out) {

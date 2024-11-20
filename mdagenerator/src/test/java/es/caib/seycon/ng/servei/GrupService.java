@@ -9,7 +9,7 @@ import com.soffid.mda.annotation.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Service (translatedName="GroupSrevice", translatedPackage="com.soffid.iam.service2") 
+@Service ( ) 
 @Depends ({es.caib.seycon.ng.model.RolsGrupEntity.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	es.caib.seycon.ng.model.RolEntity.class,

@@ -7,8 +7,8 @@
 package es.caib.bpm.vo;
 import com.soffid.mda.annotation.*;
 
-@ValueObject ( translatedName="BPMUser",
-	 translatedPackage="com.soffid.iam.api")
+@ValueObject ( 
+	 )
 public abstract class BPMUser {
 
 	public java.lang.String userName;

@@ -7,8 +7,8 @@
 package es.caib.seycon.ng.comu;
 import com.soffid.mda.annotation.*;
 
-@ValueObject ( translatedName="VoidPasswordStatus",
-	 translatedPackage="com.soffid.iam.api")
+@ValueObject ( 
+	 )
 public abstract class EstatContrasenyaBuida extends es.caib.seycon.ng.comu.EstatContrasenya {
 
 	@Attribute(translated = "userWithoutPasswordDomain" )

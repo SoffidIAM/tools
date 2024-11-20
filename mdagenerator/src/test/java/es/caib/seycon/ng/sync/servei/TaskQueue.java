@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service ( internal=true,
 	 serverOnly=true,
-	 translatedName="TaskQueue",
-	 translatedPackage="es.caib.seycon.ng.sync.servei")
+	 
+	 )
 @Depends ({es.caib.seycon.ng.sync.servei.TaskGenerator.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	es.caib.seycon.ng.model.DominiContrasenyaEntity.class,

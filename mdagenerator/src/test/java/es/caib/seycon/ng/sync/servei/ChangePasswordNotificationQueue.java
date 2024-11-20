@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service ( internal=true,
 	 serverOnly=true,
-	 translatedName="ChangePasswordNotificationQueue",
-	 translatedPackage="es.caib.seycon.ng.sync.servei")
+	 
+	 )
 @Depends ({es.caib.seycon.ng.model.SessioEntity.class})
 public abstract class ChangePasswordNotificationQueue {
 

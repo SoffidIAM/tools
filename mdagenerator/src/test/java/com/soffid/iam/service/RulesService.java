@@ -12,8 +12,8 @@ import java.util.Collection;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Service ( translatedName="RulesService",
-	 translatedPackage="com.soffid.iam.service")
+@Service ( 
+	 )
 @Depends ({com.soffid.iam.model.RuleEntity.class,
 	com.soffid.iam.model.RuleAssignedRoleEntity.class,
 	es.caib.seycon.ng.model.RolEntity.class,

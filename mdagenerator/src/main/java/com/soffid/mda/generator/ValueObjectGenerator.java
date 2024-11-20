@@ -3,7 +3,7 @@ package com.soffid.mda.generator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import com.soffid.mda.annotation.JsonObject;
@@ -1144,6 +1144,10 @@ public class ValueObjectGenerator {
 							jsonObject.hibernateClass().getName()+" is not an entity");
 				out.println("  \"hibernateClass\": \"" + 
 							entity.getFullName(Translate.ENTITY_SCOPE)+"\",");
+				addAttribute(out, jsonObject.startAttribute(), "start");
+				addAttribute(out, jsonObject.endAttribute(), "end");
+				addAttribute(out, jsonObject.deletedAttribute(), "deleted");
+				addAttribute(out, jsonObject.tenantFilter(), "tenantFilter");
 			}
 
 			out.println ("  \"attributes\": [");
@@ -1214,12 +1218,6 @@ public class ValueObjectGenerator {
 			out.print ("  \"class\": \"");
 			out.print(vo.getFullName(scope));
 			out.println("\",");
-			if (vo.isJsonObject()) {
-				JsonObject j = vo.getJsonObject();
-				addAttribute(out, j.startAttribute(), "start");
-				addAttribute(out, j.endAttribute(), "end");
-				addAttribute(out, j.deletedAttribute(), "deleted");
-			}
 			out.println ("  \"attributes\": [");
 			//
 			// Attributes
@@ -1356,7 +1354,7 @@ public class ValueObjectGenerator {
 				AbstractModelClass entity = (AbstractModelClass) parser.getElement(jsonObject.hibernateClass());
 				if (entity != null) {
 					entity.setJsonObject(jsonObject);
-					createAttribute(entity, jsonObject.createdOnAttribute(), "CREDAT", Date.class);
+					createAttribute(entity, jsonObject.createdOnAttribute(), "CREDAT", java.util.Date.class);
 					createAttribute(entity, jsonObject.createdByAttribute(), "CREUSE", String.class);
 					createAttribute(entity, jsonObject.updatedOnAttribute(), "UPDDAT", Date.class);
 					createAttribute(entity, jsonObject.updatedByAttribute(), "UPDUSE", String.class);

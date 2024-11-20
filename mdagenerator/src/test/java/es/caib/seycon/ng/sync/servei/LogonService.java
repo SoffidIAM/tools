@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service ( serverOnly=true,
 	 serverPath="/seycon/LogonService",
-	 translatedName="LogonService",
-	 translatedPackage="es.caib.seycon.ng.sync.servei")
+	 
+	 )
 @Depends ({es.caib.seycon.ng.sync.servei.TaskQueue.class,
 	es.caib.seycon.ng.model.DominiUsuariEntity.class,
 	es.caib.seycon.ng.model.DominiContrasenyaEntity.class,

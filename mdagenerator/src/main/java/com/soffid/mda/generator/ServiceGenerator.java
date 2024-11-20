@@ -1539,9 +1539,10 @@ public class ServiceGenerator {
 		out.println ( "\timplements " + service.getFullName(scope) ) ;
 		out.println ( " {" );
 
-		if (service.isTranslatedImpl()? 
-				scope == Translate.SERVICE_SCOPE:
-				scope == Translate.ALTSERVICE_SCOPE)
+		if (!parser.isTranslateOnly() && 
+				(service.isTranslatedImpl()? 
+						scope == Translate.SERVICE_SCOPE:
+						scope == Translate.ALTSERVICE_SCOPE))
 		{
 			int reverseScope = service.isTranslatedImpl() ?
 					Translate.ALTSERVICE_SCOPE: Translate.SERVICE_SCOPE;

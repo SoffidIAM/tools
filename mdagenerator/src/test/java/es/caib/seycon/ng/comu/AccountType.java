@@ -7,7 +7,7 @@
 package es.caib.seycon.ng.comu;
 import com.soffid.mda.annotation.*;
 
-@Enumeration (translatedName="AccountTypeXX", translatedPackage="com.soffid.iam.model")
+@Enumeration ( )
 public class AccountType {
 
 	public java.lang.String USER="U";

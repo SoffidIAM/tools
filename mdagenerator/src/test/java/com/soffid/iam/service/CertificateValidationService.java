@@ -10,8 +10,8 @@ import com.soffid.mda.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service ( serverPath="/seycon/CertificateValidationtService",
-	 translatedName="CertificateValidationService",
-	 translatedPackage="com.soffid.iam.service",
+	 
+	 
 	 grantees={Roles.anonymous.class})
 public abstract class CertificateValidationService {
 
