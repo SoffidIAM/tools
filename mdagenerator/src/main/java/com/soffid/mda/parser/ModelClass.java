@@ -1036,6 +1036,7 @@ public class ModelClass extends AbstractModelClass {
 			name = generator.getPluginName() + "-";
 		} 
 		else if (isService() &&
+				!generator.isTransaltedOnly() &&
 				scope == (generator.isTranslated() ? Translate.SERVICE_SCOPE: Translate.ALTSERVICE_SCOPE))
 		{
 			suffix = "-v2";
@@ -1048,8 +1049,9 @@ public class ModelClass extends AbstractModelClass {
 	}
 
 	@Override
-	public String getEjbName(int scope) {
-		if (Translate.mustTranslate(this, scope))
+	public String getEjbName(Generator generator, int scope) {
+		if (Translate.mustTranslate(this, scope) && 
+				!generator.isTransaltedOnly())
 			return getName(scope)+"-v2";
 		else
 			return getName(scope);

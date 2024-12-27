@@ -9,9 +9,7 @@ import com.soffid.mda.annotation.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Service ( internal=true,
-	 
-	 )
+@Service ( internal=true)
 @Depends ({es.caib.seycon.ng.model.RolAccountEntity.class,
 	com.soffid.iam.model.RuleAssignedRoleEntity.class,
 	com.soffid.iam.model.RuleEntity.class,

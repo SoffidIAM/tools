@@ -10,9 +10,7 @@ import com.soffid.mda.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service ( internal=true,
-	 serverOnly=true,
-	 
-	 )
+	 serverOnly=true)
 @Depends ({es.caib.seycon.ng.sync.servei.TaskGenerator.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	es.caib.seycon.ng.model.DominiContrasenyaEntity.class,

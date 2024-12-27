@@ -1872,9 +1872,7 @@ public class EntityGenerator<E> {
 						+ "\t\t{" + "\n"
 						+ "\t\t\tthrow new IllegalArgumentException(" + "\n"
 						+ "\t\t\t\t\"" + entity.getDaoName(Translate.DEFAULT) + ".update - 'entity' can not be null\");" + "\n"
-						+ "\t\t}" + "\n"
-						+ "\t\tthis.getHibernateTemplate().update(entity);" + "\n"
-						+ "\t\tthis.getHibernateTemplate().flush();" );
+						+ "\t\t}" );
 					JsonObject j = entity.getJsonObject();
 					if (j != null) {
 						if (j.updatedOnAttribute() != null && !j.updatedOnAttribute().isBlank())
@@ -1882,6 +1880,8 @@ public class EntityGenerator<E> {
 						if (j.updatedByAttribute() != null && !j.updatedByAttribute().isBlank())
 							out.println("\t\tentity."+generateSetter(j.updatedByAttribute())+"(com.soffid.iam.utils.Security.getCurrentAccount());");
 					}
+					out.println ( "\t\tthis.getHibernateTemplate().update(entity);" + "\n"
+							+ "\t\tthis.getHibernateTemplate().flush();" );
 //					generateHibernateListenerMethods(rep, "updated", out);
 					generateCleanCache (entity, out);
 					out.println ( "\t}" + "\n" );

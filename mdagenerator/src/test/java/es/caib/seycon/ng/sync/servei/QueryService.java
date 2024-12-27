@@ -10,9 +10,7 @@ import com.soffid.mda.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service ( internal=true,
-	 serverOnly=true,
-	 
-	 )
+	 serverOnly=true)
 public abstract class QueryService {
 
 	@Transactional(rollbackFor={java.lang.Exception.class})

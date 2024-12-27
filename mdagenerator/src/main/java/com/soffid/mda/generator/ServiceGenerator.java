@@ -99,7 +99,8 @@ public class ServiceGenerator {
 			generateOpenEjbXml();
 		}
 		generateServiceLocator();
-		generateAltServiceLocator();
+		if (! generator.isTransaltedOnly())
+			generateAltServiceLocator();
 		if (generator.isGenerateEjb())
 		{
 			generateEjbLocator(Translate.SERVICE_SCOPE);
@@ -852,7 +853,7 @@ public class ServiceGenerator {
 							+ "\t\t\t\t" + Util.formatXmlComments(service.getComments(), "\t\t\t\t\t") + endl
 							+ "\t\t\t\t]]>" + endl
 							+ "\t\t\t</description>" + endl
-							+ "\t\t\t<ejb-name>" + service.getEjbName(scope) + "</ejb-name>" + endl
+							+ "\t\t\t<ejb-name>" + service.getEjbName(generator, scope) + "</ejb-name>" + endl
 							+ "\t\t\t<local-home>" + service.getEjbHomeFullName(scope) + "</local-home>" + endl
 							+ "\t\t\t<local>" + service.getEjbInterfaceFullName(scope) + "</local>" + endl
 							+ "\t\t\t<ejb-class>" + service.getBeanFullName(scope) + "</ejb-class>" + endl
@@ -916,13 +917,13 @@ public class ServiceGenerator {
 						}
 						out.println ( "\t\t\t<method>" + endl
 								+ "\t\t\t\t<description><![CDATA[Creates the " + service.getName(scope) + " Session EJB]]></description>" + endl
-								+ "\t\t\t\t<ejb-name>" + service.getEjbName(scope) + "</ejb-name>" + endl
+								+ "\t\t\t\t<ejb-name>" + service.getEjbName(generator, scope) + "</ejb-name>" + endl
 								+ "\t\t\t\t<method-intf>LocalHome</method-intf>" + endl
 								+ "\t\t\t\t<method-name>create</method-name>" + endl
 								+ "\t\t\t</method>" + endl
 								+ "\t\t\t<method>" + endl
 							+ "\t\t\t\t<description><![CDATA[Removes the " + service.getName(scope) + " Session EJB]]></description>" + endl
-							+ "\t\t\t\t<ejb-name>" + service.getEjbName(scope) + "</ejb-name>" + endl
+							+ "\t\t\t\t<ejb-name>" + service.getEjbName(generator, scope) + "</ejb-name>" + endl
 							+ "\t\t\t\t<method-intf>Local</method-intf>" + endl
 							+ "\t\t\t\t<method-name>remove</method-name>" + endl
 							+ "\t\t\t</method>" + endl
@@ -966,7 +967,7 @@ public class ServiceGenerator {
 							}
 							out.println ( "\t\t\t<method>" + endl
 									+ "\t\t\t\t<description><![CDATA[" + Util.formatXmlComments(op.getComments(), "\t\t\t\t\t") + "]]></description>" + endl
-							+ "\t\t\t\t<ejb-name>"+ service.getEjbName(scope) + "</ejb-name>" + endl
+							+ "\t\t\t\t<ejb-name>"+ service.getEjbName(generator, scope) + "</ejb-name>" + endl
 							+ "\t\t\t\t<method-intf>Local</method-intf>" + endl
 							+ "\t\t\t\t<method-name>" + op.getName(scope) + "</method-name>" );
 
@@ -1002,7 +1003,7 @@ public class ServiceGenerator {
 					{
 						out.println ( "\t\t<container-transaction>" + endl
 								+ "\t\t\t<method>" + endl
-								+ "\t\t\t\t<ejb-name>" + service.getEjbName(scope) + "</ejb-name>" + endl
+								+ "\t\t\t\t<ejb-name>" + service.getEjbName(generator, scope) + "</ejb-name>" + endl
 								+ "\t\t\t\t<method-name>" + op.getName(scope)+ "</method-name>" + endl
 								+ "\t\t\t\t<method-params>" );
 						for (ModelParameter param: op.getParameters())
@@ -1057,7 +1058,7 @@ public class ServiceGenerator {
 				do
 				{
 					out.println ( "\t\t<session>" + endl
-						+ "\t\t\t<ejb-name>" + service.getEjbName(scope) + "</ejb-name>" + endl
+						+ "\t\t\t<ejb-name>" + service.getEjbName(generator, scope) + "</ejb-name>" + endl
 						+ "\t\t\t<local-jndi-name>soffid/ejb/" + service.getFullName(scope) + "</local-jndi-name>" + endl
 						+ "\t\t</session>" + endl
 						+ "" );
@@ -1091,7 +1092,7 @@ public class ServiceGenerator {
 			{
 				if (parser.isTranslateOnly() ) {
 					int scope = Translate.ALTSERVICE_SCOPE;
-					out.println ( "\t<ejb-deployment ejb-name=\"" + service.getEjbName(scope) + "\">" + endl
+					out.println ( "\t<ejb-deployment ejb-name=\"" + service.getEjbName(generator, scope) + "\">" + endl
 							+ "\t\t<jndi name=\"soffid.ejb." + service.getFullName(scope) + "\"/>" + endl
 							+ "\t</ejb-deployment>" + endl
 							+ "" );
@@ -1100,7 +1101,7 @@ public class ServiceGenerator {
 					int scope = Translate.SERVICE_SCOPE;
 					do
 					{
-						out.println ( "\t<ejb-deployment ejb-name=\"" + service.getEjbName(scope) + "\">" + endl
+						out.println ( "\t<ejb-deployment ejb-name=\"" + service.getEjbName(generator, scope) + "\">" + endl
 								+ "\t\t<jndi name=\"soffid.ejb." + service.getFullName(scope) + "\"/>" + endl
 								+ "\t</ejb-deployment>" + endl
 								+ "" );
@@ -1169,7 +1170,7 @@ public class ServiceGenerator {
 					+ serverPath + "\";" + endl );
 		}
 		out.println ( "\tpublic final static String SERVICE_NAME = \""
-				+ service.getSpringBeanName(generator, scope) + "\";" + endl );
+				+ service.getSpringBeanName(generator, generator.isTransaltedOnly()? Translate.SERVICE_SCOPE: scope) + "\";" + endl );
 
 		for (ModelOperation op: service.getOperations())
 		{
@@ -1971,10 +1972,10 @@ public class ServiceGenerator {
 		{
 			if (service.isStateful())
 			{
-				out.println("@javax.ejb.Stateful(name=\""+service.getEjbName(scope)+"\")");
+				out.println("@javax.ejb.Stateful(name=\""+service.getEjbName(generator, scope)+"\")");
 			}
 			else
-				out.println("@javax.ejb.Stateless(name=\""+service.getEjbName(scope)+"\")");
+				out.println("@javax.ejb.Stateless(name=\""+service.getEjbName(generator, scope)+"\")");
 			if (generator.isTargetTomee())
 				out.println("@javax.ejb.Local("+service.getEjbInterfaceFullName(scope)+".class)");
 			out.println("@javax.ejb.TransactionManagement(value=javax.ejb.TransactionManagementType.CONTAINER)");

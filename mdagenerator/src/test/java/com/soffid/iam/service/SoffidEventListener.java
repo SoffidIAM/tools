@@ -9,9 +9,7 @@ import com.soffid.mda.annotation.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Service ( internal=true,
-	 
-	 )
+@Service ( internal=true)
 public abstract class SoffidEventListener {
 
 	@Transactional(rollbackFor={java.lang.Exception.class})

@@ -37,24 +37,8 @@ public class Parser {
 	
 	public void parse (File dir) throws ClassNotFoundException, MalformedURLException
 	{
-		if (root == null)
-			root = dir;
-		
-		urls.add(dir.toURI().toURL());
-		
-		for (File file: dir.listFiles())
-		{
-			if (file.isDirectory())
-				parse (file);
-			else
-			{
-				if (file.getName().endsWith(".class"))
-				{
-					register (file);
-				}
-			}
-		}
-		
+		parseRecursive(dir);
+		System.out.println("Generating cross attributes\n");
 		for (ModelElement element: getModelElements())
 		{
 			if (element instanceof AbstractModelClass)
@@ -64,6 +48,26 @@ public class Parser {
 		}
 	}
 
+	public void parseRecursive (File dir) throws ClassNotFoundException, MalformedURLException
+	{
+		if (root == null)
+			root = dir;
+		
+		urls.add(dir.toURI().toURL());
+		
+		for (File file: dir.listFiles())
+		{
+			if (file.isDirectory())
+				parseRecursive (file);
+			else
+			{
+				if (file.getName().endsWith(".class"))
+				{
+					register (file);
+				}
+			}
+		}
+	}
 
 	private void register(File file) throws ClassNotFoundException {
 		String f1 = root.getPath();

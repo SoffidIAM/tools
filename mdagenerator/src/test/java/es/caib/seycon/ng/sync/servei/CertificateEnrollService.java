@@ -10,9 +10,7 @@ import com.soffid.mda.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service ( serverOnly=true,
-	 serverPath="/seycon/CertificateEnrollService",
-	 
-	 )
+	 serverPath="/seycon/CertificateEnrollService")
 @Depends ({es.caib.seycon.ng.sync.servei.ServerService.class,
 	es.caib.seycon.ng.sync.servei.LogonService.class})
 public abstract class CertificateEnrollService {

@@ -10,9 +10,7 @@ import com.soffid.mda.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service ( serverOnly=true,
-	 serverPath="/seycon/LogonService",
-	 
-	 )
+	 serverPath="/seycon/LogonService")
 @Depends ({es.caib.seycon.ng.sync.servei.TaskQueue.class,
 	es.caib.seycon.ng.model.DominiUsuariEntity.class,
 	es.caib.seycon.ng.model.DominiContrasenyaEntity.class,

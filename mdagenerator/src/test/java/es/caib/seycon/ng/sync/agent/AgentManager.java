@@ -11,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service ( serverOnly=true,
 	 serverPath="/seycon/AgentManager",
-	 serverRole="server",
-	 
-	 )
+	 serverRole="server")
 public abstract class AgentManager {
 
 	@Transactional(rollbackFor={java.lang.Exception.class})

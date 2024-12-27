@@ -10,9 +10,7 @@ import com.soffid.mda.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service ( internal=true,
-	 serverOnly=true,
-	 
-	 )
+	 serverOnly=true)
 @Depends ({es.caib.seycon.ng.model.ServerEntity.class})
 public abstract class SecretConfigurationService {
 

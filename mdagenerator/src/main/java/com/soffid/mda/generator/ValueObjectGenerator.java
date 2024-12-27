@@ -1342,33 +1342,35 @@ public class ValueObjectGenerator {
 		for (AbstractModelClass vo: parser.getValueObjects()) {
 			if (vo.isJsonObject()) {
 				JsonObject jsonObject = vo.getJsonObject();
-				createAttribute(vo, jsonObject.createdOnAttribute(), null, Date.class);
-				createAttribute(vo, jsonObject.createdByAttribute(), null, String.class);
-				createAttribute(vo, jsonObject.updatedOnAttribute(), null, Date.class);
-				createAttribute(vo, jsonObject.updatedByAttribute(), null, String.class);
-				createAttribute(vo, jsonObject.deletedOnAttribute(), null, Date.class);
-				createAttribute(vo, jsonObject.deletedByAttribute(), null, String.class);
-				createAttribute(vo, jsonObject.startAttribute(), null, Date.class);
-				createAttribute(vo, jsonObject.endAttribute(), null, Date.class);
-				createAttribute(vo, jsonObject.deletedAttribute(), null, Boolean.class);
+				createAttribute(vo, jsonObject.createdOnAttribute(), null, Date.class, false);
+				createAttribute(vo, jsonObject.createdByAttribute(), null, String.class, false);
+				createAttribute(vo, jsonObject.updatedOnAttribute(), null, Date.class, false);
+				createAttribute(vo, jsonObject.updatedByAttribute(), null, String.class, false);
+				createAttribute(vo, jsonObject.deletedOnAttribute(), null, Date.class, true);
+				createAttribute(vo, jsonObject.deletedByAttribute(), null, String.class, true);
+				createAttribute(vo, jsonObject.startAttribute(), null, Date.class, false);
+				createAttribute(vo, jsonObject.endAttribute(), null, Date.class, false);
+				createAttribute(vo, jsonObject.deletedAttribute(), null, Boolean.class, true);
 				AbstractModelClass entity = (AbstractModelClass) parser.getElement(jsonObject.hibernateClass());
 				if (entity != null) {
 					entity.setJsonObject(jsonObject);
-					createAttribute(entity, jsonObject.createdOnAttribute(), "CREDAT", java.util.Date.class);
-					createAttribute(entity, jsonObject.createdByAttribute(), "CREUSE", String.class);
-					createAttribute(entity, jsonObject.updatedOnAttribute(), "UPDDAT", Date.class);
-					createAttribute(entity, jsonObject.updatedByAttribute(), "UPDUSE", String.class);
-					createAttribute(entity, jsonObject.deletedOnAttribute(), "DELDAT", Date.class);
-					createAttribute(entity, jsonObject.deletedByAttribute(), "DELUSE", String.class);
-					createAttribute(entity, jsonObject.startAttribute(), "START", Date.class);
-					createAttribute(entity, jsonObject.endAttribute(), "END", Date.class);
-					createAttribute(entity, jsonObject.deletedAttribute(), "DELETED", Boolean.class);
+					createAttribute(entity, jsonObject.createdOnAttribute(), "CREDAT", java.util.Date.class, false);
+					createAttribute(entity, jsonObject.createdByAttribute(), "CREUSE", String.class, false);
+					createAttribute(entity, jsonObject.updatedOnAttribute(), "UPDDAT", Date.class, false);
+					createAttribute(entity, jsonObject.updatedByAttribute(), "UPDUSE", String.class, false);
+					createAttribute(entity, jsonObject.deletedOnAttribute(), "DELDAT", Date.class, true);
+					createAttribute(entity, jsonObject.deletedByAttribute(), "DELUSE", String.class, true);
+					createAttribute(entity, jsonObject.startAttribute(), "START", Date.class, false);
+					createAttribute(entity, jsonObject.endAttribute(), "END", Date.class, false);
+					createAttribute(entity, jsonObject.deletedAttribute(), "DELETED", Boolean.class, true);
 				}
 			}
 		}
 	}
 
-	private AbstractModelAttribute createAttribute(AbstractModelClass entity, String attName, String columnName, Class class1) {
+	private AbstractModelAttribute createAttribute(AbstractModelClass entity, String attName, 
+			String columnName, Class class1, 
+			boolean hidden) {
 		if (attName == null || attName.isBlank()) return null;
 		String prefix = "";
 		for (AbstractModelAttribute att: entity.getAttributes()) {
@@ -1378,6 +1380,8 @@ public class ValueObjectGenerator {
 				prefix = att.getColumn().substring(0, att.getColumn().indexOf("_") + 1);
 		}
 		CustomModelAttribute m = new CustomModelAttribute(parser, entity, class1, attName, prefix + columnName);
+		if (hidden)
+			m.setHidden(true);
 		entity.getAttributes().add(m);
 		return m;
 	}

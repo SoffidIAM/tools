@@ -43,7 +43,7 @@ public abstract class AbstractModelClass extends ModelElement {
 
 	public abstract String getBeanFullName(int scope);
 
-	public abstract String getEjbName(int scope);
+	public abstract String getEjbName(Generator generator, int scope);
 
 	public abstract String getSpringBeanName(Generator generator, int scope);
 

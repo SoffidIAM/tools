@@ -9,6 +9,7 @@ public class CustomModelAttribute extends AbstractModelAttribute {
 	AbstractModelClass dataType;
 	String name;
 	String column;
+	private boolean hidden;
 	
 	public void setColumn(String column) {
 		this.column = column;
@@ -30,20 +31,90 @@ public class CustomModelAttribute extends AbstractModelAttribute {
 
 	@Override
 	public String getDdlType(int scope) {
-		String t = getJavaType(scope);
-		if (getDataType().getName().equals ("Blob") || t.equals("byte[]"))
-			return 	"org.springframework.orm.hibernate3.support.BlobByteArrayType";
-		if (t.equals( "Long") )
-			return "java.lang.Long";
-		if (t.equals("String"))
-			return "java.lang.String";
-		if (t.equals("Integer"))
-			return"java.lang.Integer";
-		if (t .equals("Boolean"))
-			return "java.lang.Boolean";
-		if (getDataType().isEnumeration())
-			return t + "Enum";
-		return t;
+		if (getDataType() == null)
+		{
+			return "";
+		}
+
+		String javaType = getDataType().getJavaType();
+		int length = getIntegerLength();
+		AbstractModelClass dataType = getDataType();
+		
+		if (getDataType().isEntity())
+		{
+			AbstractModelClass foreign = getDataType();
+			AbstractModelAttribute foreignKey = foreign.getIdentifier();
+			javaType = foreignKey.getDataType().getJavaType();
+			length = foreignKey.getIntegerLength();
+		}
+		else if (getDataType().isEnumeration())
+		{
+			AbstractModelClass enumeration = getDataType();
+			AbstractModelAttribute sample = enumeration.getAttributes().get(0);
+			javaType = sample.getJavaType(scope);
+			if (length <= 0)
+				length = sample.getIntegerLength();
+		}
+
+	
+		if (dataType.getName().equals("Blob") || javaType.equals("byte[]"))
+		{
+			String t = "type='BLOB'";
+			if (length > 0)
+			{
+				t += " length='";
+				t += length;
+				t += "'";
+			}
+			return t;
+		}
+		else if (dataType.getName().equals("Clob") || 
+				(javaType.equals("java.lang.String") && length > 2000))
+		{
+			String t = "type='CLOB'";
+			if (length > 0)
+			{
+				t += " length='";
+				t += length;
+				t += "'";
+			}
+			return t;
+		}
+		else if (javaType.equals("java.lang.String"))
+		{
+			if (length <= 0)
+			{
+				System.out.println ( "Warning: Attribute  " + getModelClass().getFullName()+"."+getName()
+					+ "." + getName() + " is missing length" );
+				length = 256;
+			}
+			return "type='VARCHAR' length='" + length + "'";
+		}
+		else if (javaType.equals ( "java.lang.Long") || javaType.equals("long"))
+		{
+			return "type='BIGINT'" ;
+		}
+		else if (javaType.equals ( "java.lang.Integer") || javaType.equals("int"))
+		{
+			return "type='INTEGER'" ;
+		}
+		else if (javaType.equals ( "java.lang.Double") || javaType.equals("double")
+			|| javaType.equals ( "java.lang.Float") || javaType.equals("float"))
+		{
+			return "type='FLOAT'" ;
+		}
+		else if (javaType.equals ( "boolean" ) || javaType.equals ( "java.lang.Boolean"))
+		{
+			return  "type='BIT'";
+		}
+		else if (javaType.equals ( "java.util.Date" )|| javaType.equals( "java.sql.Timestamp") || javaType.equals( "java.sql.DateTime"))
+		{
+			return "type='DATE'" ;
+		}
+		else
+		{
+			return "";
+		}
 	}
 
 	@Override
@@ -58,7 +129,7 @@ public class CustomModelAttribute extends AbstractModelAttribute {
 
 	@Override
 	public String getHibernateType(int scope) {
-		return dataType.getName(scope);
+		return dataType.getFullName(scope);
 	}
 
 	@Override
@@ -178,12 +249,20 @@ public class CustomModelAttribute extends AbstractModelAttribute {
 
 	@Override
 	public boolean isHidden() {
-		return false;
+		return hidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
 
 	@Override
 	public String getUiType() {
-		return null;
+		String javaType = getDataType().getJavaType();
+		if (javaType.endsWith("Date"))
+			return "DATE_TIME";
+		else
+			return "USER";
 	}
 
 	@Override
@@ -198,7 +277,7 @@ public class CustomModelAttribute extends AbstractModelAttribute {
 
 	@Override
 	public boolean isReadonly() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -228,7 +307,7 @@ public class CustomModelAttribute extends AbstractModelAttribute {
 
 	@Override
 	public boolean isMultivalue() {
-		return true;
+		return false;
 	}
 
 	@Override
