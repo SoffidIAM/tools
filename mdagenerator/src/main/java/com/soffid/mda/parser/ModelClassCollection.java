@@ -79,7 +79,6 @@ public class ModelClassCollection extends AbstractModelClass {
 		return "";
 	}
 
-	@Override
 	public String getEjbName(int scope) {
 		return "";
 	}
@@ -465,6 +464,11 @@ public class ModelClassCollection extends AbstractModelClass {
 
 	@Override
 	public void setJsonObject(JsonObject jsonObject) {
+	}
+
+	@Override
+	public String getEjbName(Generator generator, int scope) {
+		return null;
 	}
 
 }

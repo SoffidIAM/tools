@@ -43,7 +43,8 @@ public class Generator {
 	
 	public boolean isTargetTomee () 
 	{
-		return "tomee".equals(targetServer);
+		return "tomee".equals(targetServer) ||
+				"tomee10".equals(targetServer);
 	}
 
 	
@@ -51,6 +52,11 @@ public class Generator {
 	{
 		return "jboss3".equals(targetServer);
 	}
+
+	public boolean isTargetTomee10() {
+		return "tomee10".equals(targetServer);
+	}
+
 
 	public boolean isHqlFullTest() {
 		return hqlFullTest;

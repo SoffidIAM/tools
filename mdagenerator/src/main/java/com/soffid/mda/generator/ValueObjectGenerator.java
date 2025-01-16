@@ -545,7 +545,7 @@ public class ValueObjectGenerator {
 				+ "\t\t\t\telse" + endl
 				+ "\t\t\t\t{" + endl
 				+ "\t\t\t\t\texceptionProperty = \"causedByException\";" + endl
-				+ "\t\t\t\t\t//javax.ejb.EJBException" + endl
+				+ "\t\t\t\t\t//"+getEjbPackage()+".EJBException" + endl
 				+ "\t\t\t\t\tif (PropertyUtils.isReadable(th, exceptionProperty))" + endl
 				+ "\t\t\t\t\t{" + endl
 				+ "\t\t\t\t\t\ttargetException = (Throwable)PropertyUtils.getProperty(th, exceptionProperty);" + endl
@@ -1386,4 +1386,10 @@ public class ValueObjectGenerator {
 		return m;
 	}
 
+	private String getEjbPackage() {
+		if (generator.getTargetServer().equals("tomee10"))
+			return "jakarta.ejb";
+		else
+			return "javax.ejb";
+	}
 }
