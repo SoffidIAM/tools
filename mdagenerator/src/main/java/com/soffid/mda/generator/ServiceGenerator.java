@@ -177,7 +177,8 @@ public class ServiceGenerator {
 			if (! service.isInternal() && ! path.isEmpty()) {
 				out.println ( "\t\tbean = locator.getService(\"" + service.getSpringBeanName(generator, Translate.SERVICE_SCOPE) + "\");" + endl
 					+ "\t\tif (bean != null)" + endl
-					+ "\t\t\tpublisher.publish(bean, \"" + path + (generator.isTranslated() ? "-en": "") + "\", \"" + role + "\");" + endl );
+					+ "\t\t\tpublisher.publish(bean, \"" + path + 
+					(generator.isTranslated()&&!generator.isTransaltedOnly() ? "-en": "") + "\", \"" + role + "\");" + endl );
 				if (service.isTranslated())
 				{
 					out.println ( "\t\tbean = locator.getService(\"" + service.getSpringBeanName(generator, Translate.ALTSERVICE_SCOPE) + "\");" + endl
@@ -385,7 +386,7 @@ public class ServiceGenerator {
 				+ "\t\tif (serviceLocatorProxy != null && server == null)\n"
 				+ "\t\t\treturn ("+service.getFullName(scope)+") serviceLocatorProxy.getService(\""+ service.getSpringBeanName(generator, scope)+"\");\n"
 				+ "\t\telse\n"
-				+ "\t\t\treturn ( " + service.getFullName(scope) + " ) getRemoteService (\"" + path + (translated ? "-en": "")+ "\");" + endl
+				+ "\t\t\treturn ( " + service.getFullName(scope) + " ) getRemoteService (\"" + path + (translated && !generator.isTransaltedOnly() ? "-en": "")+ "\");" + endl
 				+ "\t}" + endl
 				+ "\t" );
 			}
@@ -1326,7 +1327,7 @@ public class ServiceGenerator {
 		String serverPath = service.getServerPath() ;
 		if (!serverPath.isEmpty())
 		{
-			if (Translate.mustTranslate(service, scope))
+			if (!generator.isTransaltedOnly() && Translate.mustTranslate(service, scope))
 				serverPath = serverPath + "-en";
 			out.println ( "\tpublic final static String REMOTE_PATH = \""
 					+ serverPath + "\";" + endl );
@@ -2271,11 +2272,15 @@ public class ServiceGenerator {
 						out.print ( param.getName(scope) );
 
 				}
+
 				out.println ( ")" + invocationSuffix + "; " + endl
 						+ "\t\t}" + endl
 						+ "\t\tcatch (Exception exception)" + endl
 						+ "\t\t{" + endl
 						+ "\t\t\tfinal Throwable cause = getRootCause(exception);" );
+				out.println ( "\t\t\tif (cause instanceof " + parser.getDefaultException() + ")" + endl
+						+ "\t\t\t\tthrow (" + parser.getDefaultException () + ") cause;" );
+
 				for (AbstractModelClass ex: op.getExceptions()) {
 					out.println ( "\t\t\tif (cause instanceof " + ex.getFullName(Translate.SERVICE_SCOPE) + ")" + endl
 							+ "\t\t\t\tthrow (" + ex.getFullName(Translate.SERVICE_SCOPE) + ") cause;" );
