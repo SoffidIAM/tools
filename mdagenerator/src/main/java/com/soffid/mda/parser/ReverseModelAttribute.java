@@ -218,4 +218,9 @@ public class ReverseModelAttribute extends AbstractModelAttribute {
 	public String[] getListOfValues() {
 		return null;
 	}
+
+	@Override
+	public String getLabel() {
+		return null;
+	}
 }

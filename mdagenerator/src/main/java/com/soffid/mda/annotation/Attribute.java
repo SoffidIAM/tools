@@ -24,4 +24,5 @@ public @interface Attribute {
 	boolean searchCriteria() default false;
 	String customUiHandler() default "";
 	String[] listOfValues() default {};
+	String label() default "";
 }

@@ -527,4 +527,13 @@ public class ModelAttribute extends AbstractModelAttribute {
 		return att == null ? null: att.listOfValues();
 	}
 
+	@Override
+	public String getLabel() {
+		Attribute annotation = (Attribute) field.getAnnotation (Attribute.class);
+		if (annotation != null)
+			return annotation.label();
+		else
+			return null;
+	}
+
 }

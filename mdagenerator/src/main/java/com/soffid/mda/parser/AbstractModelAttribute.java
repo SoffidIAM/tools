@@ -123,4 +123,6 @@ public abstract class AbstractModelAttribute extends ModelElement {
 
 	public abstract String[] getListOfValues();
 
+	public abstract String getLabel();
+
 }

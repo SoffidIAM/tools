@@ -314,4 +314,9 @@ public class CustomModelAttribute extends AbstractModelAttribute {
 	public String[] getListOfValues() {
 		return null;
 	}
+
+	@Override
+	public String getLabel() {
+		return null;
+	}
 }

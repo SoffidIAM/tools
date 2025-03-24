@@ -1251,6 +1251,11 @@ public class ValueObjectGenerator {
 					out.print(att.isMultiline()?"true":"false");
 					out.print(", \"multivalue\":");
 					out.print(att.isMultivalue()?"true":"false");
+					if (att.getLabel() != null && ! att.getLabel().trim().isEmpty()) {
+						out.print(", \"label\":\"");
+						out.print(att.getLabel());
+						out.print("\"");
+					}
 					out.print(", \"readonly\":");
 					out.print(att.isReadonly()?"true":"false");
 					if (att.getFilterExpression() != null && ! att.getFilterExpression().trim().isEmpty()) {
