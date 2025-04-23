@@ -404,17 +404,17 @@ public class ServiceGenerator {
 
 		String packageName;
 		String className;
-		if (generator.getBasePackage() != null)
-		{
-			packageName = generator.getBasePackage();
-			file = file + "/"+Util.packageToDir(packageName);
-			className = "ServiceLocator";
-		}
-		else if (generator.isPlugin())
+		if (generator.isPlugin())
 		{
 			file =  file + "/com/soffid/iam/addons/" + generator.getPluginName();
 			packageName = "com.soffid.iam.addons." + generator.getPluginName();
 			className = Util.firstUpper(generator.getPluginName())+"ServiceLocator";
+		}
+		else if (generator.getBasePackage() != null)
+		{
+			packageName = generator.getBasePackage();
+			file = file + "/"+Util.packageToDir(packageName);
+			className = "ServiceLocator";
 		}
 		else
 		{

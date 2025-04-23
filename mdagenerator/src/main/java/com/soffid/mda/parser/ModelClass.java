@@ -392,7 +392,11 @@ public class ModelClass extends AbstractModelClass {
 
 	private String removeMeta(String name) {
 		String s = name;
-		if (isGenerated()) {
+		if (isGenerated() || 
+				isValueObject() ||
+				isService() ||
+				isEntity()  || 
+				isEnumeration()) {
 			if (name.endsWith("Meta"))
 				name = name.substring(0, name.length() - 4);
 			if (name.startsWith("Meta"))
