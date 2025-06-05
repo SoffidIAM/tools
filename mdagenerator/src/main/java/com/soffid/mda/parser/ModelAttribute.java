@@ -174,7 +174,7 @@ public class ModelAttribute extends AbstractModelAttribute {
 	public String getHibernateType(int scope) {
 		String t = getJavaType(scope);
 		if (getDataType().getName().equals ("Blob"))
-			return 	"org.springframework.orm.hibernate3.support.BlobSerializableType";
+			return 	"java.sql.Blob";
 		else if (t.equals("byte[]"))
 			return 	"org.springframework.orm.hibernate3.support.BlobByteArrayType";
 		if (t.equals( "Long") )
