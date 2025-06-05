@@ -66,7 +66,8 @@ public class ServiceGenerator {
 			{
 				generateInterface (service, Translate.ALTSERVICE_SCOPE);
 				generateBase(service, Translate.ALTSERVICE_SCOPE);
-				generateBaseProxy(service, Translate.ALTSERVICE_SCOPE);
+				if (!parser.isTranslateOnly())
+					generateBaseProxy(service, Translate.ALTSERVICE_SCOPE);
 			}
 			if (generator.isGenerateUml())
 			{
