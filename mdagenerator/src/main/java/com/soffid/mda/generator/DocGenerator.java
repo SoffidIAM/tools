@@ -370,7 +370,7 @@ public class DocGenerator {
 		
 		for (ModelOperation op: mc.getOperations())
 		{
-			if (! op.isQuery() && ! op.isStatic())
+			if (! op.isQuery() && ! op.isStatic() && !op.isDeprecated())
 				generateMethod(null, scope, p, op);
 		}
 		p.println ("</ul>");
@@ -412,7 +412,7 @@ public class DocGenerator {
 		
 		for (ModelOperation op: mc.getOperations())
 		{
-			if (! op.isQuery() && ! op.isStatic())
+			if (! op.isQuery() && ! op.isStatic() && !op.isDeprecated())
 				generateMethod(null, scope, p, op);
 		}
 		p.println ("</ul>");
@@ -510,7 +510,7 @@ public class DocGenerator {
 		
 		for (ModelOperation op: mc.getOperations())
 		{
-			if (op.isQuery() || op.isStatic())
+			if ((op.isQuery() || op.isStatic()) && !op.isDeprecated())
 				generateMethod(null, scope, p, op);
 		}
 		p.println ("</ul>");
@@ -604,7 +604,9 @@ public class DocGenerator {
 		
 		for (ModelOperation op: mc.getOperations())
 		{
-			generateMethod(null, scope, p, op);
+			if (!op.isDeprecated()) {
+				generateMethod(null, scope, p, op);
+			}
 		}
 		p.println ("</ul>");
 
@@ -673,9 +675,11 @@ public class DocGenerator {
 			} else {
 				for (ModelOperation op: service.getOperations())
 				{
-					if (op.getActors().contains (mc))
-					{
-						generateMethod(mc, scope, p, op);
+					if (!op.isDeprecated()) {
+						if (op.getActors().contains (mc))
+						{
+							generateMethod(mc, scope, p, op);
+						}
 					}
 				}
 			}

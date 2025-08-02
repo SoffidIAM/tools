@@ -19,6 +19,7 @@ import net.sourceforge.plantuml.SourceStringReader;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.soffid.mda.annotation.JsonObject;
 import com.soffid.mda.parser.AbstractModelAttribute;
 import com.soffid.mda.parser.AbstractModelClass;
 import com.soffid.mda.parser.ModelClass;
@@ -32,7 +33,7 @@ public class ServiceGenerator {
 	private Parser parser;
 	private String pkg;
 	private String rootPkg;
-
+	private StringBuilder servicesList;
 	final static String endl = "\n";
 	
 	public void generate(Generator generator, Parser parser) throws IOException {
@@ -57,15 +58,19 @@ public class ServiceGenerator {
 		{
 			pkg = rootPkg;
 		}
+		servicesList = new StringBuilder();
+		
 		for (AbstractModelClass service: parser.getServices()) {
 			if (! parser.isTranslateOnly()) {
 				generateInterface (service, Translate.SERVICE_SCOPE);
 				generateBase(service, Translate.SERVICE_SCOPE);
+				generateUIDescriptor(service, Translate.SERVICE_SCOPE);
 			}
 			if (service.isTranslated() || parser.isTranslateOnly())
 			{
 				generateInterface (service, Translate.ALTSERVICE_SCOPE);
 				generateBase(service, Translate.ALTSERVICE_SCOPE);
+				generateUIDescriptor(service, Translate.ALTSERVICE_SCOPE);
 				if (!parser.isTranslateOnly())
 					generateBaseProxy(service, Translate.ALTSERVICE_SCOPE);
 			}
@@ -98,8 +103,10 @@ public class ServiceGenerator {
 		else
 		{
 			generateOpenEjbXml();
-			if (generator.isTargetTomee10())
+			if (generator.isTargetTomee10()) {
 				generateTomee10EjbJarXml();
+				generateServicesList();
+			}
 		}
 		generateServiceLocator();
 		if (! generator.isTransaltedOnly())
@@ -392,6 +399,21 @@ public class ServiceGenerator {
 				+ "\t" );
 			}
 		}
+		if (generator.getTargetServer().equals("tomee10")) {
+			out.println ( "	/**" + endl
+			+ "	 * Gets any remote service." + endl
+			+ "	 *" + endl
+			+ "	 * @return Remote object" + endl
+			+ "	 **/" + endl
+			+ "\tpublic Object getService( String serviceName ) throws IOException, "+generator.getDefaultException()+" {" + endl
+			+ "\t\tif (serviceLocatorProxy != null && server == null)\n"
+			+ "\t\t\treturn serviceLocatorProxy.getService(serviceName);\n"
+			+ "\t\telse\n"
+			+ "\t\t\treturn getRemoteService (\"/seycon/\"+serviceName);" + endl
+			+ "\t}" + endl
+			+ "\t" );
+		}
+		
 		out.println ( "" + endl
 				+ "}" );
 		out.close ();
@@ -1195,6 +1217,15 @@ public class ServiceGenerator {
 		out.close ();
 	}
 
+	void generateServicesList () throws FileNotFoundException, UnsupportedEncodingException {
+		String file;
+		File f = new File (generator.getCoreResourcesDir() + "/META-INF/soffid-services");
+		f.getParentFile().mkdirs();
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
+
+		out.print(servicesList.toString());
+		out.close ();
+	}
 
 	void generateJbossXml () throws FileNotFoundException, UnsupportedEncodingException {
 		String file;
@@ -1345,6 +1376,8 @@ public class ServiceGenerator {
 					+ "\t * Operation " + op.getName(scope) + endl
 					+ Util.formatComments(op.getComments(), "\t") );
 
+			if (op.isDeprecated())
+				out.println("@Deprecated");
 			for (ModelParameter param: op.getParameters()) {
 				out.print ( "\t * @param "
 					+ param.getName(scope)
@@ -2044,8 +2077,11 @@ public class ServiceGenerator {
 		out.println ( );
 		for (ModelOperation op: service.getOperations())
 		{
-			if (!op.getActors().isEmpty() || ! service.getActors().isEmpty())
+			if (!op.getActors().isEmpty() || ! service.getActors().isEmpty()) {
+				if (op.isDeprecated())
+					out.println("@Deprecated");
 				out.println ( "\t" + op.getPrettySpec (scope) + endl + "\t" + op.getThrowsClause(Translate.SERVICE_SCOPE) + ";" + endl );
+			}
 		}
 		out.println ( "}" );
 		out.close();
@@ -2591,4 +2627,83 @@ public class ServiceGenerator {
 			reader.generateImage(new FileOutputStream(f), new FileFormatOption(FileFormat.SVG));
 		}
 	}
+	
+	void generateUIDescriptor(AbstractModelClass vo, int scope) throws FileNotFoundException, UnsupportedEncodingException {
+		if (vo.isService() && !vo.isInternal())
+		{
+			JsonObject jsonObject = vo.getJsonObject();
+
+			String modelPackage = generator.getModelPackage(scope);
+			String file = generator.getCoreResourcesDir()+ "/" + vo.getPackageDir(scope)+ vo.getName(scope) + ".svc.json";
+			
+			servicesList.append(vo.getFullName(scope)).append("\n");
+			
+			File f = new File(file);
+			f.getParentFile().mkdirs();
+			SmartPrintStream out = new SmartPrintStream (f);
+	
+			out.println( "{" );
+			out.print ("  \"class\": \"");
+			out.print(vo.getFullName(scope));
+			if (vo.getComments() != null) {
+				out.print("\", \"comments\":\"");
+				out.print(vo.getComments().replace("\"", "\\\"").replace("\n", "\\n"));
+			}
+			out.println("\",");
+			out.println ("  \"methods\": [");
+			//
+			// Attributes
+			//
+			boolean first = true;
+			for (ModelOperation att: vo.getOperations())
+			{
+				if (!att.isDeprecated()) {
+					if (first)
+						first = false;
+					else
+						out.println (",");
+					out.print("    {\"name\":\"");
+					out.print(att.getName(scope));
+					if (att.getComments() != null) {
+						out.print("\", \"comments\":\"");
+						out.print(att.getComments().replace("\"", "\\\"").replace("\n", "\\n"));
+					}
+					if (att.getReturnParameter() != null) {
+						out.print("\", \"return\":\"");
+						out.print(att.getReturnParameter().getDataType().getJavaType(scope) 
+								.replace("\"", "\\\"").replace("\n", "\\n"));
+					}
+					out.println("\", \"arguments\":[");
+					boolean firstParam = true;
+					for (ModelParameter param: att.getParameters()) {
+						if (firstParam) firstParam = false;
+						else out.println(",");
+						out.print("       {\"name\":\"");
+						out.print(param.getName().replace("\"", "\\\"").replace("\n", "\\n"));
+						out.print("\",\"type\":\"");
+						out.print(param.getDataType().getJavaType(scope).replace("\"", "\\\"").replace("\n", "\\n"));
+						if (param.isRequired())
+							out.print("\",\"required\": true");
+						else
+							out.print("\",\"required\":false");
+						if (param.getComments() != null) {
+							out.print(", \"comments\":\"");
+							out.print(param.getComments().replace("\"", "\\\"").replace("\n", "\\n"));
+							out.print("\"");
+						}
+						out.print("}");
+					}
+					out.print("    ]}");
+				}
+			}
+			out.println ();
+			out.println ("  ]");
+			out.println ("}");
+	
+			out.close();
+		}
+
+	}
+
+
 }

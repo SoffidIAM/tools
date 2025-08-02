@@ -15,13 +15,15 @@ public class ValueObjectGenerator {
 
 	private Generator generator;
 	private Parser parser;
-
+	private StringBuilder beansList;
 	private int scope;
 
 	public void generate(Generator generator, Parser parser) throws FileNotFoundException, UnsupportedEncodingException {
 		this.generator = generator;
 		this.parser = parser;
 		this.scope = Translate.SERVICE_SCOPE; 
+		
+		beansList = new StringBuilder();
 		
 		for (AbstractModelClass vo: parser.getValueObjects()) {
 			generateValueObject (vo, Translate.SERVICE_SCOPE);
@@ -60,7 +62,7 @@ public class ValueObjectGenerator {
 				}
 			}
 		}
-
+		generateValueObjectsList();
 	}
 
 	void generateEnumeration(AbstractModelClass vo, int entityScope) throws FileNotFoundException, UnsupportedEncodingException {
@@ -1205,6 +1207,9 @@ public class ValueObjectGenerator {
 			f.getParentFile().mkdirs();
 			SmartPrintStream out = new SmartPrintStream (f);
 	
+			if (scope == Translate.SERVICE_SCOPE)
+				beansList.append(vo.getFullName(scope)).append("\n");
+			
 			out.println( "{" );
 			AbstractModelClass entity = null;
 			if (jsonObject.hibernateClass() != null)
@@ -1217,6 +1222,10 @@ public class ValueObjectGenerator {
 			}
 			out.print ("  \"class\": \"");
 			out.print(vo.getFullName(scope));
+			if (vo.getComments() != null) {
+				out.print("\", \"comments\":\"");
+				out.print(vo.getComments().replace("\"", "\\\"").replace("\n", "\\n"));
+			}
 			out.println("\",");
 			out.println ("  \"attributes\": [");
 			//
@@ -1241,6 +1250,10 @@ public class ValueObjectGenerator {
 						
 					else
 						out.print(att.getUiType());
+					if (att.getComments() != null) {
+						out.print("\", \"comments\":\"");
+						out.print(att.getComments().replace("\"", "\\\"").replace("\n", "\\n"));
+					}
 					out.print("\", \"lettercase\":\"");
 					out.print(att.getCase());
 					out.print("\", \"required\":");
@@ -1260,17 +1273,17 @@ public class ValueObjectGenerator {
 					out.print(att.isReadonly()?"true":"false");
 					if (att.getFilterExpression() != null && ! att.getFilterExpression().trim().isEmpty()) {
 						out.print(", \"filter_expression\":\"");
-						out.print(att.getFilterExpression().replaceAll("\"", "\\\\\""));
+						out.print(att.getFilterExpression().replace("\"", "\\\"").replace("\n", "\\n"));
 						out.print("\"");
 					}
 					if (att.getCustomUiHandler() != null && ! att.getCustomUiHandler().trim().isEmpty()) {
 						out.print(", \"custom_ui_handler\":\"");
-						out.print(att.getCustomUiHandler().replaceAll("\"", "\\\\\""));
+						out.print(att.getCustomUiHandler().replace("\"", "\\\"").replace("\n", "\\n"));
 						out.print("\"");
 					}
 					if (att.getSeparator() != null && ! att.getSeparator().trim().isEmpty()) {
 						out.print(", \"separator\":\"");
-						out.print(att.getSeparator().replaceAll("\"", "\\\\\""));
+						out.print(att.getSeparator().replace("\"", "\\\"").replace("\n", "\\n"));
 						out.print("\"");
 					}
 					if (att.getListOfValues() != null && att.getListOfValues().length > 0) {
@@ -1280,7 +1293,7 @@ public class ValueObjectGenerator {
 							if (firstValue) firstValue = false;
 							else out.print(',');
 							out.print('"');
-							out.print(value.replaceAll("\"", "\\\\\""));
+							out.print(value.replace("\"", "\\\"").replace("\n", "\\n"));
 							out.print('"');
 						}
 						out.print("]");
@@ -1295,7 +1308,7 @@ public class ValueObjectGenerator {
 					}
 //					if (att.getComments() != null) {
 //						out.print(", \"placeholder\":\"");
-//						out.print(att.getComments().replaceAll("\"", "\\\\\"").replaceAll("\n", " "));
+//						out.print(att.getComments().replace("\"", "\\\"").replace("\n", "\\n").replaceAll("\n", " "));
 //						out.print("\"");
 //					}
 					AbstractModelClass datatype = att.getDataType();
@@ -1397,4 +1410,15 @@ public class ValueObjectGenerator {
 		else
 			return "javax.ejb";
 	}
+	
+	void generateValueObjectsList () throws FileNotFoundException, UnsupportedEncodingException {
+		String file;
+		File f = new File (generator.getCoreResourcesDir() + "/META-INF/soffid-beans");
+		f.getParentFile().mkdirs();
+		SmartPrintStream out = new SmartPrintStream(f, "UTF-8");
+
+		out.print(beansList.toString());
+		out.close ();
+	}
+
 }

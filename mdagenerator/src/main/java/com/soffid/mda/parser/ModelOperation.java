@@ -79,6 +79,10 @@ public class ModelOperation extends ModelElement {
 				method.getAnnotation(DaoOperation.class) != null;
 	}
 	
+	public boolean isDeprecated() {
+		return method.getAnnotation(Deprecated.class) != null;
+	}
+
 	public boolean isQuery ()
 	{
 		return method.getName().startsWith("find") ||

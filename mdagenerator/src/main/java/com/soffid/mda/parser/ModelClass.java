@@ -943,8 +943,12 @@ public class ModelClass extends AbstractModelClass {
 		if (underlyingClass == null)
 			return null;
 		Service service = (Service) underlyingClass.getAnnotation(Service.class);
-		if (service != null)
-			return service.serverPath();
+		if (service != null) {
+			if ("agent".equals(service.serverRole()))
+				return "/seycon/"+getFullName();
+			else
+				return service.serverPath();
+		}
 		else
 			return null;
 	}
@@ -1033,23 +1037,28 @@ public class ModelClass extends AbstractModelClass {
 
 	@Override
 	public String getSpringBeanName(Generator generator, int scope) {
-		String name = "";
-		String suffix = "";
-		if (generator.isPlugin() && isGenerated())
-		{
-			name = generator.getPluginName() + "-";
-		} 
-		else if (isService() &&
-				!generator.isTransaltedOnly() &&
-				scope == (generator.isTranslated() ? Translate.SERVICE_SCOPE: Translate.ALTSERVICE_SCOPE))
-		{
-			suffix = "-v2";
+		
+		if (generator.getTargetServer().equals("tomee10")) {
+			return getFullName(scope);
+		} else {
+			String name = "";
+			String suffix = "";
+			if (generator.isPlugin() && isGenerated())
+			{
+				name = generator.getPluginName() + "-";
+			} 
+			else if (isService() &&
+					!generator.isTransaltedOnly() &&
+					scope == (generator.isTranslated() ? Translate.SERVICE_SCOPE: Translate.ALTSERVICE_SCOPE))
+			{
+				suffix = "-v2";
+			}
+			if (isEntity())
+				name = name + Util.firstLower(getDaoName(scope));
+			else
+				name = name + Util.firstLower(getName(scope));
+			return name + suffix;
 		}
-		if (isEntity())
-			name = name + Util.firstLower(getDaoName(scope));
-		else
-			name = name + Util.firstLower(getName(scope));
-		return name + suffix;
 	}
 
 	@Override
