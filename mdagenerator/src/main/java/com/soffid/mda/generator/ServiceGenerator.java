@@ -1376,8 +1376,6 @@ public class ServiceGenerator {
 					+ "\t * Operation " + op.getName(scope) + endl
 					+ Util.formatComments(op.getComments(), "\t") );
 
-			if (op.isDeprecated())
-				out.println("@Deprecated");
 			for (ModelParameter param: op.getParameters()) {
 				out.print ( "\t * @param "
 					+ param.getName(scope)
@@ -1400,6 +1398,8 @@ public class ServiceGenerator {
 					out.println ();
 			}
 			out.println ( "\t */" );
+			if (op.isDeprecated())
+				out.println("@Deprecated");
 			out.println ( "\t" + op.getPrettySpec (scope) + endl
 					+ "\t\t\t" + op.getThrowsClause(Translate.SERVICE_SCOPE) + ";" + endl );
 		}
